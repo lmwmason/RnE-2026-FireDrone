@@ -1,0 +1,4 @@
+(design_block_lib_table
+  (version 7)
+  (lib (name "LM5146QRGYRQ1")(type "KiCad")(uri "/home/happy-coding/Desktop/git/RnE-2026-FireDrone/PCB-Design/lib/ul_LM5146QRGYRQ1/KiCADv6/footprints.pretty")(options "")(descr ""))
+)

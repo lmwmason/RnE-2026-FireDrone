@@ -1,0 +1,224 @@
+(kicad_sch
+	(version 20250114)
+	(generator "eeschema")
+	(generator_version "9.0")
+	(uuid "4948088e-d38f-44ee-beff-cf5f668e8dfb")
+	(paper "A4")
+	(lib_symbols)
+	(sheet
+		(at 17.78 17.78)
+		(size 48.26 50.8)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "0424c1ac-776e-4b2b-9bc4-21c99a4a18f1")
+		(property "Sheetname" "Power_Management"
+			(at 17.78 17.0684 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "Power_Management.kicad_sch"
+			(at 17.78 69.1646 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "FC-PCB"
+				(path "/4948088e-d38f-44ee-beff-cf5f668e8dfb"
+					(page "2")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 231.14 17.78)
+		(size 48.26 50.8)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "4a4d3c24-bf04-4237-be1b-f4c78c888a64")
+		(property "Sheetname" "Connectors"
+			(at 231.14 17.0684 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "Connectors.kicad_sch"
+			(at 231.14 69.1646 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "FC-PCB"
+				(path "/4948088e-d38f-44ee-beff-cf5f668e8dfb"
+					(page "6")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 71.12 17.78)
+		(size 48.26 50.8)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "4eadf4ec-5cff-4b23-8b62-40228647a036")
+		(property "Sheetname" "MCU_F4_Sensor"
+			(at 71.12 17.0684 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "MCU_F4_Sensor.kicad_sch"
+			(at 71.12 69.1646 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "FC-PCB"
+				(path "/4948088e-d38f-44ee-beff-cf5f668e8dfb"
+					(page "3")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 177.8 17.78)
+		(size 48.26 50.8)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "8b4a05e3-e8b3-4786-b3f5-1ecb8c1a4e7c")
+		(property "Sheetname" "MCU_F7_Main"
+			(at 177.8 17.0684 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "MCU_H7_Main.kicad_sch"
+			(at 177.8 69.1646 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "FC-PCB"
+				(path "/4948088e-d38f-44ee-beff-cf5f668e8dfb"
+					(page "5")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 124.46 17.78)
+		(size 48.26 50.8)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "9d7619f2-351a-46c1-892b-3cefb811571d")
+		(property "Sheetname" "MCU_H7_AI"
+			(at 124.46 17.0684 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "MCU_H7_AI.kicad_sch"
+			(at 124.46 69.1646 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "FC-PCB"
+				(path "/4948088e-d38f-44ee-beff-cf5f668e8dfb"
+					(page "4")
+				)
+			)
+		)
+	)
+	(sheet_instances
+		(path "/"
+			(page "1")
+		)
+	)
+	(embedded_fonts no)
+)
