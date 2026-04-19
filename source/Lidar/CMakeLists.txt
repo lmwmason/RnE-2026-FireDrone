@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.20)
-project(my_lidar_project)
+project(RnELidar)
 
 set(CMAKE_CXX_STANDARD 14)
 
@@ -24,6 +24,6 @@ set(SDK_SOURCES
         src/LidarVisualization.cpp
 )
 
-add_executable(my_lidar_project src/LidarDistanceAngleTest.cpp ${SDK_SOURCES})
+add_executable(RnELidar src/LidarDistanceAngleTest.cpp ${SDK_SOURCES})
 
-target_link_libraries(my_lidar_project pthread rt ${OpenCV_LIBS})
+target_link_libraries(RnELidar pthread rt ${OpenCV_LIBS})

@@ -1,4 +1,4 @@
-/*#include <opencv2/opencv.hpp>
+#include <opencv2/opencv.hpp>
 #include <atomic>
 #include <iostream>
 #include <csignal>
@@ -80,4 +80,4 @@ int main()
     cv::destroyAllWindows();
 
     return 0;
-}*/
+}

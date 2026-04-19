@@ -1,0 +1,226 @@
+** Drc report for BEC-For-Drone.kicad_pcb **
+** Created on 2026-04-18T16:41:05 **
+** Report includes: Errors, Warnings **
+
+** Found 53 DRC violations **
+[starved_thermal]: Thermal relief connection to zone incomplete (layer F.Cu; zone min spoke count 2; actual 1)
+    Local override; error
+    @(101.9925 mm, 45.0075 mm): Zone 'gnd' [GND] on F.Cu and B.Cu, priority 1
+    @(182.0000 mm, 81.1750 mm): Pad 2 [GND] of R3 on F.Cu
+[silk_overlap]: Silkscreen clearance
+    Rule: board setup constraints silk; warning
+    @(120.0380 mm, 120.9312 mm): Polygon of G*** on F.Silkscreen
+    @(120.8297 mm, 122.8043 mm): Reference field of G***
+[silk_overlap]: Silkscreen clearance
+    Rule: board setup constraints silk; warning
+    @(116.2699 mm, 122.2061 mm): Polygon of G*** on F.Silkscreen
+    @(120.8297 mm, 122.8043 mm): Reference field of G***
+[silk_overlap]: Silkscreen clearance
+    Rule: board setup constraints silk; warning
+    @(118.8290 mm, 123.0145 mm): Polygon of G*** on F.Silkscreen
+    @(120.8297 mm, 122.8043 mm): Reference field of G***
+[silk_overlap]: Silkscreen clearance
+    Rule: board setup constraints silk; warning
+    @(120.8297 mm, 122.8043 mm): Reference field of G***
+    @(118.7637 mm, 123.1450 mm): Polygon of G*** on F.Silkscreen
+[silk_overlap]: Silkscreen clearance
+    Rule: board setup constraints silk; warning
+    @(120.8297 mm, 122.8043 mm): Reference field of G***
+    @(122.1920 mm, 120.1527 mm): Polygon of G*** on F.Silkscreen
+[silk_overlap]: Silkscreen clearance
+    Rule: board setup constraints silk; warning
+    @(120.8297 mm, 122.8043 mm): Reference field of G***
+    @(123.2435 mm, 122.2098 mm): Polygon of G*** on F.Silkscreen
+[silk_overlap]: Silkscreen clearance
+    Rule: board setup constraints silk; warning
+    @(120.3150 mm, 122.3222 mm): Polygon of G*** on F.Silkscreen
+    @(120.8297 mm, 122.8043 mm): Reference field of G***
+[silk_overlap]: Silkscreen clearance
+    Rule: board setup constraints silk; warning
+    @(120.3585 mm, 122.3222 mm): Polygon of G*** on F.Silkscreen
+    @(120.8297 mm, 122.8043 mm): Reference field of G***
+[silk_overlap]: Silkscreen clearance
+    Rule: board setup constraints silk; warning
+    @(120.8297 mm, 122.8043 mm): Reference field of G***
+    @(120.4020 mm, 122.3440 mm): Polygon of G*** on F.Silkscreen
+[silk_overlap]: Silkscreen clearance
+    Rule: board setup constraints silk; warning
+    @(120.8297 mm, 122.8043 mm): Reference field of G***
+    @(120.5469 mm, 122.2098 mm): Polygon of G*** on F.Silkscreen
+[silk_overlap]: Silkscreen clearance
+    Rule: board setup constraints silk; warning
+    @(120.0758 mm, 122.2570 mm): Polygon of G*** on F.Silkscreen
+    @(120.8297 mm, 122.8043 mm): Reference field of G***
+[silk_overlap]: Silkscreen clearance
+    Rule: board setup constraints silk; warning
+    @(120.8297 mm, 122.8043 mm): Reference field of G***
+    @(120.1193 mm, 122.2787 mm): Polygon of G*** on F.Silkscreen
+[silk_overlap]: Silkscreen clearance
+    Rule: board setup constraints silk; warning
+    @(120.2280 mm, 122.3657 mm): Polygon of G*** on F.Silkscreen
+    @(120.8297 mm, 122.8043 mm): Reference field of G***
+[silk_overlap]: Silkscreen clearance
+    Rule: board setup constraints silk; warning
+    @(120.8681 mm, 122.2873 mm): Polygon of G*** on F.Silkscreen
+    @(120.8297 mm, 122.8043 mm): Reference field of G***
+[silk_overlap]: Silkscreen clearance
+    Rule: board setup constraints silk; warning
+    @(119.1769 mm, 122.7318 mm): Polygon of G*** on F.Silkscreen
+    @(120.8297 mm, 122.8043 mm): Reference field of G***
+[silk_overlap]: Silkscreen clearance
+    Rule: board setup constraints silk; warning
+    @(113.5000 mm, 134.0000 mm): Segment on F.Silkscreen
+    @(131.4950 mm, 133.8525 mm): Reference field of J16
+[silk_overlap]: Silkscreen clearance
+    Rule: board setup constraints silk; warning
+    @(113.5000 mm, 134.0000 mm): Segment on F.Silkscreen
+    @(119.4950 mm, 133.8525 mm): Reference field of J15
+[silk_overlap]: Silkscreen clearance
+    Rule: board setup constraints silk; warning
+    @(192.5000 mm, 95.0000 mm): Segment on F.Silkscreen
+    @(192.5000 mm, 126.0700 mm): Reference field of P4
+[silk_overlap]: Silkscreen clearance
+    Rule: board setup constraints silk; warning
+    @(192.5000 mm, 95.0000 mm): Segment on F.Silkscreen
+    @(192.5000 mm, 113.0700 mm): Reference field of P3
+[silk_overlap]: Silkscreen clearance
+    Rule: board setup constraints silk; warning
+    @(192.5000 mm, 95.0000 mm): Segment on F.Silkscreen
+    @(192.5000 mm, 101.0700 mm): Reference field of P2
+[silk_overlap]: Silkscreen clearance
+    Rule: board setup constraints silk; warning
+    @(115.5000 mm, 78.5000 mm): Rectangle on F.Silkscreen
+    @(115.6800 mm, 109.0400 mm): Reference field of J13
+[silk_overlap]: Silkscreen clearance
+    Rule: board setup constraints silk; warning
+    @(113.5000 mm, 54.5000 mm): Segment on F.Silkscreen
+    @(113.3200 mm, 97.0400 mm): Reference field of J8
+[silk_overlap]: Silkscreen clearance
+    Rule: board setup constraints silk; warning
+    @(113.5000 mm, 54.5000 mm): Segment on F.Silkscreen
+    @(113.3200 mm, 85.0400 mm): Reference field of J7
+[silk_overlap]: Silkscreen clearance
+    Rule: board setup constraints silk; warning
+    @(115.5000 mm, 78.5000 mm): Rectangle on F.Silkscreen
+    @(115.6800 mm, 85.0400 mm): Reference field of J11
+[silk_overlap]: Silkscreen clearance
+    Rule: board setup constraints silk; warning
+    @(115.6800 mm, 97.0400 mm): Reference field of J12
+    @(115.5000 mm, 78.5000 mm): Rectangle on F.Silkscreen
+[silk_overlap]: Silkscreen clearance
+    Rule: board setup constraints silk; warning
+    @(113.3200 mm, 73.0400 mm): Reference field of J6
+    @(113.5000 mm, 54.5000 mm): Segment on F.Silkscreen
+[silk_overlap]: Silkscreen clearance
+    Rule: board setup constraints silk; warning
+    @(113.5000 mm, 54.5000 mm): Segment on F.Silkscreen
+    @(113.3200 mm, 109.0400 mm): Reference field of J9
+[silk_overlap]: Silkscreen clearance
+    Rule: board setup constraints silk; warning
+    @(182.5225 mm, 82.2373 mm): Segment of R3 on F.Silkscreen
+    @(182.5000 mm, 57.0000 mm): Segment on F.Silkscreen
+[silk_overlap]: Silkscreen clearance
+    Rule: board setup constraints silk; warning
+    @(113.5000 mm, 54.5000 mm): Segment on F.Silkscreen
+    @(113.3200 mm, 61.0400 mm): Reference field of J5
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(182.5000 mm, 57.0000 mm): Segment on F.Silkscreen
+    @(182.0000 mm, 81.1750 mm): Pad 2 [GND] of R3 on F.Cu
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(182.5000 mm, 57.0000 mm): Segment on F.Silkscreen
+    @(182.0000 mm, 82.8250 mm): Pad 1 [Net-(P3-CC)] of R3 on F.Cu
+[silk_edge_clearance]: Silkscreen clipped by board edge
+    Rule: board setup constraints silk; warning
+    @(102.0000 mm, 50.0000 mm): Segment on Edge.Cuts
+    @(102.0000 mm, 54.5000 mm): Segment on F.Silkscreen
+[silk_edge_clearance]: Silkscreen clipped by board edge
+    Rule: board setup constraints silk; warning
+    @(102.0000 mm, 50.0000 mm): Segment on Edge.Cuts
+    @(102.0000 mm, 119.5000 mm): Segment on F.Silkscreen
+[silk_edge_clearance]: Silkscreen clipped by board edge
+    Rule: board setup constraints silk; warning
+    @(102.0000 mm, 50.0000 mm): Segment on Edge.Cuts
+    @(113.5000 mm, 115.5000 mm): Segment on F.Silkscreen
+[silk_edge_clearance]: Silkscreen clipped by board edge
+    Rule: board setup constraints silk; warning
+    @(107.0000 mm, 145.0000 mm): Segment on Edge.Cuts
+    @(137.5000 mm, 134.0000 mm): Segment on F.Silkscreen
+[silk_edge_clearance]: Silkscreen clipped by board edge
+    Rule: board setup constraints silk; warning
+    @(202.0000 mm, 140.0000 mm): Segment on Edge.Cuts
+    @(182.5225 mm, 94.5000 mm): Segment on F.Silkscreen
+[silk_edge_clearance]: Silkscreen clipped by board edge
+    Rule: board setup constraints silk; warning
+    @(202.0000 mm, 140.0000 mm): Segment on Edge.Cuts
+    @(192.5000 mm, 132.0000 mm): Segment on F.Silkscreen
+[silk_edge_clearance]: Silkscreen clipped by board edge
+    Rule: board setup constraints silk; warning
+    @(202.0000 mm, 140.0000 mm): Segment on Edge.Cuts
+    @(202.0000 mm, 57.0000 mm): Segment on F.Silkscreen
+[silk_edge_clearance]: Silkscreen clipped by board edge
+    Rule: board setup constraints silk; warning
+    @(202.0000 mm, 140.0000 mm): Segment on Edge.Cuts
+    @(202.0000 mm, 95.0000 mm): Segment on F.Silkscreen
+[silk_edge_clearance]: Silkscreen clipped by board edge
+    Rule: board setup constraints silk; warning
+    @(102.0000 mm, 50.0000 mm): Segment on Edge.Cuts
+    @(102.2800 mm, 94.5000 mm): Polygon of J8 on F.Silkscreen
+[silk_edge_clearance]: Silkscreen clipped by board edge
+    Rule: board setup constraints silk; warning
+    @(102.0000 mm, 50.0000 mm): Segment on Edge.Cuts
+    @(102.2800 mm, 70.5000 mm): Polygon of J6 on F.Silkscreen
+[silk_edge_clearance]: Silkscreen clipped by board edge
+    Rule: board setup constraints silk; warning
+    @(102.0000 mm, 50.0000 mm): Segment on Edge.Cuts
+    @(102.2800 mm, 58.5000 mm): Polygon of J5 on F.Silkscreen
+[silk_edge_clearance]: Silkscreen clipped by board edge
+    Rule: board setup constraints silk; warning
+    @(107.0000 mm, 145.0000 mm): Segment on Edge.Cuts
+    @(156.0000 mm, 145.5000 mm): Reference field of J1
+[silk_edge_clearance]: Silkscreen clipped by board edge
+    Rule: board setup constraints silk; warning
+    @(107.0000 mm, 145.0000 mm): Segment on Edge.Cuts
+    @(175.6000 mm, 144.5000 mm): Reference field of J2
+[silk_edge_clearance]: Silkscreen clipped by board edge
+    Rule: board setup constraints silk; warning
+    @(102.0000 mm, 50.0000 mm): Segment on Edge.Cuts
+    @(101.7800 mm, 121.8400 mm): Segment of J14 on F.Silkscreen
+[silk_edge_clearance]: Silkscreen clipped by board edge
+    Rule: board setup constraints silk; warning
+    @(102.0000 mm, 50.0000 mm): Segment on Edge.Cuts
+    @(111.8200 mm, 132.2400 mm): Segment of J14 on F.Silkscreen
+[silk_edge_clearance]: Silkscreen clipped by board edge
+    Rule: board setup constraints silk; warning
+    @(107.0000 mm, 145.0000 mm): Segment on Edge.Cuts
+    @(128.9550 mm, 144.8925 mm): Polygon of J16 on F.Silkscreen
+[silk_edge_clearance]: Silkscreen clipped by board edge
+    Rule: board setup constraints silk; warning
+    @(107.0000 mm, 145.0000 mm): Segment on Edge.Cuts
+    @(116.9550 mm, 144.8925 mm): Polygon of J15 on F.Silkscreen
+[silk_edge_clearance]: Silkscreen clipped by board edge
+    Rule: board setup constraints silk; warning
+    @(102.0000 mm, 50.0000 mm): Segment on Edge.Cuts
+    @(102.2800 mm, 82.5000 mm): Polygon of J7 on F.Silkscreen
+[silk_edge_clearance]: Silkscreen clipped by board edge
+    Rule: board setup constraints silk; warning
+    @(102.0000 mm, 50.0000 mm): Segment on Edge.Cuts
+    @(102.2800 mm, 106.5000 mm): Polygon of J9 on F.Silkscreen
+
+** Found 0 unconnected pads **
+
+** Found 0 Footprint errors **
+
+** Ignored checks **
+    - Footprint has no courtyard defined
+    - Track endpoint not centered on via
+    - Tuning profile track geometries
+    - Footprint doesn't match symbol's footprint filters
+    - Footprint component type doesn't match footprint pads
+
+** End of Report **
