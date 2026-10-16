@@ -1,0 +1,12 @@
+{
+  "bench_passed": false,
+  "reason": [
+    "adapter peak 853 us exceeds 312 us PID period",
+    "persistent roll/pitch disagreement with BF reference"
+  ],
+  "original_configuration_fully_restored": true,
+  "ukf_enabled": false,
+  "research_enabled": false,
+  "se_modes_preserved": true,
+  "flight_logs_preserved": true
+}

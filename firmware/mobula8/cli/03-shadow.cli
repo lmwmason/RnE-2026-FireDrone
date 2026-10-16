@@ -1,0 +1,8 @@
+# First set fd_b_roll/pitch/yaw from reviewed real-unit identification.
+# Zero/unknown effectiveness deliberately leaves the candidate invalid.
+set fd_mode = 1
+set fd_blend = 0
+set fd_ukf = 0
+set blackbox_mode = NORMAL
+set debug_mode = FIREDRONE
+save

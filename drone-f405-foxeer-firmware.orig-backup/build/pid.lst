@@ -1,0 +1,227 @@
+ARM GAS  /tmp/ccVP8HAp.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 1
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"pid.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.file 1 "Core/Src/pid.c"
+  20              		.section	.text.PID_Init,"ax",%progbits
+  21              		.align	1
+  22              		.global	PID_Init
+  23              		.syntax unified
+  24              		.thumb
+  25              		.thumb_func
+  27              	PID_Init:
+  28              	.LVL0:
+  29              	.LFB0:
+   1:Core/Src/pid.c **** #include "pid.h"
+   2:Core/Src/pid.c **** 
+   3:Core/Src/pid.c **** void PID_Init(pid_t *pid, float kp, float ki, float kd, float i_limit)
+   4:Core/Src/pid.c **** {
+  30              		.loc 1 4 1 view -0
+  31              		.cfi_startproc
+  32              		@ args = 0, pretend = 0, frame = 0
+  33              		@ frame_needed = 0, uses_anonymous_args = 0
+  34              		@ link register save eliminated.
+   5:Core/Src/pid.c ****     pid->kp = kp;
+  35              		.loc 1 5 5 view .LVU1
+  36              		.loc 1 5 13 is_stmt 0 view .LVU2
+  37 0000 80ED000A 		vstr.32	s0, [r0]
+   6:Core/Src/pid.c ****     pid->ki = ki;
+  38              		.loc 1 6 5 is_stmt 1 view .LVU3
+  39              		.loc 1 6 13 is_stmt 0 view .LVU4
+  40 0004 C0ED010A 		vstr.32	s1, [r0, #4]
+   7:Core/Src/pid.c ****     pid->kd = kd;
+  41              		.loc 1 7 5 is_stmt 1 view .LVU5
+  42              		.loc 1 7 13 is_stmt 0 view .LVU6
+  43 0008 80ED021A 		vstr.32	s2, [r0, #8]
+   8:Core/Src/pid.c ****     pid->i_limit = i_limit;
+  44              		.loc 1 8 5 is_stmt 1 view .LVU7
+  45              		.loc 1 8 18 is_stmt 0 view .LVU8
+  46 000c C0ED031A 		vstr.32	s3, [r0, #12]
+   9:Core/Src/pid.c ****     pid->integrator = 0.0f;
+  47              		.loc 1 9 5 is_stmt 1 view .LVU9
+  48              		.loc 1 9 21 is_stmt 0 view .LVU10
+  49 0010 0023     		movs	r3, #0
+ARM GAS  /tmp/ccVP8HAp.s 			page 2
+
+
+  50 0012 0361     		str	r3, [r0, #16]	@ float
+  10:Core/Src/pid.c ****     pid->prev_measurement = 0.0f;
+  51              		.loc 1 10 5 is_stmt 1 view .LVU11
+  52              		.loc 1 10 27 is_stmt 0 view .LVU12
+  53 0014 4361     		str	r3, [r0, #20]	@ float
+  11:Core/Src/pid.c **** }
+  54              		.loc 1 11 1 view .LVU13
+  55 0016 7047     		bx	lr
+  56              		.cfi_endproc
+  57              	.LFE0:
+  59              		.section	.text.PID_Reset,"ax",%progbits
+  60              		.align	1
+  61              		.global	PID_Reset
+  62              		.syntax unified
+  63              		.thumb
+  64              		.thumb_func
+  66              	PID_Reset:
+  67              	.LVL1:
+  68              	.LFB1:
+  12:Core/Src/pid.c **** 
+  13:Core/Src/pid.c **** void PID_Reset(pid_t *pid)
+  14:Core/Src/pid.c **** {
+  69              		.loc 1 14 1 is_stmt 1 view -0
+  70              		.cfi_startproc
+  71              		@ args = 0, pretend = 0, frame = 0
+  72              		@ frame_needed = 0, uses_anonymous_args = 0
+  73              		@ link register save eliminated.
+  15:Core/Src/pid.c ****     pid->integrator = 0.0f;
+  74              		.loc 1 15 5 view .LVU15
+  75              		.loc 1 15 21 is_stmt 0 view .LVU16
+  76 0000 0023     		movs	r3, #0
+  77 0002 0361     		str	r3, [r0, #16]	@ float
+  16:Core/Src/pid.c ****     pid->prev_measurement = 0.0f;
+  78              		.loc 1 16 5 is_stmt 1 view .LVU17
+  79              		.loc 1 16 27 is_stmt 0 view .LVU18
+  80 0004 4361     		str	r3, [r0, #20]	@ float
+  17:Core/Src/pid.c **** }
+  81              		.loc 1 17 1 view .LVU19
+  82 0006 7047     		bx	lr
+  83              		.cfi_endproc
+  84              	.LFE1:
+  86              		.section	.text.PID_Update,"ax",%progbits
+  87              		.align	1
+  88              		.global	PID_Update
+  89              		.syntax unified
+  90              		.thumb
+  91              		.thumb_func
+  93              	PID_Update:
+  94              	.LVL2:
+  95              	.LFB2:
+  18:Core/Src/pid.c **** 
+  19:Core/Src/pid.c **** float PID_Update(pid_t *pid, float setpoint, float measurement, float dt)
+  20:Core/Src/pid.c **** {
+  96              		.loc 1 20 1 is_stmt 1 view -0
+  97              		.cfi_startproc
+  98              		@ args = 0, pretend = 0, frame = 0
+  99              		@ frame_needed = 0, uses_anonymous_args = 0
+ARM GAS  /tmp/ccVP8HAp.s 			page 3
+
+
+ 100              		@ link register save eliminated.
+  21:Core/Src/pid.c ****     float error = setpoint - measurement;
+ 101              		.loc 1 21 5 view .LVU21
+ 102              		.loc 1 21 11 is_stmt 0 view .LVU22
+ 103 0000 30EE600A 		vsub.f32	s0, s0, s1
+ 104              	.LVL3:
+  22:Core/Src/pid.c **** 
+  23:Core/Src/pid.c ****     pid->integrator += error * dt;
+ 105              		.loc 1 23 5 is_stmt 1 view .LVU23
+ 106              		.loc 1 23 8 is_stmt 0 view .LVU24
+ 107 0004 90ED047A 		vldr.32	s14, [r0, #16]
+ 108              		.loc 1 23 30 view .LVU25
+ 109 0008 60EE017A 		vmul.f32	s15, s0, s2
+ 110              		.loc 1 23 21 view .LVU26
+ 111 000c 37EE277A 		vadd.f32	s14, s14, s15
+ 112 0010 80ED047A 		vstr.32	s14, [r0, #16]
+  24:Core/Src/pid.c ****     if (pid->integrator > pid->i_limit)  pid->integrator = pid->i_limit;
+ 113              		.loc 1 24 5 is_stmt 1 view .LVU27
+ 114              		.loc 1 24 30 is_stmt 0 view .LVU28
+ 115 0014 D0ED037A 		vldr.32	s15, [r0, #12]
+ 116              		.loc 1 24 8 view .LVU29
+ 117 0018 B4EEE77A 		vcmpe.f32	s14, s15
+ 118 001c F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 119 0020 01DD     		ble	.L4
+ 120              		.loc 1 24 42 is_stmt 1 discriminator 1 view .LVU30
+ 121              		.loc 1 24 58 is_stmt 0 discriminator 1 view .LVU31
+ 122 0022 C0ED047A 		vstr.32	s15, [r0, #16]
+ 123              	.L4:
+  25:Core/Src/pid.c ****     if (pid->integrator < -pid->i_limit) pid->integrator = -pid->i_limit;
+ 124              		.loc 1 25 5 is_stmt 1 view .LVU32
+ 125              		.loc 1 25 12 is_stmt 0 view .LVU33
+ 126 0026 90ED047A 		vldr.32	s14, [r0, #16]
+ 127              		.loc 1 25 27 view .LVU34
+ 128 002a F1EE677A 		vneg.f32	s15, s15
+ 129              		.loc 1 25 8 view .LVU35
+ 130 002e B4EEE77A 		vcmpe.f32	s14, s15
+ 131 0032 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 132 0036 01D5     		bpl	.L6
+ 133              		.loc 1 25 42 is_stmt 1 discriminator 1 view .LVU36
+ 134              		.loc 1 25 58 is_stmt 0 discriminator 1 view .LVU37
+ 135 0038 C0ED047A 		vstr.32	s15, [r0, #16]
+ 136              	.L6:
+  26:Core/Src/pid.c **** 
+  27:Core/Src/pid.c ****     /* derivative on measurement avoids derivative kick from stick steps */
+  28:Core/Src/pid.c ****     float derivative = -(measurement - pid->prev_measurement) / dt;
+ 137              		.loc 1 28 5 is_stmt 1 view .LVU38
+ 138              		.loc 1 28 43 is_stmt 0 view .LVU39
+ 139 003c D0ED057A 		vldr.32	s15, [r0, #20]
+ 140              		.loc 1 28 38 view .LVU40
+ 141 0040 70EEE77A 		vsub.f32	s15, s1, s15
+ 142              		.loc 1 28 24 view .LVU41
+ 143 0044 F1EE677A 		vneg.f32	s15, s15
+ 144              		.loc 1 28 11 view .LVU42
+ 145 0048 C7EE816A 		vdiv.f32	s13, s15, s2
+ 146              	.LVL4:
+  29:Core/Src/pid.c ****     pid->prev_measurement = measurement;
+ 147              		.loc 1 29 5 is_stmt 1 view .LVU43
+ARM GAS  /tmp/ccVP8HAp.s 			page 4
+
+
+ 148              		.loc 1 29 27 is_stmt 0 view .LVU44
+ 149 004c C0ED050A 		vstr.32	s1, [r0, #20]
+  30:Core/Src/pid.c **** 
+  31:Core/Src/pid.c ****     return pid->kp * error + pid->ki * pid->integrator + pid->kd * derivative;
+ 150              		.loc 1 31 5 is_stmt 1 view .LVU45
+ 151              		.loc 1 31 15 is_stmt 0 view .LVU46
+ 152 0050 D0ED007A 		vldr.32	s15, [r0]
+ 153              		.loc 1 31 20 view .LVU47
+ 154 0054 67EE807A 		vmul.f32	s15, s15, s0
+ 155              		.loc 1 31 33 view .LVU48
+ 156 0058 90ED017A 		vldr.32	s14, [r0, #4]
+ 157              		.loc 1 31 43 view .LVU49
+ 158 005c 90ED046A 		vldr.32	s12, [r0, #16]
+ 159              		.loc 1 31 38 view .LVU50
+ 160 0060 27EE067A 		vmul.f32	s14, s14, s12
+ 161              		.loc 1 31 28 view .LVU51
+ 162 0064 77EE877A 		vadd.f32	s15, s15, s14
+ 163              		.loc 1 31 61 view .LVU52
+ 164 0068 90ED020A 		vldr.32	s0, [r0, #8]
+ 165              	.LVL5:
+ 166              		.loc 1 31 66 view .LVU53
+ 167 006c 20EE260A 		vmul.f32	s0, s0, s13
+  32:Core/Src/pid.c **** }
+ 168              		.loc 1 32 1 view .LVU54
+ 169 0070 37EE800A 		vadd.f32	s0, s15, s0
+ 170 0074 7047     		bx	lr
+ 171              		.cfi_endproc
+ 172              	.LFE2:
+ 174              		.text
+ 175              	.Letext0:
+ 176              		.file 2 "Core/Inc/pid.h"
+ARM GAS  /tmp/ccVP8HAp.s 			page 5
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 pid.c
+     /tmp/ccVP8HAp.s:21     .text.PID_Init:00000000 $t
+     /tmp/ccVP8HAp.s:27     .text.PID_Init:00000000 PID_Init
+     /tmp/ccVP8HAp.s:60     .text.PID_Reset:00000000 $t
+     /tmp/ccVP8HAp.s:66     .text.PID_Reset:00000000 PID_Reset
+     /tmp/ccVP8HAp.s:87     .text.PID_Update:00000000 $t
+     /tmp/ccVP8HAp.s:93     .text.PID_Update:00000000 PID_Update
+
+NO UNDEFINED SYMBOLS

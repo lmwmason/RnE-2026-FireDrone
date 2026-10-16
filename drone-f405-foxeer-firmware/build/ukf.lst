@@ -1,0 +1,2643 @@
+ARM GAS  /tmp/ccrqj9wF.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 1
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"ukf.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.file 1 "Estimation/ukf.c"
+  20              		.section	.text.sigma_to_quat,"ax",%progbits
+  21              		.align	1
+  22              		.syntax unified
+  23              		.thumb
+  24              		.thumb_func
+  26              	sigma_to_quat:
+  27              	.LVL0:
+  28              	.LFB0:
+   1:Estimation/ukf.c **** #include "ukf.h"
+   2:Estimation/ukf.c **** #include "../Math/matrix.h"
+   3:Estimation/ukf.c **** #include "../Math/quaternion.h"
+   4:Estimation/ukf.c **** #include <math.h>
+   5:Estimation/ukf.c **** #include <string.h>
+   6:Estimation/ukf.c **** 
+   7:Estimation/ukf.c **** #define GRAVITY_MPS2 9.80665f
+   8:Estimation/ukf.c **** #define REG_EPS      1e-6f
+   9:Estimation/ukf.c **** 
+  10:Estimation/ukf.c **** static void sigma_to_quat(const float *sp, quat_t *q)
+  11:Estimation/ukf.c **** {
+  29              		.loc 1 11 1 view -0
+  30              		.cfi_startproc
+  31              		@ args = 0, pretend = 0, frame = 0
+  32              		@ frame_needed = 0, uses_anonymous_args = 0
+  33              		@ link register save eliminated.
+  12:Estimation/ukf.c ****     q->w = sp[IDX_Q0];
+  34              		.loc 1 12 5 view .LVU1
+  35              		.loc 1 12 14 is_stmt 0 view .LVU2
+  36 0000 0368     		ldr	r3, [r0]	@ float
+  37              		.loc 1 12 10 view .LVU3
+  38 0002 0B60     		str	r3, [r1]	@ float
+  13:Estimation/ukf.c ****     q->x = sp[IDX_Q1];
+  39              		.loc 1 13 5 is_stmt 1 view .LVU4
+  40              		.loc 1 13 14 is_stmt 0 view .LVU5
+  41 0004 4368     		ldr	r3, [r0, #4]	@ float
+  42              		.loc 1 13 10 view .LVU6
+  43 0006 4B60     		str	r3, [r1, #4]	@ float
+  14:Estimation/ukf.c ****     q->y = sp[IDX_Q2];
+  44              		.loc 1 14 5 is_stmt 1 view .LVU7
+ARM GAS  /tmp/ccrqj9wF.s 			page 2
+
+
+  45              		.loc 1 14 14 is_stmt 0 view .LVU8
+  46 0008 8368     		ldr	r3, [r0, #8]	@ float
+  47              		.loc 1 14 10 view .LVU9
+  48 000a 8B60     		str	r3, [r1, #8]	@ float
+  15:Estimation/ukf.c ****     q->z = sp[IDX_Q3];
+  49              		.loc 1 15 5 is_stmt 1 view .LVU10
+  50              		.loc 1 15 14 is_stmt 0 view .LVU11
+  51 000c C368     		ldr	r3, [r0, #12]	@ float
+  52              		.loc 1 15 10 view .LVU12
+  53 000e CB60     		str	r3, [r1, #12]	@ float
+  16:Estimation/ukf.c **** }
+  54              		.loc 1 16 1 view .LVU13
+  55 0010 7047     		bx	lr
+  56              		.cfi_endproc
+  57              	.LFE0:
+  59              		.section	.text.quat_to_sigma,"ax",%progbits
+  60              		.align	1
+  61              		.syntax unified
+  62              		.thumb
+  63              		.thumb_func
+  65              	quat_to_sigma:
+  66              	.LVL1:
+  67              	.LFB1:
+  17:Estimation/ukf.c **** 
+  18:Estimation/ukf.c **** static void quat_to_sigma(const quat_t *q, float *sp)
+  19:Estimation/ukf.c **** {
+  68              		.loc 1 19 1 is_stmt 1 view -0
+  69              		.cfi_startproc
+  70              		@ args = 0, pretend = 0, frame = 0
+  71              		@ frame_needed = 0, uses_anonymous_args = 0
+  72              		@ link register save eliminated.
+  20:Estimation/ukf.c ****     sp[IDX_Q0] = q->w;
+  73              		.loc 1 20 5 view .LVU15
+  74              		.loc 1 20 19 is_stmt 0 view .LVU16
+  75 0000 0368     		ldr	r3, [r0]	@ float
+  76              		.loc 1 20 16 view .LVU17
+  77 0002 0B60     		str	r3, [r1]	@ float
+  21:Estimation/ukf.c ****     sp[IDX_Q1] = q->x;
+  78              		.loc 1 21 5 is_stmt 1 view .LVU18
+  79              		.loc 1 21 19 is_stmt 0 view .LVU19
+  80 0004 4368     		ldr	r3, [r0, #4]	@ float
+  81              		.loc 1 21 16 view .LVU20
+  82 0006 4B60     		str	r3, [r1, #4]	@ float
+  22:Estimation/ukf.c ****     sp[IDX_Q2] = q->y;
+  83              		.loc 1 22 5 is_stmt 1 view .LVU21
+  84              		.loc 1 22 19 is_stmt 0 view .LVU22
+  85 0008 8368     		ldr	r3, [r0, #8]	@ float
+  86              		.loc 1 22 16 view .LVU23
+  87 000a 8B60     		str	r3, [r1, #8]	@ float
+  23:Estimation/ukf.c ****     sp[IDX_Q3] = q->z;
+  88              		.loc 1 23 5 is_stmt 1 view .LVU24
+  89              		.loc 1 23 19 is_stmt 0 view .LVU25
+  90 000c C368     		ldr	r3, [r0, #12]	@ float
+  91              		.loc 1 23 16 view .LVU26
+  92 000e CB60     		str	r3, [r1, #12]	@ float
+  24:Estimation/ukf.c **** }
+  93              		.loc 1 24 1 view .LVU27
+ARM GAS  /tmp/ccrqj9wF.s 			page 3
+
+
+  94 0010 7047     		bx	lr
+  95              		.cfi_endproc
+  96              	.LFE1:
+  98              		.section	.text.compute_sigma_points,"ax",%progbits
+  99              		.align	1
+ 100              		.syntax unified
+ 101              		.thumb
+ 102              		.thumb_func
+ 104              	compute_sigma_points:
+ 105              	.LVL2:
+ 106              	.LFB4:
+  25:Estimation/ukf.c **** 
+  26:Estimation/ukf.c **** static void process_sigma(float *sp, float dt)
+  27:Estimation/ukf.c **** {
+  28:Estimation/ukf.c ****     float omega[3] = { sp[IDX_WX], sp[IDX_WY], sp[IDX_WZ] };
+  29:Estimation/ukf.c ****     quat_t q, q_new;
+  30:Estimation/ukf.c ****     sigma_to_quat(sp, &q);
+  31:Estimation/ukf.c ****     quat_integrate(&q, omega, dt, &q_new);
+  32:Estimation/ukf.c ****     quat_to_sigma(&q_new, sp);
+  33:Estimation/ukf.c **** }
+  34:Estimation/ukf.c **** 
+  35:Estimation/ukf.c **** static void meas_sigma(const float *sp, float *h)
+  36:Estimation/ukf.c **** {
+  37:Estimation/ukf.c ****     quat_t q;
+  38:Estimation/ukf.c ****     sigma_to_quat(sp, &q);
+  39:Estimation/ukf.c **** 
+  40:Estimation/ukf.c ****     float R[9];
+  41:Estimation/ukf.c ****     quat_to_dcm(&q, R);
+  42:Estimation/ukf.c **** 
+  43:Estimation/ukf.c ****     h[0] = sp[IDX_WX];
+  44:Estimation/ukf.c ****     h[1] = sp[IDX_WY];
+  45:Estimation/ukf.c ****     h[2] = sp[IDX_WZ];
+  46:Estimation/ukf.c **** 
+  47:Estimation/ukf.c ****     h[3] = R[2] * GRAVITY_MPS2 + sp[IDX_BAX];
+  48:Estimation/ukf.c ****     h[4] = R[5] * GRAVITY_MPS2 + sp[IDX_BAY];
+  49:Estimation/ukf.c ****     h[5] = R[8] * GRAVITY_MPS2 + sp[IDX_BAZ];
+  50:Estimation/ukf.c **** }
+  51:Estimation/ukf.c **** 
+  52:Estimation/ukf.c **** static void compute_sigma_points(ukf_t *ukf)
+  53:Estimation/ukf.c **** {
+ 107              		.loc 1 53 1 is_stmt 1 view -0
+ 108              		.cfi_startproc
+ 109              		@ args = 0, pretend = 0, frame = 816
+ 110              		@ frame_needed = 0, uses_anonymous_args = 0
+ 111              		.loc 1 53 1 is_stmt 0 view .LVU29
+ 112 0000 2DE9F041 		push	{r4, r5, r6, r7, r8, lr}
+ 113              	.LCFI0:
+ 114              		.cfi_def_cfa_offset 24
+ 115              		.cfi_offset 4, -24
+ 116              		.cfi_offset 5, -20
+ 117              		.cfi_offset 6, -16
+ 118              		.cfi_offset 7, -12
+ 119              		.cfi_offset 8, -8
+ 120              		.cfi_offset 14, -4
+ 121 0004 ADF54C7D 		sub	sp, sp, #816
+ 122              	.LCFI1:
+ 123              		.cfi_def_cfa_offset 840
+ARM GAS  /tmp/ccrqj9wF.s 			page 4
+
+
+ 124 0008 0546     		mov	r5, r0
+  54:Estimation/ukf.c ****     float L[STATE_DIM * STATE_DIM];
+ 125              		.loc 1 54 5 is_stmt 1 view .LVU30
+  55:Estimation/ukf.c ****     float Ps[STATE_DIM * STATE_DIM];
+ 126              		.loc 1 55 5 view .LVU31
+  56:Estimation/ukf.c **** 
+  57:Estimation/ukf.c ****     float scale = (float)(STATE_DIM) + ukf->lambda;
+ 127              		.loc 1 57 5 view .LVU32
+ 128              		.loc 1 57 43 is_stmt 0 view .LVU33
+ 129 000a 00F5F963 		add	r3, r0, #1992
+ 130 000e 93ED000A 		vldr.32	s0, [r3]
+ 131              	.LVL3:
+  58:Estimation/ukf.c ****     mat_scale(ukf->P, scale, Ps, STATE_DIM, STATE_DIM);
+ 132              		.loc 1 58 5 is_stmt 1 view .LVU34
+ 133 0012 04AC     		add	r4, sp, #16
+ 134 0014 0A23     		movs	r3, #10
+ 135 0016 1A46     		mov	r2, r3
+ 136 0018 2146     		mov	r1, r4
+ 137 001a F2EE047A 		vmov.f32	s15, #1.0e+1
+ 138 001e 30EE270A 		vadd.f32	s0, s0, s15
+ 139              	.LVL4:
+ 140              		.loc 1 58 5 is_stmt 0 view .LVU35
+ 141 0022 2830     		adds	r0, r0, #40
+ 142              	.LVL5:
+ 143              		.loc 1 58 5 view .LVU36
+ 144 0024 FFF7FEFF 		bl	mat_scale
+ 145              	.LVL6:
+  59:Estimation/ukf.c **** 
+  60:Estimation/ukf.c ****     if (mat_chol(Ps, L, STATE_DIM) != 0) {
+ 146              		.loc 1 60 5 is_stmt 1 view .LVU37
+ 147              		.loc 1 60 9 is_stmt 0 view .LVU38
+ 148 0028 0A22     		movs	r2, #10
+ 149 002a 68A9     		add	r1, sp, #416
+ 150 002c 2046     		mov	r0, r4
+ 151 002e FFF7FEFF 		bl	mat_chol
+ 152              	.LVL7:
+ 153              		.loc 1 60 8 discriminator 1 view .LVU39
+ 154 0032 08BB     		cbnz	r0, .L10
+ 155              	.L5:
+  61:Estimation/ukf.c ****         for (uint8_t i = 0; i < STATE_DIM; i++)
+  62:Estimation/ukf.c ****             Ps[(uint16_t)i * STATE_DIM + i] += REG_EPS;
+  63:Estimation/ukf.c ****         mat_chol(Ps, L, STATE_DIM);
+  64:Estimation/ukf.c ****     }
+  65:Estimation/ukf.c **** 
+  66:Estimation/ukf.c ****     mat_copy(ukf->x, &ukf->sigma[0], 1, STATE_DIM);
+ 156              		.loc 1 66 5 is_stmt 1 view .LVU40
+ 157 0034 0A23     		movs	r3, #10
+ 158 0036 0122     		movs	r2, #1
+ 159 0038 05F57671 		add	r1, r5, #984
+ 160 003c 2846     		mov	r0, r5
+ 161 003e FFF7FEFF 		bl	mat_copy
+ 162              	.LVL8:
+  67:Estimation/ukf.c **** 
+  68:Estimation/ukf.c ****     for (uint8_t i = 0; i < STATE_DIM; i++) {
+ 163              		.loc 1 68 5 view .LVU41
+ 164              	.LBB2:
+ 165              		.loc 1 68 10 view .LVU42
+ARM GAS  /tmp/ccrqj9wF.s 			page 5
+
+
+ 166              		.loc 1 68 18 is_stmt 0 view .LVU43
+ 167 0042 0024     		movs	r4, #0
+ 168              		.loc 1 68 5 view .LVU44
+ 169 0044 6BE0     		b	.L7
+ 170              	.LVL9:
+ 171              	.L6:
+ 172              		.loc 1 68 5 view .LVU45
+ 173              	.LBE2:
+ 174              	.LBB8:
+  62:Estimation/ukf.c ****         mat_chol(Ps, L, STATE_DIM);
+ 175              		.loc 1 62 13 is_stmt 1 view .LVU46
+  62:Estimation/ukf.c ****         mat_chol(Ps, L, STATE_DIM);
+ 176              		.loc 1 62 15 is_stmt 0 view .LVU47
+ 177 0046 03EB8301 		add	r1, r3, r3, lsl #2
+ 178 004a 03EB4101 		add	r1, r3, r1, lsl #1
+ 179 004e 04AA     		add	r2, sp, #16
+ 180 0050 02EB8102 		add	r2, r2, r1, lsl #2
+ 181 0054 D2ED007A 		vldr.32	s15, [r2]
+  62:Estimation/ukf.c ****         mat_chol(Ps, L, STATE_DIM);
+ 182              		.loc 1 62 45 view .LVU48
+ 183 0058 9FED357A 		vldr.32	s14, .L14
+ 184 005c 77EE877A 		vadd.f32	s15, s15, s14
+ 185 0060 C2ED007A 		vstr.32	s15, [r2]
+  61:Estimation/ukf.c ****         for (uint8_t i = 0; i < STATE_DIM; i++)
+ 186              		.loc 1 61 45 is_stmt 1 discriminator 3 view .LVU49
+ 187 0064 0133     		adds	r3, r3, #1
+ 188              	.LVL10:
+  61:Estimation/ukf.c ****         for (uint8_t i = 0; i < STATE_DIM; i++)
+ 189              		.loc 1 61 45 is_stmt 0 discriminator 3 view .LVU50
+ 190 0066 DBB2     		uxtb	r3, r3
+ 191              	.LVL11:
+ 192              	.L4:
+  61:Estimation/ukf.c ****         for (uint8_t i = 0; i < STATE_DIM; i++)
+ 193              		.loc 1 61 31 is_stmt 1 discriminator 1 view .LVU51
+ 194 0068 092B     		cmp	r3, #9
+ 195 006a ECD9     		bls	.L6
+ 196              	.LBE8:
+  63:Estimation/ukf.c ****     }
+ 197              		.loc 1 63 9 view .LVU52
+ 198 006c 0A22     		movs	r2, #10
+ 199 006e 68A9     		add	r1, sp, #416
+ 200 0070 04A8     		add	r0, sp, #16
+ 201 0072 FFF7FEFF 		bl	mat_chol
+ 202              	.LVL12:
+  63:Estimation/ukf.c ****     }
+ 203              		.loc 1 63 9 is_stmt 0 view .LVU53
+ 204 0076 DDE7     		b	.L5
+ 205              	.LVL13:
+ 206              	.L10:
+ 207              	.LBB9:
+  61:Estimation/ukf.c ****             Ps[(uint16_t)i * STATE_DIM + i] += REG_EPS;
+ 208              		.loc 1 61 22 view .LVU54
+ 209 0078 0023     		movs	r3, #0
+ 210 007a F5E7     		b	.L4
+ 211              	.LVL14:
+ 212              	.L8:
+  61:Estimation/ukf.c ****             Ps[(uint16_t)i * STATE_DIM + i] += REG_EPS;
+ARM GAS  /tmp/ccrqj9wF.s 			page 6
+
+
+ 213              		.loc 1 61 22 view .LVU55
+ 214              	.LBE9:
+ 215              	.LBB10:
+ 216              	.LBB3:
+ 217              	.LBB4:
+ 218              	.LBB5:
+  69:Estimation/ukf.c ****         for (uint8_t j = 0; j < STATE_DIM; j++) {
+  70:Estimation/ukf.c ****             float col_val = L[(uint16_t)j * STATE_DIM + i];
+ 219              		.loc 1 70 13 is_stmt 1 view .LVU56
+ 220              		.loc 1 70 43 is_stmt 0 view .LVU57
+ 221 007c 02EB8201 		add	r1, r2, r2, lsl #2
+ 222              		.loc 1 70 55 view .LVU58
+ 223 0080 04EB4101 		add	r1, r4, r1, lsl #1
+ 224              		.loc 1 70 19 view .LVU59
+ 225 0084 68AB     		add	r3, sp, #416
+ 226 0086 03EB8103 		add	r3, r3, r1, lsl #2
+ 227 008a 93ED007A 		vldr.32	s14, [r3]
+ 228              	.LVL15:
+  71:Estimation/ukf.c ****             ukf->sigma[(uint16_t)(i + 1)         * STATE_DIM + j] = ukf->x[j] + col_val;
+ 229              		.loc 1 71 13 is_stmt 1 view .LVU60
+ 230              		.loc 1 71 75 is_stmt 0 view .LVU61
+ 231 008e 05EB8203 		add	r3, r5, r2, lsl #2
+ 232 0092 D3ED007A 		vldr.32	s15, [r3]
+ 233              		.loc 1 71 24 view .LVU62
+ 234 0096 631C     		adds	r3, r4, #1
+ 235              		.loc 1 71 50 view .LVU63
+ 236 0098 03EB8303 		add	r3, r3, r3, lsl #2
+ 237              		.loc 1 71 62 view .LVU64
+ 238 009c 02EB4303 		add	r3, r2, r3, lsl #1
+ 239              		.loc 1 71 79 view .LVU65
+ 240 00a0 77EE876A 		vadd.f32	s13, s15, s14
+ 241              		.loc 1 71 67 view .LVU66
+ 242 00a4 F633     		adds	r3, r3, #246
+ 243 00a6 05EB8303 		add	r3, r5, r3, lsl #2
+ 244 00aa C3ED006A 		vstr.32	s13, [r3]
+  72:Estimation/ukf.c ****             ukf->sigma[(uint16_t)(i + 1 + STATE_DIM) * STATE_DIM + j] = ukf->x[j] - col_val;
+ 245              		.loc 1 72 13 is_stmt 1 view .LVU67
+ 246              		.loc 1 72 24 is_stmt 0 view .LVU68
+ 247 00ae 04F10B03 		add	r3, r4, #11
+ 248              		.loc 1 72 54 view .LVU69
+ 249 00b2 03EB8303 		add	r3, r3, r3, lsl #2
+ 250              		.loc 1 72 66 view .LVU70
+ 251 00b6 02EB4303 		add	r3, r2, r3, lsl #1
+ 252              		.loc 1 72 83 view .LVU71
+ 253 00ba 77EEC77A 		vsub.f32	s15, s15, s14
+ 254              		.loc 1 72 71 view .LVU72
+ 255 00be F633     		adds	r3, r3, #246
+ 256 00c0 05EB8303 		add	r3, r5, r3, lsl #2
+ 257 00c4 C3ED007A 		vstr.32	s15, [r3]
+ 258              	.LBE5:
+  69:Estimation/ukf.c ****         for (uint8_t j = 0; j < STATE_DIM; j++) {
+ 259              		.loc 1 69 45 is_stmt 1 discriminator 3 view .LVU73
+ 260 00c8 0132     		adds	r2, r2, #1
+ 261              	.LVL16:
+  69:Estimation/ukf.c ****         for (uint8_t j = 0; j < STATE_DIM; j++) {
+ 262              		.loc 1 69 45 is_stmt 0 discriminator 3 view .LVU74
+ 263 00ca D2B2     		uxtb	r2, r2
+ARM GAS  /tmp/ccrqj9wF.s 			page 7
+
+
+ 264              	.LVL17:
+ 265              	.L9:
+  69:Estimation/ukf.c ****         for (uint8_t j = 0; j < STATE_DIM; j++) {
+ 266              		.loc 1 69 31 is_stmt 1 discriminator 1 view .LVU75
+ 267 00cc 092A     		cmp	r2, #9
+ 268 00ce D5D9     		bls	.L8
+ 269              	.LBE4:
+  73:Estimation/ukf.c ****         }
+  74:Estimation/ukf.c ****         quat_t q;
+ 270              		.loc 1 74 9 view .LVU76
+  75:Estimation/ukf.c ****         sigma_to_quat(&ukf->sigma[(uint16_t)(i + 1) * STATE_DIM], &q);
+ 271              		.loc 1 75 9 view .LVU77
+ 272              		.loc 1 75 35 is_stmt 0 view .LVU78
+ 273 00d0 671C     		adds	r7, r4, #1
+ 274              		.loc 1 75 53 view .LVU79
+ 275 00d2 07EB8708 		add	r8, r7, r7, lsl #2
+ 276 00d6 4FEA4808 		lsl	r8, r8, #1
+ 277              		.loc 1 75 23 view .LVU80
+ 278 00da 08F1F608 		add	r8, r8, #246
+ 279 00de 05EB8808 		add	r8, r5, r8, lsl #2
+ 280              		.loc 1 75 9 view .LVU81
+ 281 00e2 6946     		mov	r1, sp
+ 282 00e4 4046     		mov	r0, r8
+ 283 00e6 FFF7FEFF 		bl	sigma_to_quat
+ 284              	.LVL18:
+  76:Estimation/ukf.c ****         quat_norm(&q);
+ 285              		.loc 1 76 9 is_stmt 1 view .LVU82
+ 286 00ea 6846     		mov	r0, sp
+ 287 00ec FFF7FEFF 		bl	quat_norm
+ 288              	.LVL19:
+  77:Estimation/ukf.c ****         quat_to_sigma(&q, &ukf->sigma[(uint16_t)(i + 1) * STATE_DIM]);
+ 289              		.loc 1 77 9 view .LVU83
+ 290 00f0 4146     		mov	r1, r8
+ 291 00f2 6846     		mov	r0, sp
+ 292 00f4 FFF7FEFF 		bl	quat_to_sigma
+ 293              	.LVL20:
+  78:Estimation/ukf.c **** 
+  79:Estimation/ukf.c ****         sigma_to_quat(&ukf->sigma[(uint16_t)(i + 1 + STATE_DIM) * STATE_DIM], &q);
+ 294              		.loc 1 79 9 view .LVU84
+ 295              		.loc 1 79 35 is_stmt 0 view .LVU85
+ 296 00f8 0B34     		adds	r4, r4, #11
+ 297              	.LVL21:
+ 298              		.loc 1 79 65 view .LVU86
+ 299 00fa 04EB8404 		add	r4, r4, r4, lsl #2
+ 300              	.LVL22:
+ 301              		.loc 1 79 65 view .LVU87
+ 302 00fe 6400     		lsls	r4, r4, #1
+ 303              		.loc 1 79 23 view .LVU88
+ 304 0100 F634     		adds	r4, r4, #246
+ 305 0102 05EB8404 		add	r4, r5, r4, lsl #2
+ 306              		.loc 1 79 9 view .LVU89
+ 307 0106 6946     		mov	r1, sp
+ 308 0108 2046     		mov	r0, r4
+ 309 010a FFF7FEFF 		bl	sigma_to_quat
+ 310              	.LVL23:
+  80:Estimation/ukf.c ****         quat_norm(&q);
+ 311              		.loc 1 80 9 is_stmt 1 view .LVU90
+ARM GAS  /tmp/ccrqj9wF.s 			page 8
+
+
+ 312 010e 6846     		mov	r0, sp
+ 313 0110 FFF7FEFF 		bl	quat_norm
+ 314              	.LVL24:
+  81:Estimation/ukf.c ****         quat_to_sigma(&q, &ukf->sigma[(uint16_t)(i + 1 + STATE_DIM) * STATE_DIM]);
+ 315              		.loc 1 81 9 view .LVU91
+ 316 0114 2146     		mov	r1, r4
+ 317 0116 6846     		mov	r0, sp
+ 318 0118 FFF7FEFF 		bl	quat_to_sigma
+ 319              	.LVL25:
+ 320              	.LBE3:
+  68:Estimation/ukf.c ****         for (uint8_t j = 0; j < STATE_DIM; j++) {
+ 321              		.loc 1 68 41 discriminator 2 view .LVU92
+ 322 011c FCB2     		uxtb	r4, r7
+ 323              	.LVL26:
+ 324              	.L7:
+  68:Estimation/ukf.c ****         for (uint8_t j = 0; j < STATE_DIM; j++) {
+ 325              		.loc 1 68 27 discriminator 1 view .LVU93
+ 326 011e 092C     		cmp	r4, #9
+ 327 0120 01D8     		bhi	.L13
+ 328              	.LBB7:
+ 329              	.LBB6:
+  69:Estimation/ukf.c ****             float col_val = L[(uint16_t)j * STATE_DIM + i];
+ 330              		.loc 1 69 22 is_stmt 0 view .LVU94
+ 331 0122 0022     		movs	r2, #0
+ 332 0124 D2E7     		b	.L9
+ 333              	.L13:
+ 334              	.LBE6:
+ 335              	.LBE7:
+ 336              	.LBE10:
+  82:Estimation/ukf.c ****     }
+  83:Estimation/ukf.c **** }
+ 337              		.loc 1 83 1 view .LVU95
+ 338 0126 0DF54C7D 		add	sp, sp, #816
+ 339              	.LCFI2:
+ 340              		.cfi_def_cfa_offset 24
+ 341              		@ sp needed
+ 342 012a BDE8F081 		pop	{r4, r5, r6, r7, r8, pc}
+ 343              	.LVL27:
+ 344              	.L15:
+ 345              		.loc 1 83 1 view .LVU96
+ 346 012e 00BF     		.align	2
+ 347              	.L14:
+ 348 0130 BD378635 		.word	897988541
+ 349              		.cfi_endproc
+ 350              	.LFE4:
+ 352              		.section	.text.process_sigma,"ax",%progbits
+ 353              		.align	1
+ 354              		.syntax unified
+ 355              		.thumb
+ 356              		.thumb_func
+ 358              	process_sigma:
+ 359              	.LVL28:
+ 360              	.LFB2:
+  27:Estimation/ukf.c ****     float omega[3] = { sp[IDX_WX], sp[IDX_WY], sp[IDX_WZ] };
+ 361              		.loc 1 27 1 is_stmt 1 view -0
+ 362              		.cfi_startproc
+ 363              		@ args = 0, pretend = 0, frame = 48
+ARM GAS  /tmp/ccrqj9wF.s 			page 9
+
+
+ 364              		@ frame_needed = 0, uses_anonymous_args = 0
+  27:Estimation/ukf.c ****     float omega[3] = { sp[IDX_WX], sp[IDX_WY], sp[IDX_WZ] };
+ 365              		.loc 1 27 1 is_stmt 0 view .LVU98
+ 366 0000 70B5     		push	{r4, r5, r6, lr}
+ 367              	.LCFI3:
+ 368              		.cfi_def_cfa_offset 16
+ 369              		.cfi_offset 4, -16
+ 370              		.cfi_offset 5, -12
+ 371              		.cfi_offset 6, -8
+ 372              		.cfi_offset 14, -4
+ 373 0002 2DED028B 		vpush.64	{d8}
+ 374              	.LCFI4:
+ 375              		.cfi_def_cfa_offset 24
+ 376              		.cfi_offset 80, -24
+ 377              		.cfi_offset 81, -20
+ 378 0006 8CB0     		sub	sp, sp, #48
+ 379              	.LCFI5:
+ 380              		.cfi_def_cfa_offset 72
+ 381 0008 0446     		mov	r4, r0
+ 382 000a B0EE408A 		vmov.f32	s16, s0
+  28:Estimation/ukf.c ****     quat_t q, q_new;
+ 383              		.loc 1 28 5 is_stmt 1 view .LVU99
+  28:Estimation/ukf.c ****     quat_t q, q_new;
+ 384              		.loc 1 28 11 is_stmt 0 view .LVU100
+ 385 000e 0369     		ldr	r3, [r0, #16]	@ float
+ 386 0010 0993     		str	r3, [sp, #36]	@ float
+ 387 0012 4369     		ldr	r3, [r0, #20]	@ float
+ 388 0014 0A93     		str	r3, [sp, #40]	@ float
+ 389 0016 8369     		ldr	r3, [r0, #24]	@ float
+ 390 0018 0B93     		str	r3, [sp, #44]	@ float
+  29:Estimation/ukf.c ****     sigma_to_quat(sp, &q);
+ 391              		.loc 1 29 5 is_stmt 1 view .LVU101
+  30:Estimation/ukf.c ****     quat_integrate(&q, omega, dt, &q_new);
+ 392              		.loc 1 30 5 view .LVU102
+ 393 001a 05AE     		add	r6, sp, #20
+ 394 001c 3146     		mov	r1, r6
+ 395 001e FFF7FEFF 		bl	sigma_to_quat
+ 396              	.LVL29:
+  31:Estimation/ukf.c ****     quat_to_sigma(&q_new, sp);
+ 397              		.loc 1 31 5 view .LVU103
+ 398 0022 01AD     		add	r5, sp, #4
+ 399 0024 2A46     		mov	r2, r5
+ 400 0026 B0EE480A 		vmov.f32	s0, s16
+ 401 002a 09A9     		add	r1, sp, #36
+ 402 002c 3046     		mov	r0, r6
+ 403 002e FFF7FEFF 		bl	quat_integrate
+ 404              	.LVL30:
+  32:Estimation/ukf.c **** }
+ 405              		.loc 1 32 5 view .LVU104
+ 406 0032 2146     		mov	r1, r4
+ 407 0034 2846     		mov	r0, r5
+ 408 0036 FFF7FEFF 		bl	quat_to_sigma
+ 409              	.LVL31:
+  33:Estimation/ukf.c **** 
+ 410              		.loc 1 33 1 is_stmt 0 view .LVU105
+ 411 003a 0CB0     		add	sp, sp, #48
+ 412              	.LCFI6:
+ARM GAS  /tmp/ccrqj9wF.s 			page 10
+
+
+ 413              		.cfi_def_cfa_offset 24
+ 414              		@ sp needed
+ 415 003c BDEC028B 		vldm	sp!, {d8}
+ 416              	.LCFI7:
+ 417              		.cfi_restore 80
+ 418              		.cfi_restore 81
+ 419              		.cfi_def_cfa_offset 16
+ 420              	.LVL32:
+  33:Estimation/ukf.c **** 
+ 421              		.loc 1 33 1 view .LVU106
+ 422 0040 70BD     		pop	{r4, r5, r6, pc}
+  33:Estimation/ukf.c **** 
+ 423              		.loc 1 33 1 view .LVU107
+ 424              		.cfi_endproc
+ 425              	.LFE2:
+ 427              		.section	.text.weighted_mean_state,"ax",%progbits
+ 428              		.align	1
+ 429              		.syntax unified
+ 430              		.thumb
+ 431              		.thumb_func
+ 433              	weighted_mean_state:
+ 434              	.LVL33:
+ 435              	.LFB5:
+  84:Estimation/ukf.c **** 
+  85:Estimation/ukf.c **** static void weighted_mean_state(ukf_t *ukf, float *x_mean)
+  86:Estimation/ukf.c **** {
+ 436              		.loc 1 86 1 is_stmt 1 view -0
+ 437              		.cfi_startproc
+ 438              		@ args = 0, pretend = 0, frame = 16
+ 439              		@ frame_needed = 0, uses_anonymous_args = 0
+ 440              		.loc 1 86 1 is_stmt 0 view .LVU109
+ 441 0000 30B5     		push	{r4, r5, lr}
+ 442              	.LCFI8:
+ 443              		.cfi_def_cfa_offset 12
+ 444              		.cfi_offset 4, -12
+ 445              		.cfi_offset 5, -8
+ 446              		.cfi_offset 14, -4
+ 447 0002 85B0     		sub	sp, sp, #20
+ 448              	.LCFI9:
+ 449              		.cfi_def_cfa_offset 32
+ 450 0004 0446     		mov	r4, r0
+ 451 0006 0D46     		mov	r5, r1
+  87:Estimation/ukf.c ****     mat_zero(x_mean, 1, STATE_DIM);
+ 452              		.loc 1 87 5 is_stmt 1 view .LVU110
+ 453 0008 0A22     		movs	r2, #10
+ 454 000a 0121     		movs	r1, #1
+ 455              	.LVL34:
+ 456              		.loc 1 87 5 is_stmt 0 view .LVU111
+ 457 000c 2846     		mov	r0, r5
+ 458              	.LVL35:
+ 459              		.loc 1 87 5 view .LVU112
+ 460 000e FFF7FEFF 		bl	mat_zero
+ 461              	.LVL36:
+  88:Estimation/ukf.c ****     for (uint8_t i = 0; i < SIGMA_COUNT; i++) {
+ 462              		.loc 1 88 5 is_stmt 1 view .LVU113
+ 463              	.LBB11:
+ 464              		.loc 1 88 10 view .LVU114
+ARM GAS  /tmp/ccrqj9wF.s 			page 11
+
+
+ 465              		.loc 1 88 18 is_stmt 0 view .LVU115
+ 466 0012 0020     		movs	r0, #0
+ 467              		.loc 1 88 5 view .LVU116
+ 468 0014 18E0     		b	.L19
+ 469              	.LVL37:
+ 470              	.L21:
+ 471              	.LBB12:
+ 472              	.LBB13:
+  89:Estimation/ukf.c ****         float w = ukf->w_m[i];
+  90:Estimation/ukf.c ****         for (uint8_t j = 0; j < STATE_DIM; j++)
+  91:Estimation/ukf.c ****             x_mean[j] += w * ukf->sigma[(uint16_t)i * STATE_DIM + j];
+ 473              		.loc 1 91 13 is_stmt 1 view .LVU117
+ 474              		.loc 1 91 19 is_stmt 0 view .LVU118
+ 475 0016 05EB8201 		add	r1, r5, r2, lsl #2
+ 476 001a D1ED007A 		vldr.32	s15, [r1]
+ 477              		.loc 1 91 53 view .LVU119
+ 478 001e 00EB8003 		add	r3, r0, r0, lsl #2
+ 479              		.loc 1 91 65 view .LVU120
+ 480 0022 02EB4303 		add	r3, r2, r3, lsl #1
+ 481              		.loc 1 91 40 view .LVU121
+ 482 0026 F633     		adds	r3, r3, #246
+ 483 0028 04EB8303 		add	r3, r4, r3, lsl #2
+ 484 002c 93ED007A 		vldr.32	s14, [r3]
+ 485              		.loc 1 91 28 view .LVU122
+ 486 0030 27EE267A 		vmul.f32	s14, s14, s13
+ 487              		.loc 1 91 23 view .LVU123
+ 488 0034 77EE877A 		vadd.f32	s15, s15, s14
+ 489 0038 C1ED007A 		vstr.32	s15, [r1]
+  90:Estimation/ukf.c ****             x_mean[j] += w * ukf->sigma[(uint16_t)i * STATE_DIM + j];
+ 490              		.loc 1 90 45 is_stmt 1 discriminator 3 view .LVU124
+ 491 003c 0132     		adds	r2, r2, #1
+ 492              	.LVL38:
+  90:Estimation/ukf.c ****             x_mean[j] += w * ukf->sigma[(uint16_t)i * STATE_DIM + j];
+ 493              		.loc 1 90 45 is_stmt 0 discriminator 3 view .LVU125
+ 494 003e D2B2     		uxtb	r2, r2
+ 495              	.LVL39:
+ 496              	.L20:
+  90:Estimation/ukf.c ****             x_mean[j] += w * ukf->sigma[(uint16_t)i * STATE_DIM + j];
+ 497              		.loc 1 90 31 is_stmt 1 discriminator 1 view .LVU126
+ 498 0040 092A     		cmp	r2, #9
+ 499 0042 E8D9     		bls	.L21
+ 500              	.LBE13:
+ 501              	.LBE12:
+  88:Estimation/ukf.c ****     for (uint8_t i = 0; i < SIGMA_COUNT; i++) {
+ 502              		.loc 1 88 43 discriminator 2 view .LVU127
+ 503 0044 0130     		adds	r0, r0, #1
+ 504              	.LVL40:
+  88:Estimation/ukf.c ****     for (uint8_t i = 0; i < SIGMA_COUNT; i++) {
+ 505              		.loc 1 88 43 is_stmt 0 discriminator 2 view .LVU128
+ 506 0046 C0B2     		uxtb	r0, r0
+ 507              	.LVL41:
+ 508              	.L19:
+  88:Estimation/ukf.c ****     for (uint8_t i = 0; i < SIGMA_COUNT; i++) {
+ 509              		.loc 1 88 27 is_stmt 1 discriminator 1 view .LVU129
+ 510 0048 1428     		cmp	r0, #20
+ 511 004a 07D8     		bhi	.L24
+ 512              	.LBB15:
+ARM GAS  /tmp/ccrqj9wF.s 			page 12
+
+
+  89:Estimation/ukf.c ****         float w = ukf->w_m[i];
+ 513              		.loc 1 89 9 view .LVU130
+  89:Estimation/ukf.c ****         float w = ukf->w_m[i];
+ 514              		.loc 1 89 15 is_stmt 0 view .LVU131
+ 515 004c 00F5E473 		add	r3, r0, #456
+ 516 0050 04EB8303 		add	r3, r4, r3, lsl #2
+ 517 0054 D3ED006A 		vldr.32	s13, [r3]
+ 518              	.LVL42:
+  90:Estimation/ukf.c ****             x_mean[j] += w * ukf->sigma[(uint16_t)i * STATE_DIM + j];
+ 519              		.loc 1 90 9 is_stmt 1 view .LVU132
+ 520              	.LBB14:
+  90:Estimation/ukf.c ****             x_mean[j] += w * ukf->sigma[(uint16_t)i * STATE_DIM + j];
+ 521              		.loc 1 90 14 view .LVU133
+  90:Estimation/ukf.c ****             x_mean[j] += w * ukf->sigma[(uint16_t)i * STATE_DIM + j];
+ 522              		.loc 1 90 22 is_stmt 0 view .LVU134
+ 523 0058 0022     		movs	r2, #0
+  90:Estimation/ukf.c ****             x_mean[j] += w * ukf->sigma[(uint16_t)i * STATE_DIM + j];
+ 524              		.loc 1 90 9 view .LVU135
+ 525 005a F1E7     		b	.L20
+ 526              	.LVL43:
+ 527              	.L24:
+  90:Estimation/ukf.c ****             x_mean[j] += w * ukf->sigma[(uint16_t)i * STATE_DIM + j];
+ 528              		.loc 1 90 9 view .LVU136
+ 529              	.LBE14:
+ 530              	.LBE15:
+ 531              	.LBE11:
+  92:Estimation/ukf.c ****     }
+  93:Estimation/ukf.c ****     quat_t q = { x_mean[IDX_Q0], x_mean[IDX_Q1], x_mean[IDX_Q2], x_mean[IDX_Q3] };
+ 532              		.loc 1 93 5 is_stmt 1 view .LVU137
+ 533              		.loc 1 93 24 is_stmt 0 view .LVU138
+ 534 005c 2B68     		ldr	r3, [r5]	@ float
+ 535              		.loc 1 93 12 view .LVU139
+ 536 005e 0093     		str	r3, [sp]	@ float
+ 537 0060 6B68     		ldr	r3, [r5, #4]	@ float
+ 538 0062 0193     		str	r3, [sp, #4]	@ float
+ 539 0064 AB68     		ldr	r3, [r5, #8]	@ float
+ 540 0066 0293     		str	r3, [sp, #8]	@ float
+ 541 0068 EB68     		ldr	r3, [r5, #12]	@ float
+ 542 006a 0393     		str	r3, [sp, #12]	@ float
+  94:Estimation/ukf.c ****     quat_norm(&q);
+ 543              		.loc 1 94 5 is_stmt 1 view .LVU140
+ 544 006c 6846     		mov	r0, sp
+ 545              	.LVL44:
+ 546              		.loc 1 94 5 is_stmt 0 view .LVU141
+ 547 006e FFF7FEFF 		bl	quat_norm
+ 548              	.LVL45:
+  95:Estimation/ukf.c ****     x_mean[IDX_Q0] = q.w;
+ 549              		.loc 1 95 5 is_stmt 1 view .LVU142
+ 550              		.loc 1 95 23 is_stmt 0 view .LVU143
+ 551 0072 009B     		ldr	r3, [sp]	@ float
+ 552              		.loc 1 95 20 view .LVU144
+ 553 0074 2B60     		str	r3, [r5]	@ float
+  96:Estimation/ukf.c ****     x_mean[IDX_Q1] = q.x;
+ 554              		.loc 1 96 5 is_stmt 1 view .LVU145
+ 555              		.loc 1 96 23 is_stmt 0 view .LVU146
+ 556 0076 019B     		ldr	r3, [sp, #4]	@ float
+ 557              		.loc 1 96 20 view .LVU147
+ARM GAS  /tmp/ccrqj9wF.s 			page 13
+
+
+ 558 0078 6B60     		str	r3, [r5, #4]	@ float
+  97:Estimation/ukf.c ****     x_mean[IDX_Q2] = q.y;
+ 559              		.loc 1 97 5 is_stmt 1 view .LVU148
+ 560              		.loc 1 97 23 is_stmt 0 view .LVU149
+ 561 007a 029B     		ldr	r3, [sp, #8]	@ float
+ 562              		.loc 1 97 20 view .LVU150
+ 563 007c AB60     		str	r3, [r5, #8]	@ float
+  98:Estimation/ukf.c ****     x_mean[IDX_Q3] = q.z;
+ 564              		.loc 1 98 5 is_stmt 1 view .LVU151
+ 565              		.loc 1 98 23 is_stmt 0 view .LVU152
+ 566 007e 039B     		ldr	r3, [sp, #12]	@ float
+ 567              		.loc 1 98 20 view .LVU153
+ 568 0080 EB60     		str	r3, [r5, #12]	@ float
+  99:Estimation/ukf.c **** }
+ 569              		.loc 1 99 1 view .LVU154
+ 570 0082 05B0     		add	sp, sp, #20
+ 571              	.LCFI10:
+ 572              		.cfi_def_cfa_offset 12
+ 573              		@ sp needed
+ 574 0084 30BD     		pop	{r4, r5, pc}
+ 575              		.loc 1 99 1 view .LVU155
+ 576              		.cfi_endproc
+ 577              	.LFE5:
+ 579              		.section	.text.meas_sigma,"ax",%progbits
+ 580              		.align	1
+ 581              		.syntax unified
+ 582              		.thumb
+ 583              		.thumb_func
+ 585              	meas_sigma:
+ 586              	.LVL46:
+ 587              	.LFB3:
+  36:Estimation/ukf.c ****     quat_t q;
+ 588              		.loc 1 36 1 is_stmt 1 view -0
+ 589              		.cfi_startproc
+ 590              		@ args = 0, pretend = 0, frame = 56
+ 591              		@ frame_needed = 0, uses_anonymous_args = 0
+  36:Estimation/ukf.c ****     quat_t q;
+ 592              		.loc 1 36 1 is_stmt 0 view .LVU157
+ 593 0000 70B5     		push	{r4, r5, r6, lr}
+ 594              	.LCFI11:
+ 595              		.cfi_def_cfa_offset 16
+ 596              		.cfi_offset 4, -16
+ 597              		.cfi_offset 5, -12
+ 598              		.cfi_offset 6, -8
+ 599              		.cfi_offset 14, -4
+ 600 0002 8EB0     		sub	sp, sp, #56
+ 601              	.LCFI12:
+ 602              		.cfi_def_cfa_offset 72
+ 603 0004 0546     		mov	r5, r0
+ 604 0006 0C46     		mov	r4, r1
+  37:Estimation/ukf.c ****     sigma_to_quat(sp, &q);
+ 605              		.loc 1 37 5 is_stmt 1 view .LVU158
+  38:Estimation/ukf.c **** 
+ 606              		.loc 1 38 5 view .LVU159
+ 607 0008 0AAE     		add	r6, sp, #40
+ 608 000a 3146     		mov	r1, r6
+ 609              	.LVL47:
+ARM GAS  /tmp/ccrqj9wF.s 			page 14
+
+
+  38:Estimation/ukf.c **** 
+ 610              		.loc 1 38 5 is_stmt 0 view .LVU160
+ 611 000c FFF7FEFF 		bl	sigma_to_quat
+ 612              	.LVL48:
+  40:Estimation/ukf.c ****     quat_to_dcm(&q, R);
+ 613              		.loc 1 40 5 is_stmt 1 view .LVU161
+  41:Estimation/ukf.c **** 
+ 614              		.loc 1 41 5 view .LVU162
+ 615 0010 01A9     		add	r1, sp, #4
+ 616 0012 3046     		mov	r0, r6
+ 617 0014 FFF7FEFF 		bl	quat_to_dcm
+ 618              	.LVL49:
+  43:Estimation/ukf.c ****     h[1] = sp[IDX_WY];
+ 619              		.loc 1 43 5 view .LVU163
+  43:Estimation/ukf.c ****     h[1] = sp[IDX_WY];
+ 620              		.loc 1 43 14 is_stmt 0 view .LVU164
+ 621 0018 2B69     		ldr	r3, [r5, #16]	@ float
+  43:Estimation/ukf.c ****     h[1] = sp[IDX_WY];
+ 622              		.loc 1 43 10 view .LVU165
+ 623 001a 2360     		str	r3, [r4]	@ float
+  44:Estimation/ukf.c ****     h[2] = sp[IDX_WZ];
+ 624              		.loc 1 44 5 is_stmt 1 view .LVU166
+  44:Estimation/ukf.c ****     h[2] = sp[IDX_WZ];
+ 625              		.loc 1 44 14 is_stmt 0 view .LVU167
+ 626 001c 6B69     		ldr	r3, [r5, #20]	@ float
+  44:Estimation/ukf.c ****     h[2] = sp[IDX_WZ];
+ 627              		.loc 1 44 10 view .LVU168
+ 628 001e 6360     		str	r3, [r4, #4]	@ float
+  45:Estimation/ukf.c **** 
+ 629              		.loc 1 45 5 is_stmt 1 view .LVU169
+  45:Estimation/ukf.c **** 
+ 630              		.loc 1 45 14 is_stmt 0 view .LVU170
+ 631 0020 AB69     		ldr	r3, [r5, #24]	@ float
+  45:Estimation/ukf.c **** 
+ 632              		.loc 1 45 10 view .LVU171
+ 633 0022 A360     		str	r3, [r4, #8]	@ float
+  47:Estimation/ukf.c ****     h[4] = R[5] * GRAVITY_MPS2 + sp[IDX_BAY];
+ 634              		.loc 1 47 5 is_stmt 1 view .LVU172
+  47:Estimation/ukf.c ****     h[4] = R[5] * GRAVITY_MPS2 + sp[IDX_BAY];
+ 635              		.loc 1 47 17 is_stmt 0 view .LVU173
+ 636 0024 9FED107A 		vldr.32	s14, .L27
+ 637 0028 DDED037A 		vldr.32	s15, [sp, #12]
+ 638 002c 67EE877A 		vmul.f32	s15, s15, s14
+  47:Estimation/ukf.c ****     h[4] = R[5] * GRAVITY_MPS2 + sp[IDX_BAY];
+ 639              		.loc 1 47 36 view .LVU174
+ 640 0030 D5ED076A 		vldr.32	s13, [r5, #28]
+  47:Estimation/ukf.c ****     h[4] = R[5] * GRAVITY_MPS2 + sp[IDX_BAY];
+ 641              		.loc 1 47 32 view .LVU175
+ 642 0034 77EEA67A 		vadd.f32	s15, s15, s13
+  47:Estimation/ukf.c ****     h[4] = R[5] * GRAVITY_MPS2 + sp[IDX_BAY];
+ 643              		.loc 1 47 10 view .LVU176
+ 644 0038 C4ED037A 		vstr.32	s15, [r4, #12]
+  48:Estimation/ukf.c ****     h[5] = R[8] * GRAVITY_MPS2 + sp[IDX_BAZ];
+ 645              		.loc 1 48 5 is_stmt 1 view .LVU177
+  48:Estimation/ukf.c ****     h[5] = R[8] * GRAVITY_MPS2 + sp[IDX_BAZ];
+ 646              		.loc 1 48 13 is_stmt 0 view .LVU178
+ 647 003c DDED067A 		vldr.32	s15, [sp, #24]
+ARM GAS  /tmp/ccrqj9wF.s 			page 15
+
+
+  48:Estimation/ukf.c ****     h[5] = R[8] * GRAVITY_MPS2 + sp[IDX_BAZ];
+ 648              		.loc 1 48 17 view .LVU179
+ 649 0040 67EE877A 		vmul.f32	s15, s15, s14
+  48:Estimation/ukf.c ****     h[5] = R[8] * GRAVITY_MPS2 + sp[IDX_BAZ];
+ 650              		.loc 1 48 36 view .LVU180
+ 651 0044 D5ED086A 		vldr.32	s13, [r5, #32]
+  48:Estimation/ukf.c ****     h[5] = R[8] * GRAVITY_MPS2 + sp[IDX_BAZ];
+ 652              		.loc 1 48 32 view .LVU181
+ 653 0048 77EEA67A 		vadd.f32	s15, s15, s13
+  48:Estimation/ukf.c ****     h[5] = R[8] * GRAVITY_MPS2 + sp[IDX_BAZ];
+ 654              		.loc 1 48 10 view .LVU182
+ 655 004c C4ED047A 		vstr.32	s15, [r4, #16]
+  49:Estimation/ukf.c **** }
+ 656              		.loc 1 49 5 is_stmt 1 view .LVU183
+  49:Estimation/ukf.c **** }
+ 657              		.loc 1 49 13 is_stmt 0 view .LVU184
+ 658 0050 DDED097A 		vldr.32	s15, [sp, #36]
+  49:Estimation/ukf.c **** }
+ 659              		.loc 1 49 17 view .LVU185
+ 660 0054 67EE877A 		vmul.f32	s15, s15, s14
+  49:Estimation/ukf.c **** }
+ 661              		.loc 1 49 36 view .LVU186
+ 662 0058 95ED097A 		vldr.32	s14, [r5, #36]
+  49:Estimation/ukf.c **** }
+ 663              		.loc 1 49 32 view .LVU187
+ 664 005c 77EE877A 		vadd.f32	s15, s15, s14
+  49:Estimation/ukf.c **** }
+ 665              		.loc 1 49 10 view .LVU188
+ 666 0060 C4ED057A 		vstr.32	s15, [r4, #20]
+  50:Estimation/ukf.c **** 
+ 667              		.loc 1 50 1 view .LVU189
+ 668 0064 0EB0     		add	sp, sp, #56
+ 669              	.LCFI13:
+ 670              		.cfi_def_cfa_offset 16
+ 671              		@ sp needed
+ 672 0066 70BD     		pop	{r4, r5, r6, pc}
+ 673              	.LVL50:
+ 674              	.L28:
+  50:Estimation/ukf.c **** 
+ 675              		.loc 1 50 1 view .LVU190
+ 676              		.align	2
+ 677              	.L27:
+ 678 0068 0AE81C41 		.word	1092413450
+ 679              		.cfi_endproc
+ 680              	.LFE3:
+ 682              		.section	.text.ukf_init,"ax",%progbits
+ 683              		.align	1
+ 684              		.global	ukf_init
+ 685              		.syntax unified
+ 686              		.thumb
+ 687              		.thumb_func
+ 689              	ukf_init:
+ 690              	.LVL51:
+ 691              	.LFB6:
+ 100:Estimation/ukf.c **** 
+ 101:Estimation/ukf.c **** void ukf_init(ukf_t *ukf, float alpha, float beta, float kappa)
+ 102:Estimation/ukf.c **** {
+ARM GAS  /tmp/ccrqj9wF.s 			page 16
+
+
+ 692              		.loc 1 102 1 is_stmt 1 view -0
+ 693              		.cfi_startproc
+ 694              		@ args = 0, pretend = 0, frame = 0
+ 695              		@ frame_needed = 0, uses_anonymous_args = 0
+ 696              		.loc 1 102 1 is_stmt 0 view .LVU192
+ 697 0000 10B5     		push	{r4, lr}
+ 698              	.LCFI14:
+ 699              		.cfi_def_cfa_offset 8
+ 700              		.cfi_offset 4, -8
+ 701              		.cfi_offset 14, -4
+ 702 0002 2DED048B 		vpush.64	{d8, d9}
+ 703              	.LCFI15:
+ 704              		.cfi_def_cfa_offset 24
+ 705              		.cfi_offset 80, -24
+ 706              		.cfi_offset 81, -20
+ 707              		.cfi_offset 82, -16
+ 708              		.cfi_offset 83, -12
+ 709 0006 0446     		mov	r4, r0
+ 710 0008 B0EE408A 		vmov.f32	s16, s0
+ 711 000c B0EE609A 		vmov.f32	s18, s1
+ 712 0010 F0EE418A 		vmov.f32	s17, s2
+ 103:Estimation/ukf.c ****     memset(ukf, 0, sizeof(ukf_t));
+ 713              		.loc 1 103 5 is_stmt 1 view .LVU193
+ 714 0014 40F2CC72 		movw	r2, #1996
+ 715 0018 0021     		movs	r1, #0
+ 716 001a FFF7FEFF 		bl	memset
+ 717              	.LVL52:
+ 104:Estimation/ukf.c **** 
+ 105:Estimation/ukf.c ****     float n     = (float)STATE_DIM;
+ 718              		.loc 1 105 5 view .LVU194
+ 106:Estimation/ukf.c ****     float alpha2 = alpha * alpha;
+ 719              		.loc 1 106 5 view .LVU195
+ 720              		.loc 1 106 11 is_stmt 0 view .LVU196
+ 721 001e 28EE088A 		vmul.f32	s16, s16, s16
+ 722              	.LVL53:
+ 107:Estimation/ukf.c ****     ukf->lambda = alpha2 * (n + kappa) - n;
+ 723              		.loc 1 107 5 is_stmt 1 view .LVU197
+ 724              		.loc 1 107 31 is_stmt 0 view .LVU198
+ 725 0022 F2EE046A 		vmov.f32	s13, #1.0e+1
+ 726 0026 38EEA67A 		vadd.f32	s14, s17, s13
+ 727              		.loc 1 107 26 view .LVU199
+ 728 002a 27EE087A 		vmul.f32	s14, s14, s16
+ 729              		.loc 1 107 40 view .LVU200
+ 730 002e 37EE667A 		vsub.f32	s14, s14, s13
+ 731              		.loc 1 107 17 view .LVU201
+ 732 0032 04F5F963 		add	r3, r4, #1992
+ 733 0036 83ED007A 		vstr.32	s14, [r3]
+ 108:Estimation/ukf.c **** 
+ 109:Estimation/ukf.c ****     float inv_2nl = 1.0f / (2.0f * (n + ukf->lambda));
+ 734              		.loc 1 109 5 is_stmt 1 view .LVU202
+ 735              		.loc 1 109 39 is_stmt 0 view .LVU203
+ 736 003a 77EE266A 		vadd.f32	s13, s14, s13
+ 737              		.loc 1 109 34 view .LVU204
+ 738 003e 76EEA65A 		vadd.f32	s11, s13, s13
+ 739              		.loc 1 109 11 view .LVU205
+ 740 0042 B7EE006A 		vmov.f32	s12, #1.0e+0
+ 741 0046 C6EE257A 		vdiv.f32	s15, s12, s11
+ARM GAS  /tmp/ccrqj9wF.s 			page 17
+
+
+ 742              	.LVL54:
+ 110:Estimation/ukf.c ****     ukf->w_m[0] = ukf->lambda / (n + ukf->lambda);
+ 743              		.loc 1 110 5 is_stmt 1 view .LVU206
+ 744              		.loc 1 110 31 is_stmt 0 view .LVU207
+ 745 004a C7EE265A 		vdiv.f32	s11, s14, s13
+ 746              		.loc 1 110 17 view .LVU208
+ 747 004e 04F5E463 		add	r3, r4, #1824
+ 748 0052 C3ED005A 		vstr.32	s11, [r3]
+ 111:Estimation/ukf.c ****     ukf->w_c[0] = ukf->w_m[0] + (1.0f - alpha2 + beta);
+ 749              		.loc 1 111 5 is_stmt 1 view .LVU209
+ 750              		.loc 1 111 39 is_stmt 0 view .LVU210
+ 751 0056 36EE486A 		vsub.f32	s12, s12, s16
+ 752              		.loc 1 111 48 view .LVU211
+ 753 005a 36EE096A 		vadd.f32	s12, s12, s18
+ 754              		.loc 1 111 31 view .LVU212
+ 755 005e 75EE865A 		vadd.f32	s11, s11, s12
+ 756              		.loc 1 111 17 view .LVU213
+ 757 0062 04F27473 		addw	r3, r4, #1908
+ 758 0066 C3ED005A 		vstr.32	s11, [r3]
+ 112:Estimation/ukf.c ****     for (uint8_t i = 1; i < SIGMA_COUNT; i++) {
+ 759              		.loc 1 112 5 is_stmt 1 view .LVU214
+ 760              	.LBB16:
+ 761              		.loc 1 112 10 view .LVU215
+ 762              	.LVL55:
+ 763              		.loc 1 112 18 is_stmt 0 view .LVU216
+ 764 006a 0123     		movs	r3, #1
+ 765              		.loc 1 112 5 view .LVU217
+ 766 006c 0DE0     		b	.L30
+ 767              	.LVL56:
+ 768              	.L31:
+ 113:Estimation/ukf.c ****         ukf->w_m[i] = inv_2nl;
+ 769              		.loc 1 113 9 is_stmt 1 view .LVU218
+ 770              		.loc 1 113 21 is_stmt 0 view .LVU219
+ 771 006e 03F5E472 		add	r2, r3, #456
+ 772 0072 04EB8202 		add	r2, r4, r2, lsl #2
+ 773 0076 C2ED007A 		vstr.32	s15, [r2]
+ 114:Estimation/ukf.c ****         ukf->w_c[i] = inv_2nl;
+ 774              		.loc 1 114 9 is_stmt 1 view .LVU220
+ 775              		.loc 1 114 21 is_stmt 0 view .LVU221
+ 776 007a 03F5EE72 		add	r2, r3, #476
+ 777 007e 04EB8202 		add	r2, r4, r2, lsl #2
+ 778 0082 C2ED017A 		vstr.32	s15, [r2, #4]
+ 112:Estimation/ukf.c ****     for (uint8_t i = 1; i < SIGMA_COUNT; i++) {
+ 779              		.loc 1 112 43 is_stmt 1 discriminator 3 view .LVU222
+ 780 0086 0133     		adds	r3, r3, #1
+ 781              	.LVL57:
+ 112:Estimation/ukf.c ****     for (uint8_t i = 1; i < SIGMA_COUNT; i++) {
+ 782              		.loc 1 112 43 is_stmt 0 discriminator 3 view .LVU223
+ 783 0088 DBB2     		uxtb	r3, r3
+ 784              	.LVL58:
+ 785              	.L30:
+ 112:Estimation/ukf.c ****     for (uint8_t i = 1; i < SIGMA_COUNT; i++) {
+ 786              		.loc 1 112 27 is_stmt 1 discriminator 1 view .LVU224
+ 787 008a 142B     		cmp	r3, #20
+ 788 008c EFD9     		bls	.L31
+ 789              	.LBE16:
+ 115:Estimation/ukf.c ****     }
+ARM GAS  /tmp/ccrqj9wF.s 			page 18
+
+
+ 116:Estimation/ukf.c **** 
+ 117:Estimation/ukf.c ****     ukf->x[IDX_Q0] = 1.0f;
+ 790              		.loc 1 117 5 view .LVU225
+ 791              		.loc 1 117 20 is_stmt 0 view .LVU226
+ 792 008e 4FF07E53 		mov	r3, #1065353216
+ 793              	.LVL59:
+ 794              		.loc 1 117 20 view .LVU227
+ 795 0092 2360     		str	r3, [r4]	@ float
+ 118:Estimation/ukf.c **** 
+ 119:Estimation/ukf.c ****     float p_q   = 0.01f;
+ 796              		.loc 1 119 5 is_stmt 1 view .LVU228
+ 797              	.LVL60:
+ 120:Estimation/ukf.c ****     float p_w   = 0.1f;
+ 798              		.loc 1 120 5 view .LVU229
+ 121:Estimation/ukf.c ****     float p_ba  = 0.1f;
+ 799              		.loc 1 121 5 view .LVU230
+ 122:Estimation/ukf.c ****     for (uint8_t i = 0; i < 4; i++)   ukf->P[(uint16_t)i * STATE_DIM + i] = p_q;
+ 800              		.loc 1 122 5 view .LVU231
+ 801              	.LBB17:
+ 802              		.loc 1 122 10 view .LVU232
+ 803              		.loc 1 122 18 is_stmt 0 view .LVU233
+ 804 0094 0023     		movs	r3, #0
+ 805              		.loc 1 122 5 view .LVU234
+ 806 0096 0AE0     		b	.L32
+ 807              	.LVL61:
+ 808              	.L33:
+ 809              		.loc 1 122 39 is_stmt 1 discriminator 3 view .LVU235
+ 810              		.loc 1 122 70 is_stmt 0 discriminator 3 view .LVU236
+ 811 0098 03EB8302 		add	r2, r3, r3, lsl #2
+ 812 009c 03EB4202 		add	r2, r3, r2, lsl #1
+ 813              		.loc 1 122 75 discriminator 3 view .LVU237
+ 814 00a0 0A32     		adds	r2, r2, #10
+ 815 00a2 04EB8202 		add	r2, r4, r2, lsl #2
+ 816 00a6 3749     		ldr	r1, .L49
+ 817 00a8 1160     		str	r1, [r2]	@ float
+ 818              		.loc 1 122 33 is_stmt 1 discriminator 3 view .LVU238
+ 819 00aa 0133     		adds	r3, r3, #1
+ 820              	.LVL62:
+ 821              		.loc 1 122 33 is_stmt 0 discriminator 3 view .LVU239
+ 822 00ac DBB2     		uxtb	r3, r3
+ 823              	.LVL63:
+ 824              	.L32:
+ 825              		.loc 1 122 27 is_stmt 1 discriminator 1 view .LVU240
+ 826 00ae 032B     		cmp	r3, #3
+ 827 00b0 F2D9     		bls	.L33
+ 828              	.LBE17:
+ 829              	.LBB18:
+ 123:Estimation/ukf.c ****     for (uint8_t i = 4; i < 7; i++)   ukf->P[(uint16_t)i * STATE_DIM + i] = p_w;
+ 830              		.loc 1 123 18 is_stmt 0 view .LVU241
+ 831 00b2 0423     		movs	r3, #4
+ 832              	.LVL64:
+ 833              		.loc 1 123 18 view .LVU242
+ 834 00b4 0AE0     		b	.L34
+ 835              	.LVL65:
+ 836              	.L35:
+ 837              		.loc 1 123 39 is_stmt 1 discriminator 3 view .LVU243
+ 838              		.loc 1 123 70 is_stmt 0 discriminator 3 view .LVU244
+ARM GAS  /tmp/ccrqj9wF.s 			page 19
+
+
+ 839 00b6 03EB8302 		add	r2, r3, r3, lsl #2
+ 840 00ba 03EB4202 		add	r2, r3, r2, lsl #1
+ 841              		.loc 1 123 75 discriminator 3 view .LVU245
+ 842 00be 0A32     		adds	r2, r2, #10
+ 843 00c0 04EB8202 		add	r2, r4, r2, lsl #2
+ 844 00c4 3049     		ldr	r1, .L49+4
+ 845 00c6 1160     		str	r1, [r2]	@ float
+ 846              		.loc 1 123 33 is_stmt 1 discriminator 3 view .LVU246
+ 847 00c8 0133     		adds	r3, r3, #1
+ 848              	.LVL66:
+ 849              		.loc 1 123 33 is_stmt 0 discriminator 3 view .LVU247
+ 850 00ca DBB2     		uxtb	r3, r3
+ 851              	.LVL67:
+ 852              	.L34:
+ 853              		.loc 1 123 27 is_stmt 1 discriminator 1 view .LVU248
+ 854 00cc 062B     		cmp	r3, #6
+ 855 00ce F2D9     		bls	.L35
+ 856              	.LBE18:
+ 857              	.LBB19:
+ 124:Estimation/ukf.c ****     for (uint8_t i = 7; i < 10; i++)  ukf->P[(uint16_t)i * STATE_DIM + i] = p_ba;
+ 858              		.loc 1 124 18 is_stmt 0 view .LVU249
+ 859 00d0 0723     		movs	r3, #7
+ 860              	.LVL68:
+ 861              		.loc 1 124 18 view .LVU250
+ 862 00d2 0AE0     		b	.L36
+ 863              	.LVL69:
+ 864              	.L37:
+ 865              		.loc 1 124 39 is_stmt 1 discriminator 3 view .LVU251
+ 866              		.loc 1 124 70 is_stmt 0 discriminator 3 view .LVU252
+ 867 00d4 03EB8302 		add	r2, r3, r3, lsl #2
+ 868 00d8 03EB4202 		add	r2, r3, r2, lsl #1
+ 869              		.loc 1 124 75 discriminator 3 view .LVU253
+ 870 00dc 0A32     		adds	r2, r2, #10
+ 871 00de 04EB8202 		add	r2, r4, r2, lsl #2
+ 872 00e2 2949     		ldr	r1, .L49+4
+ 873 00e4 1160     		str	r1, [r2]	@ float
+ 874              		.loc 1 124 34 is_stmt 1 discriminator 3 view .LVU254
+ 875 00e6 0133     		adds	r3, r3, #1
+ 876              	.LVL70:
+ 877              		.loc 1 124 34 is_stmt 0 discriminator 3 view .LVU255
+ 878 00e8 DBB2     		uxtb	r3, r3
+ 879              	.LVL71:
+ 880              	.L36:
+ 881              		.loc 1 124 27 is_stmt 1 discriminator 1 view .LVU256
+ 882 00ea 092B     		cmp	r3, #9
+ 883 00ec F2D9     		bls	.L37
+ 884              	.LBE19:
+ 885              	.LBB20:
+ 125:Estimation/ukf.c **** 
+ 126:Estimation/ukf.c ****     float q_q   = 1e-5f;
+ 127:Estimation/ukf.c ****     float q_w   = 1e-4f;
+ 128:Estimation/ukf.c ****     float q_ba  = 1e-6f;
+ 129:Estimation/ukf.c ****     for (uint8_t i = 0; i < 4; i++)   ukf->Q[(uint16_t)i * STATE_DIM + i] = q_q;
+ 886              		.loc 1 129 18 is_stmt 0 view .LVU257
+ 887 00ee 0023     		movs	r3, #0
+ 888              	.LVL72:
+ 889              		.loc 1 129 18 view .LVU258
+ARM GAS  /tmp/ccrqj9wF.s 			page 20
+
+
+ 890 00f0 0AE0     		b	.L38
+ 891              	.LVL73:
+ 892              	.L39:
+ 893              		.loc 1 129 39 is_stmt 1 discriminator 3 view .LVU259
+ 894              		.loc 1 129 70 is_stmt 0 discriminator 3 view .LVU260
+ 895 00f2 03EB8302 		add	r2, r3, r3, lsl #2
+ 896 00f6 03EB4202 		add	r2, r3, r2, lsl #1
+ 897              		.loc 1 129 75 discriminator 3 view .LVU261
+ 898 00fa 6E32     		adds	r2, r2, #110
+ 899 00fc 04EB8202 		add	r2, r4, r2, lsl #2
+ 900 0100 2249     		ldr	r1, .L49+8
+ 901 0102 1160     		str	r1, [r2]	@ float
+ 902              		.loc 1 129 33 is_stmt 1 discriminator 3 view .LVU262
+ 903 0104 0133     		adds	r3, r3, #1
+ 904              	.LVL74:
+ 905              		.loc 1 129 33 is_stmt 0 discriminator 3 view .LVU263
+ 906 0106 DBB2     		uxtb	r3, r3
+ 907              	.LVL75:
+ 908              	.L38:
+ 909              		.loc 1 129 27 is_stmt 1 discriminator 1 view .LVU264
+ 910 0108 032B     		cmp	r3, #3
+ 911 010a F2D9     		bls	.L39
+ 912              	.LBE20:
+ 913              	.LBB21:
+ 130:Estimation/ukf.c ****     for (uint8_t i = 4; i < 7; i++)   ukf->Q[(uint16_t)i * STATE_DIM + i] = q_w;
+ 914              		.loc 1 130 18 is_stmt 0 view .LVU265
+ 915 010c 0423     		movs	r3, #4
+ 916              	.LVL76:
+ 917              		.loc 1 130 18 view .LVU266
+ 918 010e 0AE0     		b	.L40
+ 919              	.LVL77:
+ 920              	.L41:
+ 921              		.loc 1 130 39 is_stmt 1 discriminator 3 view .LVU267
+ 922              		.loc 1 130 70 is_stmt 0 discriminator 3 view .LVU268
+ 923 0110 03EB8302 		add	r2, r3, r3, lsl #2
+ 924 0114 03EB4202 		add	r2, r3, r2, lsl #1
+ 925              		.loc 1 130 75 discriminator 3 view .LVU269
+ 926 0118 6E32     		adds	r2, r2, #110
+ 927 011a 04EB8202 		add	r2, r4, r2, lsl #2
+ 928 011e 1C49     		ldr	r1, .L49+12
+ 929 0120 1160     		str	r1, [r2]	@ float
+ 930              		.loc 1 130 33 is_stmt 1 discriminator 3 view .LVU270
+ 931 0122 0133     		adds	r3, r3, #1
+ 932              	.LVL78:
+ 933              		.loc 1 130 33 is_stmt 0 discriminator 3 view .LVU271
+ 934 0124 DBB2     		uxtb	r3, r3
+ 935              	.LVL79:
+ 936              	.L40:
+ 937              		.loc 1 130 27 is_stmt 1 discriminator 1 view .LVU272
+ 938 0126 062B     		cmp	r3, #6
+ 939 0128 F2D9     		bls	.L41
+ 940              	.LBE21:
+ 941              	.LBB22:
+ 131:Estimation/ukf.c ****     for (uint8_t i = 7; i < 10; i++)  ukf->Q[(uint16_t)i * STATE_DIM + i] = q_ba;
+ 942              		.loc 1 131 18 is_stmt 0 view .LVU273
+ 943 012a 0723     		movs	r3, #7
+ 944              	.LVL80:
+ARM GAS  /tmp/ccrqj9wF.s 			page 21
+
+
+ 945              		.loc 1 131 18 view .LVU274
+ 946 012c 0AE0     		b	.L42
+ 947              	.LVL81:
+ 948              	.L43:
+ 949              		.loc 1 131 39 is_stmt 1 discriminator 3 view .LVU275
+ 950              		.loc 1 131 70 is_stmt 0 discriminator 3 view .LVU276
+ 951 012e 03EB8302 		add	r2, r3, r3, lsl #2
+ 952 0132 03EB4202 		add	r2, r3, r2, lsl #1
+ 953              		.loc 1 131 75 discriminator 3 view .LVU277
+ 954 0136 6E32     		adds	r2, r2, #110
+ 955 0138 04EB8202 		add	r2, r4, r2, lsl #2
+ 956 013c 1549     		ldr	r1, .L49+16
+ 957 013e 1160     		str	r1, [r2]	@ float
+ 958              		.loc 1 131 34 is_stmt 1 discriminator 3 view .LVU278
+ 959 0140 0133     		adds	r3, r3, #1
+ 960              	.LVL82:
+ 961              		.loc 1 131 34 is_stmt 0 discriminator 3 view .LVU279
+ 962 0142 DBB2     		uxtb	r3, r3
+ 963              	.LVL83:
+ 964              	.L42:
+ 965              		.loc 1 131 27 is_stmt 1 discriminator 1 view .LVU280
+ 966 0144 092B     		cmp	r3, #9
+ 967 0146 F2D9     		bls	.L43
+ 968              	.LBE22:
+ 969              	.LBB23:
+ 132:Estimation/ukf.c **** 
+ 133:Estimation/ukf.c ****     float r_gyro  = 1e-4f;
+ 134:Estimation/ukf.c ****     float r_accel = 1e-2f;
+ 135:Estimation/ukf.c ****     for (uint8_t i = 0; i < 3; i++)   ukf->R[(uint16_t)i * MEAS_DIM + i] = r_gyro;
+ 970              		.loc 1 135 18 is_stmt 0 view .LVU281
+ 971 0148 0023     		movs	r3, #0
+ 972              	.LVL84:
+ 973              		.loc 1 135 18 view .LVU282
+ 974 014a 08E0     		b	.L44
+ 975              	.LVL85:
+ 976              	.L45:
+ 977              		.loc 1 135 39 is_stmt 1 discriminator 3 view .LVU283
+ 978              		.loc 1 135 69 is_stmt 0 discriminator 3 view .LVU284
+ 979 014c C3EBC302 		rsb	r2, r3, r3, lsl #3
+ 980              		.loc 1 135 74 discriminator 3 view .LVU285
+ 981 0150 D232     		adds	r2, r2, #210
+ 982 0152 04EB8202 		add	r2, r4, r2, lsl #2
+ 983 0156 0E49     		ldr	r1, .L49+12
+ 984 0158 1160     		str	r1, [r2]	@ float
+ 985              		.loc 1 135 33 is_stmt 1 discriminator 3 view .LVU286
+ 986 015a 0133     		adds	r3, r3, #1
+ 987              	.LVL86:
+ 988              		.loc 1 135 33 is_stmt 0 discriminator 3 view .LVU287
+ 989 015c DBB2     		uxtb	r3, r3
+ 990              	.LVL87:
+ 991              	.L44:
+ 992              		.loc 1 135 27 is_stmt 1 discriminator 1 view .LVU288
+ 993 015e 022B     		cmp	r3, #2
+ 994 0160 F4D9     		bls	.L45
+ 995              	.LBE23:
+ 996              	.LBB24:
+ 136:Estimation/ukf.c ****     for (uint8_t i = 3; i < 6; i++)   ukf->R[(uint16_t)i * MEAS_DIM + i] = r_accel;
+ARM GAS  /tmp/ccrqj9wF.s 			page 22
+
+
+ 997              		.loc 1 136 18 is_stmt 0 view .LVU289
+ 998 0162 0323     		movs	r3, #3
+ 999              	.LVL88:
+ 1000              		.loc 1 136 18 view .LVU290
+ 1001 0164 08E0     		b	.L46
+ 1002              	.LVL89:
+ 1003              	.L47:
+ 1004              		.loc 1 136 39 is_stmt 1 discriminator 3 view .LVU291
+ 1005              		.loc 1 136 69 is_stmt 0 discriminator 3 view .LVU292
+ 1006 0166 C3EBC302 		rsb	r2, r3, r3, lsl #3
+ 1007              		.loc 1 136 74 discriminator 3 view .LVU293
+ 1008 016a D232     		adds	r2, r2, #210
+ 1009 016c 04EB8202 		add	r2, r4, r2, lsl #2
+ 1010 0170 0449     		ldr	r1, .L49
+ 1011 0172 1160     		str	r1, [r2]	@ float
+ 1012              		.loc 1 136 33 is_stmt 1 discriminator 3 view .LVU294
+ 1013 0174 0133     		adds	r3, r3, #1
+ 1014              	.LVL90:
+ 1015              		.loc 1 136 33 is_stmt 0 discriminator 3 view .LVU295
+ 1016 0176 DBB2     		uxtb	r3, r3
+ 1017              	.LVL91:
+ 1018              	.L46:
+ 1019              		.loc 1 136 27 is_stmt 1 discriminator 1 view .LVU296
+ 1020 0178 052B     		cmp	r3, #5
+ 1021 017a F4D9     		bls	.L47
+ 1022              	.LBE24:
+ 137:Estimation/ukf.c **** }
+ 1023              		.loc 1 137 1 is_stmt 0 view .LVU297
+ 1024 017c BDEC048B 		vldm	sp!, {d8-d9}
+ 1025              	.LCFI16:
+ 1026              		.cfi_restore 82
+ 1027              		.cfi_restore 83
+ 1028              		.cfi_restore 80
+ 1029              		.cfi_restore 81
+ 1030              		.cfi_def_cfa_offset 8
+ 1031              	.LVL92:
+ 1032              		.loc 1 137 1 view .LVU298
+ 1033 0180 10BD     		pop	{r4, pc}
+ 1034              	.LVL93:
+ 1035              	.L50:
+ 1036              		.loc 1 137 1 view .LVU299
+ 1037 0182 00BF     		.align	2
+ 1038              	.L49:
+ 1039 0184 0AD7233C 		.word	1008981770
+ 1040 0188 CDCCCC3D 		.word	1036831949
+ 1041 018c ACC52737 		.word	925353388
+ 1042 0190 17B7D138 		.word	953267991
+ 1043 0194 BD378635 		.word	897988541
+ 1044              		.cfi_endproc
+ 1045              	.LFE6:
+ 1047              		.section	.text.ukf_predict,"ax",%progbits
+ 1048              		.align	1
+ 1049              		.global	ukf_predict
+ 1050              		.syntax unified
+ 1051              		.thumb
+ 1052              		.thumb_func
+ 1054              	ukf_predict:
+ARM GAS  /tmp/ccrqj9wF.s 			page 23
+
+
+ 1055              	.LVL94:
+ 1056              	.LFB7:
+ 138:Estimation/ukf.c **** 
+ 139:Estimation/ukf.c **** void ukf_predict(ukf_t *ukf, const float gyro[3], float dt)
+ 140:Estimation/ukf.c **** {
+ 1057              		.loc 1 140 1 is_stmt 1 view -0
+ 1058              		.cfi_startproc
+ 1059              		@ args = 0, pretend = 0, frame = 480
+ 1060              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1061              		.loc 1 140 1 is_stmt 0 view .LVU301
+ 1062 0000 30B5     		push	{r4, r5, lr}
+ 1063              	.LCFI17:
+ 1064              		.cfi_def_cfa_offset 12
+ 1065              		.cfi_offset 4, -12
+ 1066              		.cfi_offset 5, -8
+ 1067              		.cfi_offset 14, -4
+ 1068 0002 2DED028B 		vpush.64	{d8}
+ 1069              	.LCFI18:
+ 1070              		.cfi_def_cfa_offset 20
+ 1071              		.cfi_offset 80, -20
+ 1072              		.cfi_offset 81, -16
+ 1073 0006 F9B0     		sub	sp, sp, #484
+ 1074              	.LCFI19:
+ 1075              		.cfi_def_cfa_offset 504
+ 1076 0008 0446     		mov	r4, r0
+ 1077 000a B0EE408A 		vmov.f32	s16, s0
+ 141:Estimation/ukf.c ****     (void)gyro;
+ 1078              		.loc 1 141 5 is_stmt 1 view .LVU302
+ 142:Estimation/ukf.c **** 
+ 143:Estimation/ukf.c ****     compute_sigma_points(ukf);
+ 1079              		.loc 1 143 5 view .LVU303
+ 1080 000e FFF7FEFF 		bl	compute_sigma_points
+ 1081              	.LVL95:
+ 144:Estimation/ukf.c **** 
+ 145:Estimation/ukf.c ****     for (uint8_t i = 0; i < SIGMA_COUNT; i++)
+ 1082              		.loc 1 145 5 view .LVU304
+ 1083              	.LBB25:
+ 1084              		.loc 1 145 10 view .LVU305
+ 1085              		.loc 1 145 18 is_stmt 0 view .LVU306
+ 1086 0012 0025     		movs	r5, #0
+ 1087              		.loc 1 145 5 view .LVU307
+ 1088 0014 0BE0     		b	.L52
+ 1089              	.LVL96:
+ 1090              	.L53:
+ 146:Estimation/ukf.c ****         process_sigma(&ukf->sigma[(uint16_t)i * STATE_DIM], dt);
+ 1091              		.loc 1 146 9 is_stmt 1 view .LVU308
+ 1092              		.loc 1 146 47 is_stmt 0 view .LVU309
+ 1093 0016 05EB8500 		add	r0, r5, r5, lsl #2
+ 1094 001a 4000     		lsls	r0, r0, #1
+ 1095              		.loc 1 146 9 view .LVU310
+ 1096 001c F630     		adds	r0, r0, #246
+ 1097 001e B0EE480A 		vmov.f32	s0, s16
+ 1098 0022 04EB8000 		add	r0, r4, r0, lsl #2
+ 1099 0026 FFF7FEFF 		bl	process_sigma
+ 1100              	.LVL97:
+ 145:Estimation/ukf.c ****         process_sigma(&ukf->sigma[(uint16_t)i * STATE_DIM], dt);
+ 1101              		.loc 1 145 43 is_stmt 1 discriminator 3 view .LVU311
+ARM GAS  /tmp/ccrqj9wF.s 			page 24
+
+
+ 1102 002a 0135     		adds	r5, r5, #1
+ 1103              	.LVL98:
+ 145:Estimation/ukf.c ****         process_sigma(&ukf->sigma[(uint16_t)i * STATE_DIM], dt);
+ 1104              		.loc 1 145 43 is_stmt 0 discriminator 3 view .LVU312
+ 1105 002c EDB2     		uxtb	r5, r5
+ 1106              	.LVL99:
+ 1107              	.L52:
+ 145:Estimation/ukf.c ****         process_sigma(&ukf->sigma[(uint16_t)i * STATE_DIM], dt);
+ 1108              		.loc 1 145 27 is_stmt 1 discriminator 1 view .LVU313
+ 1109 002e 142D     		cmp	r5, #20
+ 1110 0030 F1D9     		bls	.L53
+ 1111              	.LBE25:
+ 147:Estimation/ukf.c **** 
+ 148:Estimation/ukf.c ****     float x_pred[STATE_DIM];
+ 1112              		.loc 1 148 5 view .LVU314
+ 149:Estimation/ukf.c ****     weighted_mean_state(ukf, x_pred);
+ 1113              		.loc 1 149 5 view .LVU315
+ 1114 0032 6EA9     		add	r1, sp, #440
+ 1115 0034 2046     		mov	r0, r4
+ 1116 0036 FFF7FEFF 		bl	weighted_mean_state
+ 1117              	.LVL100:
+ 150:Estimation/ukf.c **** 
+ 151:Estimation/ukf.c ****     float P_pred[STATE_DIM * STATE_DIM];
+ 1118              		.loc 1 151 5 view .LVU316
+ 152:Estimation/ukf.c ****     mat_copy(ukf->Q, P_pred, STATE_DIM, STATE_DIM);
+ 1119              		.loc 1 152 5 view .LVU317
+ 1120 003a 0A23     		movs	r3, #10
+ 1121 003c 1A46     		mov	r2, r3
+ 1122 003e 0AA9     		add	r1, sp, #40
+ 1123 0040 04F5DC70 		add	r0, r4, #440
+ 1124 0044 FFF7FEFF 		bl	mat_copy
+ 1125              	.LVL101:
+ 153:Estimation/ukf.c **** 
+ 154:Estimation/ukf.c ****     for (uint8_t i = 0; i < SIGMA_COUNT; i++) {
+ 1126              		.loc 1 154 5 view .LVU318
+ 1127              	.LBB26:
+ 1128              		.loc 1 154 10 view .LVU319
+ 1129              		.loc 1 154 18 is_stmt 0 view .LVU320
+ 1130 0048 4FF0000E 		mov	lr, #0
+ 1131              		.loc 1 154 5 view .LVU321
+ 1132 004c 46E0     		b	.L54
+ 1133              	.LVL102:
+ 1134              	.L55:
+ 1135              	.LBB27:
+ 1136              	.LBB28:
+ 155:Estimation/ukf.c ****         float dx[STATE_DIM];
+ 156:Estimation/ukf.c ****         for (uint8_t j = 0; j < STATE_DIM; j++)
+ 157:Estimation/ukf.c ****             dx[j] = ukf->sigma[(uint16_t)i * STATE_DIM + j] - x_pred[j];
+ 1137              		.loc 1 157 13 is_stmt 1 view .LVU322
+ 1138              		.loc 1 157 44 is_stmt 0 view .LVU323
+ 1139 004e 0EEB8E02 		add	r2, lr, lr, lsl #2
+ 1140              		.loc 1 157 56 view .LVU324
+ 1141 0052 03EB4202 		add	r2, r3, r2, lsl #1
+ 1142              		.loc 1 157 31 view .LVU325
+ 1143 0056 F632     		adds	r2, r2, #246
+ 1144 0058 04EB8202 		add	r2, r4, r2, lsl #2
+ 1145 005c D2ED007A 		vldr.32	s15, [r2]
+ARM GAS  /tmp/ccrqj9wF.s 			page 25
+
+
+ 1146              		.loc 1 157 69 view .LVU326
+ 1147 0060 78AA     		add	r2, sp, #480
+ 1148 0062 02EB8302 		add	r2, r2, r3, lsl #2
+ 1149 0066 12ED0A7A 		vldr.32	s14, [r2, #-40]
+ 1150              		.loc 1 157 61 view .LVU327
+ 1151 006a 77EEC77A 		vsub.f32	s15, s15, s14
+ 1152              		.loc 1 157 19 view .LVU328
+ 1153 006e 0DEB8302 		add	r2, sp, r3, lsl #2
+ 1154 0072 C2ED007A 		vstr.32	s15, [r2]
+ 156:Estimation/ukf.c ****             dx[j] = ukf->sigma[(uint16_t)i * STATE_DIM + j] - x_pred[j];
+ 1155              		.loc 1 156 45 is_stmt 1 discriminator 3 view .LVU329
+ 1156 0076 0133     		adds	r3, r3, #1
+ 1157              	.LVL103:
+ 156:Estimation/ukf.c ****             dx[j] = ukf->sigma[(uint16_t)i * STATE_DIM + j] - x_pred[j];
+ 1158              		.loc 1 156 45 is_stmt 0 discriminator 3 view .LVU330
+ 1159 0078 DBB2     		uxtb	r3, r3
+ 1160              	.LVL104:
+ 1161              	.L59:
+ 156:Estimation/ukf.c ****             dx[j] = ukf->sigma[(uint16_t)i * STATE_DIM + j] - x_pred[j];
+ 1162              		.loc 1 156 31 is_stmt 1 discriminator 1 view .LVU331
+ 1163 007a 092B     		cmp	r3, #9
+ 1164 007c E7D9     		bls	.L55
+ 1165              	.LBE28:
+ 158:Estimation/ukf.c **** 
+ 159:Estimation/ukf.c ****         float w = ukf->w_c[i];
+ 1166              		.loc 1 159 9 view .LVU332
+ 1167              		.loc 1 159 15 is_stmt 0 view .LVU333
+ 1168 007e 0EF5EE73 		add	r3, lr, #476
+ 1169              	.LVL105:
+ 1170              		.loc 1 159 15 view .LVU334
+ 1171 0082 04EB8303 		add	r3, r4, r3, lsl #2
+ 1172 0086 93ED016A 		vldr.32	s12, [r3, #4]
+ 1173              	.LVL106:
+ 160:Estimation/ukf.c ****         for (uint8_t r = 0; r < STATE_DIM; r++)
+ 1174              		.loc 1 160 9 is_stmt 1 view .LVU335
+ 1175              	.LBB29:
+ 1176              		.loc 1 160 14 view .LVU336
+ 1177              		.loc 1 160 22 is_stmt 0 view .LVU337
+ 1178 008a 0020     		movs	r0, #0
+ 1179              		.loc 1 160 9 view .LVU338
+ 1180 008c 01E0     		b	.L56
+ 1181              	.LVL107:
+ 1182              	.L64:
+ 1183              		.loc 1 160 45 is_stmt 1 discriminator 2 view .LVU339
+ 1184 008e 0130     		adds	r0, r0, #1
+ 1185              	.LVL108:
+ 1186              		.loc 1 160 45 is_stmt 0 discriminator 2 view .LVU340
+ 1187 0090 C0B2     		uxtb	r0, r0
+ 1188              	.LVL109:
+ 1189              	.L56:
+ 1190              		.loc 1 160 31 is_stmt 1 discriminator 1 view .LVU341
+ 1191 0092 0928     		cmp	r0, #9
+ 1192 0094 1ED8     		bhi	.L63
+ 1193              	.LBB30:
+ 161:Estimation/ukf.c ****             for (uint8_t c = 0; c < STATE_DIM; c++)
+ 1194              		.loc 1 161 26 is_stmt 0 view .LVU342
+ 1195 0096 0023     		movs	r3, #0
+ARM GAS  /tmp/ccrqj9wF.s 			page 26
+
+
+ 1196              	.L58:
+ 1197              	.LVL110:
+ 1198              		.loc 1 161 35 is_stmt 1 discriminator 1 view .LVU343
+ 1199 0098 092B     		cmp	r3, #9
+ 1200 009a F8D8     		bhi	.L64
+ 162:Estimation/ukf.c ****                 P_pred[(uint16_t)r * STATE_DIM + c] += w * dx[r] * dx[c];
+ 1201              		.loc 1 162 17 view .LVU344
+ 1202              		.loc 1 162 23 is_stmt 0 view .LVU345
+ 1203 009c 00EB8001 		add	r1, r0, r0, lsl #2
+ 1204 00a0 03EB4101 		add	r1, r3, r1, lsl #1
+ 1205 00a4 0AAA     		add	r2, sp, #40
+ 1206 00a6 02EB8102 		add	r2, r2, r1, lsl #2
+ 1207 00aa 92ED007A 		vldr.32	s14, [r2]
+ 1208              		.loc 1 162 62 view .LVU346
+ 1209 00ae 0DEB800C 		add	ip, sp, r0, lsl #2
+ 1210 00b2 DCED007A 		vldr.32	s15, [ip]
+ 1211              		.loc 1 162 58 view .LVU347
+ 1212 00b6 67EE867A 		vmul.f32	s15, s15, s12
+ 1213              		.loc 1 162 70 view .LVU348
+ 1214 00ba 0DEB8301 		add	r1, sp, r3, lsl #2
+ 1215 00be D1ED006A 		vldr.32	s13, [r1]
+ 1216              		.loc 1 162 66 view .LVU349
+ 1217 00c2 67EEA67A 		vmul.f32	s15, s15, s13
+ 1218              		.loc 1 162 53 view .LVU350
+ 1219 00c6 77EE277A 		vadd.f32	s15, s14, s15
+ 1220 00ca C2ED007A 		vstr.32	s15, [r2]
+ 161:Estimation/ukf.c ****             for (uint8_t c = 0; c < STATE_DIM; c++)
+ 1221              		.loc 1 161 49 is_stmt 1 discriminator 3 view .LVU351
+ 1222 00ce 0133     		adds	r3, r3, #1
+ 1223              	.LVL111:
+ 161:Estimation/ukf.c ****             for (uint8_t c = 0; c < STATE_DIM; c++)
+ 1224              		.loc 1 161 49 is_stmt 0 discriminator 3 view .LVU352
+ 1225 00d0 DBB2     		uxtb	r3, r3
+ 1226              	.LVL112:
+ 161:Estimation/ukf.c ****             for (uint8_t c = 0; c < STATE_DIM; c++)
+ 1227              		.loc 1 161 49 discriminator 3 view .LVU353
+ 1228 00d2 E1E7     		b	.L58
+ 1229              	.LVL113:
+ 1230              	.L63:
+ 161:Estimation/ukf.c ****             for (uint8_t c = 0; c < STATE_DIM; c++)
+ 1231              		.loc 1 161 49 discriminator 3 view .LVU354
+ 1232              	.LBE30:
+ 1233              	.LBE29:
+ 1234              	.LBE27:
+ 154:Estimation/ukf.c ****         float dx[STATE_DIM];
+ 1235              		.loc 1 154 43 is_stmt 1 discriminator 2 view .LVU355
+ 1236 00d4 0EF1010E 		add	lr, lr, #1
+ 1237              	.LVL114:
+ 154:Estimation/ukf.c ****         float dx[STATE_DIM];
+ 1238              		.loc 1 154 43 is_stmt 0 discriminator 2 view .LVU356
+ 1239 00d8 5FFA8EFE 		uxtb	lr, lr
+ 1240              	.LVL115:
+ 1241              	.L54:
+ 154:Estimation/ukf.c ****         float dx[STATE_DIM];
+ 1242              		.loc 1 154 27 is_stmt 1 discriminator 1 view .LVU357
+ 1243 00dc BEF1140F 		cmp	lr, #20
+ 1244 00e0 01D8     		bhi	.L65
+ARM GAS  /tmp/ccrqj9wF.s 			page 27
+
+
+ 1245              	.LBB32:
+ 1246              	.LBB31:
+ 156:Estimation/ukf.c ****             dx[j] = ukf->sigma[(uint16_t)i * STATE_DIM + j] - x_pred[j];
+ 1247              		.loc 1 156 22 is_stmt 0 view .LVU358
+ 1248 00e2 0023     		movs	r3, #0
+ 1249 00e4 C9E7     		b	.L59
+ 1250              	.L65:
+ 1251              	.LBE31:
+ 1252              	.LBE32:
+ 1253              	.LBE26:
+ 163:Estimation/ukf.c ****     }
+ 164:Estimation/ukf.c **** 
+ 165:Estimation/ukf.c ****     mat_sym(P_pred, STATE_DIM);
+ 1254              		.loc 1 165 5 is_stmt 1 view .LVU359
+ 1255 00e6 0AAD     		add	r5, sp, #40
+ 1256              	.LVL116:
+ 1257              		.loc 1 165 5 is_stmt 0 view .LVU360
+ 1258 00e8 0A21     		movs	r1, #10
+ 1259 00ea 2846     		mov	r0, r5
+ 1260 00ec FFF7FEFF 		bl	mat_sym
+ 1261              	.LVL117:
+ 166:Estimation/ukf.c ****     mat_copy(x_pred, ukf->x, 1, STATE_DIM);
+ 1262              		.loc 1 166 5 is_stmt 1 view .LVU361
+ 1263 00f0 0A23     		movs	r3, #10
+ 1264 00f2 0122     		movs	r2, #1
+ 1265 00f4 2146     		mov	r1, r4
+ 1266 00f6 6EA8     		add	r0, sp, #440
+ 1267 00f8 FFF7FEFF 		bl	mat_copy
+ 1268              	.LVL118:
+ 167:Estimation/ukf.c ****     mat_copy(P_pred, ukf->P, STATE_DIM, STATE_DIM);
+ 1269              		.loc 1 167 5 view .LVU362
+ 1270 00fc 0A23     		movs	r3, #10
+ 1271 00fe 1A46     		mov	r2, r3
+ 1272 0100 04F12801 		add	r1, r4, #40
+ 1273 0104 2846     		mov	r0, r5
+ 1274 0106 FFF7FEFF 		bl	mat_copy
+ 1275              	.LVL119:
+ 168:Estimation/ukf.c **** }
+ 1276              		.loc 1 168 1 is_stmt 0 view .LVU363
+ 1277 010a 79B0     		add	sp, sp, #484
+ 1278              	.LCFI20:
+ 1279              		.cfi_def_cfa_offset 20
+ 1280              		@ sp needed
+ 1281 010c BDEC028B 		vldm	sp!, {d8}
+ 1282              	.LCFI21:
+ 1283              		.cfi_restore 80
+ 1284              		.cfi_restore 81
+ 1285              		.cfi_def_cfa_offset 12
+ 1286              	.LVL120:
+ 1287              		.loc 1 168 1 view .LVU364
+ 1288 0110 30BD     		pop	{r4, r5, pc}
+ 1289              		.loc 1 168 1 view .LVU365
+ 1290              		.cfi_endproc
+ 1291              	.LFE7:
+ 1293              		.section	.text.ukf_update,"ax",%progbits
+ 1294              		.align	1
+ 1295              		.global	ukf_update
+ARM GAS  /tmp/ccrqj9wF.s 			page 28
+
+
+ 1296              		.syntax unified
+ 1297              		.thumb
+ 1298              		.thumb_func
+ 1300              	ukf_update:
+ 1301              	.LVL121:
+ 1302              	.LFB8:
+ 169:Estimation/ukf.c **** 
+ 170:Estimation/ukf.c **** void ukf_update(ukf_t *ukf, const float accel[3], const float gyro[3], float chi2_gate)
+ 171:Estimation/ukf.c **** {
+ 1303              		.loc 1 171 1 is_stmt 1 view -0
+ 1304              		.cfi_startproc
+ 1305              		@ args = 0, pretend = 0, frame = 2104
+ 1306              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1307              		.loc 1 171 1 is_stmt 0 view .LVU367
+ 1308 0000 2DE9F043 		push	{r4, r5, r6, r7, r8, r9, lr}
+ 1309              	.LCFI22:
+ 1310              		.cfi_def_cfa_offset 28
+ 1311              		.cfi_offset 4, -28
+ 1312              		.cfi_offset 5, -24
+ 1313              		.cfi_offset 6, -20
+ 1314              		.cfi_offset 7, -16
+ 1315              		.cfi_offset 8, -12
+ 1316              		.cfi_offset 9, -8
+ 1317              		.cfi_offset 14, -4
+ 1318 0004 2DED028B 		vpush.64	{d8}
+ 1319              	.LCFI23:
+ 1320              		.cfi_def_cfa_offset 36
+ 1321              		.cfi_offset 80, -36
+ 1322              		.cfi_offset 81, -32
+ 1323 0008 ADF6440D 		subw	sp, sp, #2116
+ 1324              	.LCFI24:
+ 1325              		.cfi_def_cfa_offset 2152
+ 1326 000c 0446     		mov	r4, r0
+ 1327 000e 0D46     		mov	r5, r1
+ 1328 0010 1646     		mov	r6, r2
+ 1329 0012 B0EE408A 		vmov.f32	s16, s0
+ 172:Estimation/ukf.c ****     compute_sigma_points(ukf);
+ 1330              		.loc 1 172 5 is_stmt 1 view .LVU368
+ 1331 0016 FFF7FEFF 		bl	compute_sigma_points
+ 1332              	.LVL122:
+ 173:Estimation/ukf.c **** 
+ 174:Estimation/ukf.c ****     float h_sigma[SIGMA_COUNT * MEAS_DIM];
+ 1333              		.loc 1 174 5 view .LVU369
+ 175:Estimation/ukf.c ****     for (uint8_t i = 0; i < SIGMA_COUNT; i++)
+ 1334              		.loc 1 175 5 view .LVU370
+ 1335              	.LBB33:
+ 1336              		.loc 1 175 10 view .LVU371
+ 1337              		.loc 1 175 18 is_stmt 0 view .LVU372
+ 1338 001a 0027     		movs	r7, #0
+ 1339              		.loc 1 175 5 view .LVU373
+ 1340 001c 0FE0     		b	.L67
+ 1341              	.LVL123:
+ 1342              	.L68:
+ 176:Estimation/ukf.c ****         meas_sigma(&ukf->sigma[(uint16_t)i * STATE_DIM], &h_sigma[(uint16_t)i * MEAS_DIM]);
+ 1343              		.loc 1 176 9 is_stmt 1 view .LVU374
+ 1344              		.loc 1 176 44 is_stmt 0 view .LVU375
+ 1345 001e 07EB8700 		add	r0, r7, r7, lsl #2
+ARM GAS  /tmp/ccrqj9wF.s 			page 29
+
+
+ 1346 0022 4000     		lsls	r0, r0, #1
+ 1347              		.loc 1 176 20 view .LVU376
+ 1348 0024 F630     		adds	r0, r0, #246
+ 1349              		.loc 1 176 79 view .LVU377
+ 1350 0026 07EB4701 		add	r1, r7, r7, lsl #1
+ 1351              		.loc 1 176 9 view .LVU378
+ 1352 002a 0DF5C963 		add	r3, sp, #1608
+ 1353 002e 03EBC101 		add	r1, r3, r1, lsl #3
+ 1354 0032 04EB8000 		add	r0, r4, r0, lsl #2
+ 1355 0036 FFF7FEFF 		bl	meas_sigma
+ 1356              	.LVL124:
+ 175:Estimation/ukf.c ****     for (uint8_t i = 0; i < SIGMA_COUNT; i++)
+ 1357              		.loc 1 175 43 is_stmt 1 discriminator 3 view .LVU379
+ 1358 003a 0137     		adds	r7, r7, #1
+ 1359              	.LVL125:
+ 175:Estimation/ukf.c ****     for (uint8_t i = 0; i < SIGMA_COUNT; i++)
+ 1360              		.loc 1 175 43 is_stmt 0 discriminator 3 view .LVU380
+ 1361 003c FFB2     		uxtb	r7, r7
+ 1362              	.LVL126:
+ 1363              	.L67:
+ 175:Estimation/ukf.c ****     for (uint8_t i = 0; i < SIGMA_COUNT; i++)
+ 1364              		.loc 1 175 27 is_stmt 1 discriminator 1 view .LVU381
+ 1365 003e 142F     		cmp	r7, #20
+ 1366 0040 EDD9     		bls	.L68
+ 1367              	.LBE33:
+ 177:Estimation/ukf.c **** 
+ 178:Estimation/ukf.c ****     float z_pred[MEAS_DIM];
+ 1368              		.loc 1 178 5 view .LVU382
+ 179:Estimation/ukf.c ****     mat_zero(z_pred, 1, MEAS_DIM);
+ 1369              		.loc 1 179 5 view .LVU383
+ 1370 0042 0622     		movs	r2, #6
+ 1371 0044 0121     		movs	r1, #1
+ 1372 0046 0DF5C660 		add	r0, sp, #1584
+ 1373 004a FFF7FEFF 		bl	mat_zero
+ 1374              	.LVL127:
+ 180:Estimation/ukf.c ****     for (uint8_t i = 0; i < SIGMA_COUNT; i++) {
+ 1375              		.loc 1 180 5 view .LVU384
+ 1376              	.LBB34:
+ 1377              		.loc 1 180 10 view .LVU385
+ 1378              		.loc 1 180 18 is_stmt 0 view .LVU386
+ 1379 004e 4FF0000C 		mov	ip, #0
+ 1380              		.loc 1 180 5 view .LVU387
+ 1381 0052 1DE0     		b	.L69
+ 1382              	.LVL128:
+ 1383              	.L71:
+ 1384              	.LBB35:
+ 1385              	.LBB36:
+ 181:Estimation/ukf.c ****         float w = ukf->w_m[i];
+ 182:Estimation/ukf.c ****         for (uint8_t j = 0; j < MEAS_DIM; j++)
+ 183:Estimation/ukf.c ****             z_pred[j] += w * h_sigma[(uint16_t)i * MEAS_DIM + j];
+ 1386              		.loc 1 183 13 is_stmt 1 view .LVU388
+ 1387              		.loc 1 183 19 is_stmt 0 view .LVU389
+ 1388 0054 0DF5C662 		add	r2, sp, #1584
+ 1389 0058 02EB8302 		add	r2, r2, r3, lsl #2
+ 1390 005c D2ED007A 		vldr.32	s15, [r2]
+ 1391              		.loc 1 183 50 view .LVU390
+ 1392 0060 0CEB4C00 		add	r0, ip, ip, lsl #1
+ARM GAS  /tmp/ccrqj9wF.s 			page 30
+
+
+ 1393              		.loc 1 183 61 view .LVU391
+ 1394 0064 03EB4000 		add	r0, r3, r0, lsl #1
+ 1395              		.loc 1 183 37 view .LVU392
+ 1396 0068 0DF5C961 		add	r1, sp, #1608
+ 1397 006c 01EB8001 		add	r1, r1, r0, lsl #2
+ 1398 0070 91ED007A 		vldr.32	s14, [r1]
+ 1399              		.loc 1 183 28 view .LVU393
+ 1400 0074 27EE267A 		vmul.f32	s14, s14, s13
+ 1401              		.loc 1 183 23 view .LVU394
+ 1402 0078 77EE877A 		vadd.f32	s15, s15, s14
+ 1403 007c C2ED007A 		vstr.32	s15, [r2]
+ 182:Estimation/ukf.c ****             z_pred[j] += w * h_sigma[(uint16_t)i * MEAS_DIM + j];
+ 1404              		.loc 1 182 44 is_stmt 1 discriminator 3 view .LVU395
+ 1405 0080 0133     		adds	r3, r3, #1
+ 1406              	.LVL129:
+ 182:Estimation/ukf.c ****             z_pred[j] += w * h_sigma[(uint16_t)i * MEAS_DIM + j];
+ 1407              		.loc 1 182 44 is_stmt 0 discriminator 3 view .LVU396
+ 1408 0082 DBB2     		uxtb	r3, r3
+ 1409              	.LVL130:
+ 1410              	.L70:
+ 182:Estimation/ukf.c ****             z_pred[j] += w * h_sigma[(uint16_t)i * MEAS_DIM + j];
+ 1411              		.loc 1 182 31 is_stmt 1 discriminator 1 view .LVU397
+ 1412 0084 052B     		cmp	r3, #5
+ 1413 0086 E5D9     		bls	.L71
+ 1414              	.LBE36:
+ 1415              	.LBE35:
+ 180:Estimation/ukf.c ****     for (uint8_t i = 0; i < SIGMA_COUNT; i++) {
+ 1416              		.loc 1 180 43 discriminator 2 view .LVU398
+ 1417 0088 0CF1010C 		add	ip, ip, #1
+ 1418              	.LVL131:
+ 180:Estimation/ukf.c ****     for (uint8_t i = 0; i < SIGMA_COUNT; i++) {
+ 1419              		.loc 1 180 43 is_stmt 0 discriminator 2 view .LVU399
+ 1420 008c 5FFA8CFC 		uxtb	ip, ip
+ 1421              	.LVL132:
+ 1422              	.L69:
+ 180:Estimation/ukf.c ****     for (uint8_t i = 0; i < SIGMA_COUNT; i++) {
+ 1423              		.loc 1 180 27 is_stmt 1 discriminator 1 view .LVU400
+ 1424 0090 BCF1140F 		cmp	ip, #20
+ 1425 0094 07D8     		bhi	.L101
+ 1426              	.LBB38:
+ 181:Estimation/ukf.c ****         float w = ukf->w_m[i];
+ 1427              		.loc 1 181 9 view .LVU401
+ 181:Estimation/ukf.c ****         float w = ukf->w_m[i];
+ 1428              		.loc 1 181 15 is_stmt 0 view .LVU402
+ 1429 0096 0CF5E473 		add	r3, ip, #456
+ 1430 009a 04EB8303 		add	r3, r4, r3, lsl #2
+ 1431 009e D3ED006A 		vldr.32	s13, [r3]
+ 1432              	.LVL133:
+ 182:Estimation/ukf.c ****             z_pred[j] += w * h_sigma[(uint16_t)i * MEAS_DIM + j];
+ 1433              		.loc 1 182 9 is_stmt 1 view .LVU403
+ 1434              	.LBB37:
+ 182:Estimation/ukf.c ****             z_pred[j] += w * h_sigma[(uint16_t)i * MEAS_DIM + j];
+ 1435              		.loc 1 182 14 view .LVU404
+ 182:Estimation/ukf.c ****             z_pred[j] += w * h_sigma[(uint16_t)i * MEAS_DIM + j];
+ 1436              		.loc 1 182 22 is_stmt 0 view .LVU405
+ 1437 00a2 0023     		movs	r3, #0
+ 182:Estimation/ukf.c ****             z_pred[j] += w * h_sigma[(uint16_t)i * MEAS_DIM + j];
+ARM GAS  /tmp/ccrqj9wF.s 			page 31
+
+
+ 1438              		.loc 1 182 9 view .LVU406
+ 1439 00a4 EEE7     		b	.L70
+ 1440              	.LVL134:
+ 1441              	.L101:
+ 182:Estimation/ukf.c ****             z_pred[j] += w * h_sigma[(uint16_t)i * MEAS_DIM + j];
+ 1442              		.loc 1 182 9 view .LVU407
+ 1443              	.LBE37:
+ 1444              	.LBE38:
+ 1445              	.LBE34:
+ 184:Estimation/ukf.c ****     }
+ 185:Estimation/ukf.c **** 
+ 186:Estimation/ukf.c ****     float S[MEAS_DIM * MEAS_DIM];
+ 1446              		.loc 1 186 5 is_stmt 1 view .LVU408
+ 187:Estimation/ukf.c ****     mat_copy(ukf->R, S, MEAS_DIM, MEAS_DIM);
+ 1447              		.loc 1 187 5 view .LVU409
+ 1448 00a6 0623     		movs	r3, #6
+ 1449 00a8 1A46     		mov	r2, r3
+ 1450 00aa 0DF5B461 		add	r1, sp, #1440
+ 1451 00ae 04F55270 		add	r0, r4, #840
+ 1452 00b2 FFF7FEFF 		bl	mat_copy
+ 1453              	.LVL135:
+ 188:Estimation/ukf.c **** 
+ 189:Estimation/ukf.c ****     float Pxy[STATE_DIM * MEAS_DIM];
+ 1454              		.loc 1 189 5 view .LVU410
+ 190:Estimation/ukf.c ****     mat_zero(Pxy, STATE_DIM, MEAS_DIM);
+ 1455              		.loc 1 190 5 view .LVU411
+ 1456 00b6 0622     		movs	r2, #6
+ 1457 00b8 0A21     		movs	r1, #10
+ 1458 00ba 0DF59660 		add	r0, sp, #1200
+ 1459 00be FFF7FEFF 		bl	mat_zero
+ 1460              	.LVL136:
+ 191:Estimation/ukf.c **** 
+ 192:Estimation/ukf.c ****     for (uint8_t i = 0; i < SIGMA_COUNT; i++) {
+ 1461              		.loc 1 192 5 view .LVU412
+ 1462              	.LBB39:
+ 1463              		.loc 1 192 10 view .LVU413
+ 1464              		.loc 1 192 18 is_stmt 0 view .LVU414
+ 1465 00c2 0020     		movs	r0, #0
+ 1466              		.loc 1 192 5 view .LVU415
+ 1467 00c4 8DE0     		b	.L73
+ 1468              	.LVL137:
+ 1469              	.L75:
+ 1470              	.LBB40:
+ 1471              	.LBB41:
+ 193:Estimation/ukf.c ****         float dx[STATE_DIM], dh[MEAS_DIM];
+ 194:Estimation/ukf.c ****         float w = ukf->w_c[i];
+ 195:Estimation/ukf.c **** 
+ 196:Estimation/ukf.c ****         for (uint8_t j = 0; j < STATE_DIM; j++)
+ 197:Estimation/ukf.c ****             dx[j] = ukf->sigma[(uint16_t)i * STATE_DIM + j] - ukf->x[j];
+ 1472              		.loc 1 197 13 is_stmt 1 view .LVU416
+ 1473              		.loc 1 197 44 is_stmt 0 view .LVU417
+ 1474 00c6 00EB8002 		add	r2, r0, r0, lsl #2
+ 1475              		.loc 1 197 56 view .LVU418
+ 1476 00ca 03EB4202 		add	r2, r3, r2, lsl #1
+ 1477              		.loc 1 197 31 view .LVU419
+ 1478 00ce F632     		adds	r2, r2, #246
+ 1479 00d0 04EB8202 		add	r2, r4, r2, lsl #2
+ARM GAS  /tmp/ccrqj9wF.s 			page 32
+
+
+ 1480 00d4 D2ED007A 		vldr.32	s15, [r2]
+ 1481              		.loc 1 197 69 view .LVU420
+ 1482 00d8 04EB8302 		add	r2, r4, r3, lsl #2
+ 1483 00dc 92ED007A 		vldr.32	s14, [r2]
+ 1484              		.loc 1 197 61 view .LVU421
+ 1485 00e0 77EEC77A 		vsub.f32	s15, s15, s14
+ 1486              		.loc 1 197 19 view .LVU422
+ 1487 00e4 08AA     		add	r2, sp, #32
+ 1488 00e6 02EB8302 		add	r2, r2, r3, lsl #2
+ 1489 00ea C2ED007A 		vstr.32	s15, [r2]
+ 196:Estimation/ukf.c ****             dx[j] = ukf->sigma[(uint16_t)i * STATE_DIM + j] - ukf->x[j];
+ 1490              		.loc 1 196 45 is_stmt 1 discriminator 3 view .LVU423
+ 1491 00ee 0133     		adds	r3, r3, #1
+ 1492              	.LVL138:
+ 196:Estimation/ukf.c ****             dx[j] = ukf->sigma[(uint16_t)i * STATE_DIM + j] - ukf->x[j];
+ 1493              		.loc 1 196 45 is_stmt 0 discriminator 3 view .LVU424
+ 1494 00f0 DBB2     		uxtb	r3, r3
+ 1495              	.LVL139:
+ 1496              	.L74:
+ 196:Estimation/ukf.c ****             dx[j] = ukf->sigma[(uint16_t)i * STATE_DIM + j] - ukf->x[j];
+ 1497              		.loc 1 196 31 is_stmt 1 discriminator 1 view .LVU425
+ 1498 00f2 092B     		cmp	r3, #9
+ 1499 00f4 E7D9     		bls	.L75
+ 1500              	.LBE41:
+ 1501              	.LBB42:
+ 198:Estimation/ukf.c ****         for (uint8_t j = 0; j < MEAS_DIM; j++)
+ 1502              		.loc 1 198 22 is_stmt 0 view .LVU426
+ 1503 00f6 0023     		movs	r3, #0
+ 1504              	.LVL140:
+ 1505              		.loc 1 198 22 view .LVU427
+ 1506 00f8 18E0     		b	.L76
+ 1507              	.LVL141:
+ 1508              	.L77:
+ 199:Estimation/ukf.c ****             dh[j] = h_sigma[(uint16_t)i * MEAS_DIM + j] - z_pred[j];
+ 1509              		.loc 1 199 13 is_stmt 1 view .LVU428
+ 1510              		.loc 1 199 41 is_stmt 0 view .LVU429
+ 1511 00fa 00EB4001 		add	r1, r0, r0, lsl #1
+ 1512              		.loc 1 199 52 view .LVU430
+ 1513 00fe 03EB4101 		add	r1, r3, r1, lsl #1
+ 1514              		.loc 1 199 28 view .LVU431
+ 1515 0102 0DF5C962 		add	r2, sp, #1608
+ 1516 0106 02EB8102 		add	r2, r2, r1, lsl #2
+ 1517 010a D2ED007A 		vldr.32	s15, [r2]
+ 1518              		.loc 1 199 65 view .LVU432
+ 1519 010e 0DF5C662 		add	r2, sp, #1584
+ 1520 0112 02EB8302 		add	r2, r2, r3, lsl #2
+ 1521 0116 92ED007A 		vldr.32	s14, [r2]
+ 1522              		.loc 1 199 57 view .LVU433
+ 1523 011a 77EEC77A 		vsub.f32	s15, s15, s14
+ 1524              		.loc 1 199 19 view .LVU434
+ 1525 011e 02AA     		add	r2, sp, #8
+ 1526 0120 02EB8302 		add	r2, r2, r3, lsl #2
+ 1527 0124 C2ED007A 		vstr.32	s15, [r2]
+ 198:Estimation/ukf.c ****         for (uint8_t j = 0; j < MEAS_DIM; j++)
+ 1528              		.loc 1 198 44 is_stmt 1 discriminator 3 view .LVU435
+ 1529 0128 0133     		adds	r3, r3, #1
+ 1530              	.LVL142:
+ARM GAS  /tmp/ccrqj9wF.s 			page 33
+
+
+ 198:Estimation/ukf.c ****         for (uint8_t j = 0; j < MEAS_DIM; j++)
+ 1531              		.loc 1 198 44 is_stmt 0 discriminator 3 view .LVU436
+ 1532 012a DBB2     		uxtb	r3, r3
+ 1533              	.LVL143:
+ 1534              	.L76:
+ 198:Estimation/ukf.c ****         for (uint8_t j = 0; j < MEAS_DIM; j++)
+ 1535              		.loc 1 198 31 is_stmt 1 discriminator 1 view .LVU437
+ 1536 012c 052B     		cmp	r3, #5
+ 1537 012e E4D9     		bls	.L77
+ 1538              	.LBE42:
+ 1539              	.LBB43:
+ 200:Estimation/ukf.c **** 
+ 201:Estimation/ukf.c ****         for (uint8_t r = 0; r < MEAS_DIM; r++)
+ 1540              		.loc 1 201 22 is_stmt 0 view .LVU438
+ 1541 0130 4FF0000C 		mov	ip, #0
+ 1542 0134 22E0     		b	.L78
+ 1543              	.LVL144:
+ 1544              	.L79:
+ 1545              	.LBB44:
+ 202:Estimation/ukf.c ****             for (uint8_t c = 0; c < MEAS_DIM; c++)
+ 203:Estimation/ukf.c ****                 S[(uint16_t)r * MEAS_DIM + c] += w * dh[r] * dh[c];
+ 1546              		.loc 1 203 17 is_stmt 1 view .LVU439
+ 1547              		.loc 1 203 18 is_stmt 0 view .LVU440
+ 1548 0136 0CEB4C01 		add	r1, ip, ip, lsl #1
+ 1549 013a 03EB4101 		add	r1, r3, r1, lsl #1
+ 1550 013e 0DF5B462 		add	r2, sp, #1440
+ 1551 0142 02EB8102 		add	r2, r2, r1, lsl #2
+ 1552 0146 92ED007A 		vldr.32	s14, [r2]
+ 1553              		.loc 1 203 56 view .LVU441
+ 1554 014a 02A9     		add	r1, sp, #8
+ 1555 014c 01EB8C0E 		add	lr, r1, ip, lsl #2
+ 1556 0150 DEED007A 		vldr.32	s15, [lr]
+ 1557              		.loc 1 203 52 view .LVU442
+ 1558 0154 67EE867A 		vmul.f32	s15, s15, s12
+ 1559              		.loc 1 203 64 view .LVU443
+ 1560 0158 01EB8301 		add	r1, r1, r3, lsl #2
+ 1561 015c D1ED006A 		vldr.32	s13, [r1]
+ 1562              		.loc 1 203 60 view .LVU444
+ 1563 0160 67EEA67A 		vmul.f32	s15, s15, s13
+ 1564              		.loc 1 203 47 view .LVU445
+ 1565 0164 77EE277A 		vadd.f32	s15, s14, s15
+ 1566 0168 C2ED007A 		vstr.32	s15, [r2]
+ 202:Estimation/ukf.c ****             for (uint8_t c = 0; c < MEAS_DIM; c++)
+ 1567              		.loc 1 202 48 is_stmt 1 discriminator 3 view .LVU446
+ 1568 016c 0133     		adds	r3, r3, #1
+ 1569              	.LVL145:
+ 202:Estimation/ukf.c ****             for (uint8_t c = 0; c < MEAS_DIM; c++)
+ 1570              		.loc 1 202 48 is_stmt 0 discriminator 3 view .LVU447
+ 1571 016e DBB2     		uxtb	r3, r3
+ 1572              	.LVL146:
+ 1573              	.L80:
+ 202:Estimation/ukf.c ****             for (uint8_t c = 0; c < MEAS_DIM; c++)
+ 1574              		.loc 1 202 35 is_stmt 1 discriminator 1 view .LVU448
+ 1575 0170 052B     		cmp	r3, #5
+ 1576 0172 E0D9     		bls	.L79
+ 1577              	.LBE44:
+ 201:Estimation/ukf.c ****             for (uint8_t c = 0; c < MEAS_DIM; c++)
+ARM GAS  /tmp/ccrqj9wF.s 			page 34
+
+
+ 1578              		.loc 1 201 44 discriminator 2 view .LVU449
+ 1579 0174 0CF1010C 		add	ip, ip, #1
+ 1580              	.LVL147:
+ 201:Estimation/ukf.c ****             for (uint8_t c = 0; c < MEAS_DIM; c++)
+ 1581              		.loc 1 201 44 is_stmt 0 discriminator 2 view .LVU450
+ 1582 0178 5FFA8CFC 		uxtb	ip, ip
+ 1583              	.LVL148:
+ 1584              	.L78:
+ 201:Estimation/ukf.c ****             for (uint8_t c = 0; c < MEAS_DIM; c++)
+ 1585              		.loc 1 201 31 is_stmt 1 discriminator 1 view .LVU451
+ 1586 017c BCF1050F 		cmp	ip, #5
+ 1587 0180 01D8     		bhi	.L102
+ 1588              	.LBB45:
+ 202:Estimation/ukf.c ****             for (uint8_t c = 0; c < MEAS_DIM; c++)
+ 1589              		.loc 1 202 26 is_stmt 0 view .LVU452
+ 1590 0182 0023     		movs	r3, #0
+ 1591 0184 F4E7     		b	.L80
+ 1592              	.L102:
+ 1593              	.LBE45:
+ 1594              	.LBE43:
+ 1595              	.LBB46:
+ 204:Estimation/ukf.c **** 
+ 205:Estimation/ukf.c ****         for (uint8_t r = 0; r < STATE_DIM; r++)
+ 1596              		.loc 1 205 22 view .LVU453
+ 1597 0186 4FF0000C 		mov	ip, #0
+ 1598              	.LVL149:
+ 1599              		.loc 1 205 22 view .LVU454
+ 1600 018a 23E0     		b	.L81
+ 1601              	.LVL150:
+ 1602              	.L82:
+ 1603              	.LBB47:
+ 206:Estimation/ukf.c ****             for (uint8_t c = 0; c < MEAS_DIM; c++)
+ 207:Estimation/ukf.c ****                 Pxy[(uint16_t)r * MEAS_DIM + c] += w * dx[r] * dh[c];
+ 1604              		.loc 1 207 17 is_stmt 1 view .LVU455
+ 1605              		.loc 1 207 20 is_stmt 0 view .LVU456
+ 1606 018c 0CEB4C01 		add	r1, ip, ip, lsl #1
+ 1607 0190 03EB4101 		add	r1, r3, r1, lsl #1
+ 1608 0194 0DF59662 		add	r2, sp, #1200
+ 1609 0198 02EB8102 		add	r2, r2, r1, lsl #2
+ 1610 019c 92ED007A 		vldr.32	s14, [r2]
+ 1611              		.loc 1 207 58 view .LVU457
+ 1612 01a0 08A9     		add	r1, sp, #32
+ 1613 01a2 01EB8C01 		add	r1, r1, ip, lsl #2
+ 1614 01a6 D1ED007A 		vldr.32	s15, [r1]
+ 1615              		.loc 1 207 54 view .LVU458
+ 1616 01aa 67EE867A 		vmul.f32	s15, s15, s12
+ 1617              		.loc 1 207 66 view .LVU459
+ 1618 01ae 02A9     		add	r1, sp, #8
+ 1619 01b0 01EB8301 		add	r1, r1, r3, lsl #2
+ 1620 01b4 D1ED006A 		vldr.32	s13, [r1]
+ 1621              		.loc 1 207 62 view .LVU460
+ 1622 01b8 67EEA67A 		vmul.f32	s15, s15, s13
+ 1623              		.loc 1 207 49 view .LVU461
+ 1624 01bc 77EE277A 		vadd.f32	s15, s14, s15
+ 1625 01c0 C2ED007A 		vstr.32	s15, [r2]
+ 206:Estimation/ukf.c ****             for (uint8_t c = 0; c < MEAS_DIM; c++)
+ 1626              		.loc 1 206 48 is_stmt 1 discriminator 3 view .LVU462
+ARM GAS  /tmp/ccrqj9wF.s 			page 35
+
+
+ 1627 01c4 0133     		adds	r3, r3, #1
+ 1628              	.LVL151:
+ 206:Estimation/ukf.c ****             for (uint8_t c = 0; c < MEAS_DIM; c++)
+ 1629              		.loc 1 206 48 is_stmt 0 discriminator 3 view .LVU463
+ 1630 01c6 DBB2     		uxtb	r3, r3
+ 1631              	.LVL152:
+ 1632              	.L83:
+ 206:Estimation/ukf.c ****             for (uint8_t c = 0; c < MEAS_DIM; c++)
+ 1633              		.loc 1 206 35 is_stmt 1 discriminator 1 view .LVU464
+ 1634 01c8 052B     		cmp	r3, #5
+ 1635 01ca DFD9     		bls	.L82
+ 1636              	.LBE47:
+ 205:Estimation/ukf.c ****             for (uint8_t c = 0; c < MEAS_DIM; c++)
+ 1637              		.loc 1 205 45 discriminator 2 view .LVU465
+ 1638 01cc 0CF1010C 		add	ip, ip, #1
+ 1639              	.LVL153:
+ 205:Estimation/ukf.c ****             for (uint8_t c = 0; c < MEAS_DIM; c++)
+ 1640              		.loc 1 205 45 is_stmt 0 discriminator 2 view .LVU466
+ 1641 01d0 5FFA8CFC 		uxtb	ip, ip
+ 1642              	.LVL154:
+ 1643              	.L81:
+ 205:Estimation/ukf.c ****             for (uint8_t c = 0; c < MEAS_DIM; c++)
+ 1644              		.loc 1 205 31 is_stmt 1 discriminator 1 view .LVU467
+ 1645 01d4 BCF1090F 		cmp	ip, #9
+ 1646 01d8 01D8     		bhi	.L103
+ 1647              	.LBB48:
+ 206:Estimation/ukf.c ****             for (uint8_t c = 0; c < MEAS_DIM; c++)
+ 1648              		.loc 1 206 26 is_stmt 0 view .LVU468
+ 1649 01da 0023     		movs	r3, #0
+ 1650 01dc F4E7     		b	.L83
+ 1651              	.L103:
+ 1652              	.LBE48:
+ 1653              	.LBE46:
+ 1654              	.LBE40:
+ 192:Estimation/ukf.c ****         float dx[STATE_DIM], dh[MEAS_DIM];
+ 1655              		.loc 1 192 43 is_stmt 1 discriminator 2 view .LVU469
+ 1656 01de 0130     		adds	r0, r0, #1
+ 1657              	.LVL155:
+ 192:Estimation/ukf.c ****         float dx[STATE_DIM], dh[MEAS_DIM];
+ 1658              		.loc 1 192 43 is_stmt 0 discriminator 2 view .LVU470
+ 1659 01e0 C0B2     		uxtb	r0, r0
+ 1660              	.LVL156:
+ 1661              	.L73:
+ 192:Estimation/ukf.c ****         float dx[STATE_DIM], dh[MEAS_DIM];
+ 1662              		.loc 1 192 27 is_stmt 1 discriminator 1 view .LVU471
+ 1663 01e2 1428     		cmp	r0, #20
+ 1664 01e4 07D8     		bhi	.L104
+ 1665              	.LBB50:
+ 193:Estimation/ukf.c ****         float w = ukf->w_c[i];
+ 1666              		.loc 1 193 9 view .LVU472
+ 194:Estimation/ukf.c **** 
+ 1667              		.loc 1 194 9 view .LVU473
+ 194:Estimation/ukf.c **** 
+ 1668              		.loc 1 194 15 is_stmt 0 view .LVU474
+ 1669 01e6 00F5EE73 		add	r3, r0, #476
+ 1670 01ea 04EB8303 		add	r3, r4, r3, lsl #2
+ 1671 01ee 93ED016A 		vldr.32	s12, [r3, #4]
+ARM GAS  /tmp/ccrqj9wF.s 			page 36
+
+
+ 1672              	.LVL157:
+ 196:Estimation/ukf.c ****             dx[j] = ukf->sigma[(uint16_t)i * STATE_DIM + j] - ukf->x[j];
+ 1673              		.loc 1 196 9 is_stmt 1 view .LVU475
+ 1674              	.LBB49:
+ 196:Estimation/ukf.c ****             dx[j] = ukf->sigma[(uint16_t)i * STATE_DIM + j] - ukf->x[j];
+ 1675              		.loc 1 196 14 view .LVU476
+ 196:Estimation/ukf.c ****             dx[j] = ukf->sigma[(uint16_t)i * STATE_DIM + j] - ukf->x[j];
+ 1676              		.loc 1 196 22 is_stmt 0 view .LVU477
+ 1677 01f2 0023     		movs	r3, #0
+ 196:Estimation/ukf.c ****             dx[j] = ukf->sigma[(uint16_t)i * STATE_DIM + j] - ukf->x[j];
+ 1678              		.loc 1 196 9 view .LVU478
+ 1679 01f4 7DE7     		b	.L74
+ 1680              	.LVL158:
+ 1681              	.L104:
+ 196:Estimation/ukf.c ****             dx[j] = ukf->sigma[(uint16_t)i * STATE_DIM + j] - ukf->x[j];
+ 1682              		.loc 1 196 9 view .LVU479
+ 1683              	.LBE49:
+ 1684              	.LBE50:
+ 1685              	.LBE39:
+ 208:Estimation/ukf.c ****     }
+ 209:Estimation/ukf.c **** 
+ 210:Estimation/ukf.c ****     float z[MEAS_DIM];
+ 1686              		.loc 1 210 5 is_stmt 1 view .LVU480
+ 211:Estimation/ukf.c ****     z[0] = gyro[0];  z[1] = gyro[1];  z[2] = gyro[2];
+ 1687              		.loc 1 211 5 view .LVU481
+ 1688              		.loc 1 211 16 is_stmt 0 view .LVU482
+ 1689 01f6 3268     		ldr	r2, [r6]	@ float
+ 1690              		.loc 1 211 10 view .LVU483
+ 1691 01f8 0DF59363 		add	r3, sp, #1176
+ 1692 01fc 1A60     		str	r2, [r3]	@ float
+ 1693              		.loc 1 211 22 is_stmt 1 view .LVU484
+ 1694              		.loc 1 211 33 is_stmt 0 view .LVU485
+ 1695 01fe 7268     		ldr	r2, [r6, #4]	@ float
+ 1696              		.loc 1 211 27 view .LVU486
+ 1697 0200 5A60     		str	r2, [r3, #4]	@ float
+ 1698              		.loc 1 211 39 is_stmt 1 view .LVU487
+ 1699              		.loc 1 211 50 is_stmt 0 view .LVU488
+ 1700 0202 B268     		ldr	r2, [r6, #8]	@ float
+ 1701              		.loc 1 211 44 view .LVU489
+ 1702 0204 9A60     		str	r2, [r3, #8]	@ float
+ 212:Estimation/ukf.c ****     z[3] = accel[0]; z[4] = accel[1]; z[5] = accel[2];
+ 1703              		.loc 1 212 5 is_stmt 1 view .LVU490
+ 1704              		.loc 1 212 17 is_stmt 0 view .LVU491
+ 1705 0206 2A68     		ldr	r2, [r5]	@ float
+ 1706              		.loc 1 212 10 view .LVU492
+ 1707 0208 DA60     		str	r2, [r3, #12]	@ float
+ 1708              		.loc 1 212 22 is_stmt 1 view .LVU493
+ 1709              		.loc 1 212 34 is_stmt 0 view .LVU494
+ 1710 020a 6A68     		ldr	r2, [r5, #4]	@ float
+ 1711              		.loc 1 212 27 view .LVU495
+ 1712 020c 1A61     		str	r2, [r3, #16]	@ float
+ 1713              		.loc 1 212 39 is_stmt 1 view .LVU496
+ 1714              		.loc 1 212 51 is_stmt 0 view .LVU497
+ 1715 020e AA68     		ldr	r2, [r5, #8]	@ float
+ 1716              		.loc 1 212 44 view .LVU498
+ 1717 0210 5A61     		str	r2, [r3, #20]	@ float
+ 213:Estimation/ukf.c **** 
+ARM GAS  /tmp/ccrqj9wF.s 			page 37
+
+
+ 214:Estimation/ukf.c ****     float v[MEAS_DIM];
+ 1718              		.loc 1 214 5 is_stmt 1 view .LVU499
+ 215:Estimation/ukf.c ****     for (uint8_t j = 0; j < MEAS_DIM; j++) v[j] = z[j] - z_pred[j];
+ 1719              		.loc 1 215 5 view .LVU500
+ 1720              	.LBB51:
+ 1721              		.loc 1 215 10 view .LVU501
+ 1722              	.LVL159:
+ 1723              		.loc 1 215 18 is_stmt 0 view .LVU502
+ 1724 0212 0023     		movs	r3, #0
+ 1725              		.loc 1 215 5 view .LVU503
+ 1726 0214 15E0     		b	.L85
+ 1727              	.LVL160:
+ 1728              	.L86:
+ 1729              		.loc 1 215 44 is_stmt 1 discriminator 3 view .LVU504
+ 1730              		.loc 1 215 52 is_stmt 0 discriminator 3 view .LVU505
+ 1731 0216 0DF59362 		add	r2, sp, #1176
+ 1732 021a 02EB8302 		add	r2, r2, r3, lsl #2
+ 1733 021e D2ED007A 		vldr.32	s15, [r2]
+ 1734              		.loc 1 215 64 discriminator 3 view .LVU506
+ 1735 0222 0DF5C662 		add	r2, sp, #1584
+ 1736 0226 02EB8302 		add	r2, r2, r3, lsl #2
+ 1737 022a 92ED007A 		vldr.32	s14, [r2]
+ 1738              		.loc 1 215 56 discriminator 3 view .LVU507
+ 1739 022e 77EEC77A 		vsub.f32	s15, s15, s14
+ 1740              		.loc 1 215 49 discriminator 3 view .LVU508
+ 1741 0232 0DF59062 		add	r2, sp, #1152
+ 1742 0236 02EB8302 		add	r2, r2, r3, lsl #2
+ 1743 023a C2ED007A 		vstr.32	s15, [r2]
+ 1744              		.loc 1 215 40 is_stmt 1 discriminator 3 view .LVU509
+ 1745 023e 0133     		adds	r3, r3, #1
+ 1746              	.LVL161:
+ 1747              		.loc 1 215 40 is_stmt 0 discriminator 3 view .LVU510
+ 1748 0240 DBB2     		uxtb	r3, r3
+ 1749              	.LVL162:
+ 1750              	.L85:
+ 1751              		.loc 1 215 27 is_stmt 1 discriminator 1 view .LVU511
+ 1752 0242 052B     		cmp	r3, #5
+ 1753 0244 E7D9     		bls	.L86
+ 1754              	.LBE51:
+ 216:Estimation/ukf.c **** 
+ 217:Estimation/ukf.c ****     float S_inv[MEAS_DIM * MEAS_DIM];
+ 1755              		.loc 1 217 5 view .LVU512
+ 218:Estimation/ukf.c ****     if (mat_inv(S, S_inv, MEAS_DIM) != 0) return;
+ 1756              		.loc 1 218 5 view .LVU513
+ 1757              		.loc 1 218 9 is_stmt 0 view .LVU514
+ 1758 0246 0622     		movs	r2, #6
+ 1759 0248 FCA9     		add	r1, sp, #1008
+ 1760 024a 0DF5B460 		add	r0, sp, #1440
+ 1761              	.LVL163:
+ 1762              		.loc 1 218 9 view .LVU515
+ 1763 024e FFF7FEFF 		bl	mat_inv
+ 1764              	.LVL164:
+ 1765              		.loc 1 218 8 discriminator 1 view .LVU516
+ 1766 0252 0028     		cmp	r0, #0
+ 1767 0254 40F08B80 		bne	.L66
+ 219:Estimation/ukf.c **** 
+ 220:Estimation/ukf.c ****     if (chi2_gate > 0.0f) {
+ARM GAS  /tmp/ccrqj9wF.s 			page 38
+
+
+ 1768              		.loc 1 220 5 is_stmt 1 view .LVU517
+ 1769              		.loc 1 220 8 is_stmt 0 view .LVU518
+ 1770 0258 B5EEC08A 		vcmpe.f32	s16, #0
+ 1771 025c F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 1772 0260 25DD     		ble	.L88
+ 1773              	.LBB52:
+ 221:Estimation/ukf.c ****         float S_inv_v[MEAS_DIM];
+ 1774              		.loc 1 221 9 is_stmt 1 view .LVU519
+ 222:Estimation/ukf.c ****         mat_mul(S_inv, v, S_inv_v, MEAS_DIM, MEAS_DIM, 1);
+ 1775              		.loc 1 222 9 view .LVU520
+ 1776 0262 0123     		movs	r3, #1
+ 1777 0264 0193     		str	r3, [sp, #4]
+ 1778 0266 0623     		movs	r3, #6
+ 1779 0268 0093     		str	r3, [sp]
+ 1780 026a 08AA     		add	r2, sp, #32
+ 1781 026c 0DF59061 		add	r1, sp, #1152
+ 1782 0270 FCA8     		add	r0, sp, #1008
+ 1783 0272 FFF7FEFF 		bl	mat_mul
+ 1784              	.LVL165:
+ 223:Estimation/ukf.c ****         float mahal_sq = 0.0f;
+ 1785              		.loc 1 223 9 view .LVU521
+ 224:Estimation/ukf.c ****         for (uint8_t j = 0; j < MEAS_DIM; j++) mahal_sq += v[j] * S_inv_v[j];
+ 1786              		.loc 1 224 9 view .LVU522
+ 1787              	.LBB53:
+ 1788              		.loc 1 224 14 view .LVU523
+ 1789              		.loc 1 224 22 is_stmt 0 view .LVU524
+ 1790 0276 0023     		movs	r3, #0
+ 1791              	.LBE53:
+ 223:Estimation/ukf.c ****         float mahal_sq = 0.0f;
+ 1792              		.loc 1 223 15 view .LVU525
+ 1793 0278 DFED407A 		vldr.32	s15, .L105
+ 1794              	.LBB54:
+ 1795              		.loc 1 224 9 view .LVU526
+ 1796 027c 10E0     		b	.L90
+ 1797              	.LVL166:
+ 1798              	.L91:
+ 1799              		.loc 1 224 48 is_stmt 1 discriminator 3 view .LVU527
+ 1800              		.loc 1 224 61 is_stmt 0 discriminator 3 view .LVU528
+ 1801 027e 0DF59062 		add	r2, sp, #1152
+ 1802 0282 02EB8302 		add	r2, r2, r3, lsl #2
+ 1803 0286 92ED007A 		vldr.32	s14, [r2]
+ 1804              		.loc 1 224 74 discriminator 3 view .LVU529
+ 1805 028a 08AA     		add	r2, sp, #32
+ 1806 028c 02EB8302 		add	r2, r2, r3, lsl #2
+ 1807 0290 D2ED006A 		vldr.32	s13, [r2]
+ 1808              		.loc 1 224 65 discriminator 3 view .LVU530
+ 1809 0294 27EE267A 		vmul.f32	s14, s14, s13
+ 1810              		.loc 1 224 57 discriminator 3 view .LVU531
+ 1811 0298 77EE877A 		vadd.f32	s15, s15, s14
+ 1812              	.LVL167:
+ 1813              		.loc 1 224 44 is_stmt 1 discriminator 3 view .LVU532
+ 1814 029c 0133     		adds	r3, r3, #1
+ 1815              	.LVL168:
+ 1816              		.loc 1 224 44 is_stmt 0 discriminator 3 view .LVU533
+ 1817 029e DBB2     		uxtb	r3, r3
+ 1818              	.LVL169:
+ 1819              	.L90:
+ARM GAS  /tmp/ccrqj9wF.s 			page 39
+
+
+ 1820              		.loc 1 224 31 is_stmt 1 discriminator 1 view .LVU534
+ 1821 02a0 052B     		cmp	r3, #5
+ 1822 02a2 ECD9     		bls	.L91
+ 1823              	.LBE54:
+ 225:Estimation/ukf.c ****         if (mahal_sq > chi2_gate) return;
+ 1824              		.loc 1 225 9 view .LVU535
+ 1825              		.loc 1 225 12 is_stmt 0 view .LVU536
+ 1826 02a4 F4EEC87A 		vcmpe.f32	s15, s16
+ 1827 02a8 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 1828 02ac 5FDC     		bgt	.L66
+ 1829              	.LVL170:
+ 1830              	.L88:
+ 1831              		.loc 1 225 12 view .LVU537
+ 1832              	.LBE52:
+ 226:Estimation/ukf.c ****     }
+ 227:Estimation/ukf.c **** 
+ 228:Estimation/ukf.c ****     float K[STATE_DIM * MEAS_DIM];
+ 1833              		.loc 1 228 5 is_stmt 1 view .LVU538
+ 229:Estimation/ukf.c ****     mat_mul(Pxy, S_inv, K, STATE_DIM, MEAS_DIM, MEAS_DIM);
+ 1834              		.loc 1 229 5 view .LVU539
+ 1835 02ae C0AE     		add	r6, sp, #768
+ 1836              	.LVL171:
+ 1837              		.loc 1 229 5 is_stmt 0 view .LVU540
+ 1838 02b0 0625     		movs	r5, #6
+ 1839              	.LVL172:
+ 1840              		.loc 1 229 5 view .LVU541
+ 1841 02b2 0195     		str	r5, [sp, #4]
+ 1842 02b4 0095     		str	r5, [sp]
+ 1843 02b6 0A23     		movs	r3, #10
+ 1844 02b8 3246     		mov	r2, r6
+ 1845 02ba FCA9     		add	r1, sp, #1008
+ 1846 02bc 0DF59660 		add	r0, sp, #1200
+ 1847 02c0 FFF7FEFF 		bl	mat_mul
+ 1848              	.LVL173:
+ 230:Estimation/ukf.c **** 
+ 231:Estimation/ukf.c ****     float Kv[STATE_DIM];
+ 1849              		.loc 1 231 5 is_stmt 1 view .LVU542
+ 232:Estimation/ukf.c ****     mat_mul(K, v, Kv, STATE_DIM, MEAS_DIM, 1);
+ 1850              		.loc 1 232 5 view .LVU543
+ 1851 02c4 0123     		movs	r3, #1
+ 1852 02c6 0193     		str	r3, [sp, #4]
+ 1853 02c8 0095     		str	r5, [sp]
+ 1854 02ca 0A23     		movs	r3, #10
+ 1855 02cc B6AA     		add	r2, sp, #728
+ 1856 02ce 0DF59061 		add	r1, sp, #1152
+ 1857 02d2 3046     		mov	r0, r6
+ 1858 02d4 FFF7FEFF 		bl	mat_mul
+ 1859              	.LVL174:
+ 233:Estimation/ukf.c ****     for (uint8_t j = 0; j < STATE_DIM; j++) ukf->x[j] += Kv[j];
+ 1860              		.loc 1 233 5 view .LVU544
+ 1861              	.LBB55:
+ 1862              		.loc 1 233 10 view .LVU545
+ 1863              		.loc 1 233 18 is_stmt 0 view .LVU546
+ 1864 02d8 0023     		movs	r3, #0
+ 1865              		.loc 1 233 5 view .LVU547
+ 1866 02da 0EE0     		b	.L94
+ 1867              	.LVL175:
+ARM GAS  /tmp/ccrqj9wF.s 			page 40
+
+
+ 1868              	.L95:
+ 1869              		.loc 1 233 45 is_stmt 1 discriminator 3 view .LVU548
+ 1870              		.loc 1 233 51 is_stmt 0 discriminator 3 view .LVU549
+ 1871 02dc 04EB8301 		add	r1, r4, r3, lsl #2
+ 1872 02e0 D1ED007A 		vldr.32	s15, [r1]
+ 1873              		.loc 1 233 60 discriminator 3 view .LVU550
+ 1874 02e4 B6AA     		add	r2, sp, #728
+ 1875 02e6 02EB8302 		add	r2, r2, r3, lsl #2
+ 1876 02ea 92ED007A 		vldr.32	s14, [r2]
+ 1877              		.loc 1 233 55 discriminator 3 view .LVU551
+ 1878 02ee 77EE877A 		vadd.f32	s15, s15, s14
+ 1879 02f2 C1ED007A 		vstr.32	s15, [r1]
+ 1880              		.loc 1 233 41 is_stmt 1 discriminator 3 view .LVU552
+ 1881 02f6 0133     		adds	r3, r3, #1
+ 1882              	.LVL176:
+ 1883              		.loc 1 233 41 is_stmt 0 discriminator 3 view .LVU553
+ 1884 02f8 DBB2     		uxtb	r3, r3
+ 1885              	.LVL177:
+ 1886              	.L94:
+ 1887              		.loc 1 233 27 is_stmt 1 discriminator 1 view .LVU554
+ 1888 02fa 092B     		cmp	r3, #9
+ 1889 02fc EED9     		bls	.L95
+ 1890              	.LBE55:
+ 234:Estimation/ukf.c **** 
+ 235:Estimation/ukf.c ****     quat_t q = { ukf->x[IDX_Q0], ukf->x[IDX_Q1], ukf->x[IDX_Q2], ukf->x[IDX_Q3] };
+ 1891              		.loc 1 235 5 view .LVU555
+ 1892              		.loc 1 235 24 is_stmt 0 view .LVU556
+ 1893 02fe 2368     		ldr	r3, [r4]	@ float
+ 1894              	.LVL178:
+ 1895              		.loc 1 235 12 view .LVU557
+ 1896 0300 B2AD     		add	r5, sp, #712
+ 1897 0302 B293     		str	r3, [sp, #712]	@ float
+ 1898              		.loc 1 235 40 view .LVU558
+ 1899 0304 6368     		ldr	r3, [r4, #4]	@ float
+ 1900              		.loc 1 235 12 view .LVU559
+ 1901 0306 B393     		str	r3, [sp, #716]	@ float
+ 1902              		.loc 1 235 56 view .LVU560
+ 1903 0308 A368     		ldr	r3, [r4, #8]	@ float
+ 1904              		.loc 1 235 12 view .LVU561
+ 1905 030a B493     		str	r3, [sp, #720]	@ float
+ 1906              		.loc 1 235 72 view .LVU562
+ 1907 030c E368     		ldr	r3, [r4, #12]	@ float
+ 1908              		.loc 1 235 12 view .LVU563
+ 1909 030e B593     		str	r3, [sp, #724]	@ float
+ 236:Estimation/ukf.c ****     quat_norm(&q);
+ 1910              		.loc 1 236 5 is_stmt 1 view .LVU564
+ 1911 0310 2846     		mov	r0, r5
+ 1912 0312 FFF7FEFF 		bl	quat_norm
+ 1913              	.LVL179:
+ 237:Estimation/ukf.c ****     ukf->x[IDX_Q0] = q.w;
+ 1914              		.loc 1 237 5 view .LVU565
+ 1915              		.loc 1 237 23 is_stmt 0 view .LVU566
+ 1916 0316 B29B     		ldr	r3, [sp, #712]	@ float
+ 1917              		.loc 1 237 20 view .LVU567
+ 1918 0318 2360     		str	r3, [r4]	@ float
+ 238:Estimation/ukf.c ****     ukf->x[IDX_Q1] = q.x;
+ 1919              		.loc 1 238 5 is_stmt 1 view .LVU568
+ARM GAS  /tmp/ccrqj9wF.s 			page 41
+
+
+ 1920              		.loc 1 238 23 is_stmt 0 view .LVU569
+ 1921 031a B39B     		ldr	r3, [sp, #716]	@ float
+ 1922              		.loc 1 238 20 view .LVU570
+ 1923 031c 6360     		str	r3, [r4, #4]	@ float
+ 239:Estimation/ukf.c ****     ukf->x[IDX_Q2] = q.y;
+ 1924              		.loc 1 239 5 is_stmt 1 view .LVU571
+ 1925              		.loc 1 239 23 is_stmt 0 view .LVU572
+ 1926 031e B49B     		ldr	r3, [sp, #720]	@ float
+ 1927              		.loc 1 239 20 view .LVU573
+ 1928 0320 A360     		str	r3, [r4, #8]	@ float
+ 240:Estimation/ukf.c ****     ukf->x[IDX_Q3] = q.z;
+ 1929              		.loc 1 240 5 is_stmt 1 view .LVU574
+ 1930              		.loc 1 240 23 is_stmt 0 view .LVU575
+ 1931 0322 B59B     		ldr	r3, [sp, #724]	@ float
+ 1932              		.loc 1 240 20 view .LVU576
+ 1933 0324 E360     		str	r3, [r4, #12]	@ float
+ 241:Estimation/ukf.c **** 
+ 242:Estimation/ukf.c ****     float KS[STATE_DIM * MEAS_DIM];
+ 1934              		.loc 1 242 5 is_stmt 1 view .LVU577
+ 243:Estimation/ukf.c ****     mat_mul(K, S, KS, STATE_DIM, MEAS_DIM, MEAS_DIM);
+ 1935              		.loc 1 243 5 view .LVU578
+ 1936 0326 0DF5EC78 		add	r8, sp, #472
+ 1937 032a 0DF54079 		add	r9, sp, #768
+ 1938 032e 0626     		movs	r6, #6
+ 1939 0330 0196     		str	r6, [sp, #4]
+ 1940 0332 0096     		str	r6, [sp]
+ 1941 0334 0A23     		movs	r3, #10
+ 1942 0336 4246     		mov	r2, r8
+ 1943 0338 0DF5B461 		add	r1, sp, #1440
+ 1944 033c 4846     		mov	r0, r9
+ 1945 033e FFF7FEFF 		bl	mat_mul
+ 1946              	.LVL180:
+ 244:Estimation/ukf.c **** 
+ 245:Estimation/ukf.c ****     float KSKt[STATE_DIM * STATE_DIM];
+ 1947              		.loc 1 245 5 view .LVU579
+ 246:Estimation/ukf.c ****     mat_mul_bT(KS, K, KSKt, STATE_DIM, MEAS_DIM, STATE_DIM);
+ 1948              		.loc 1 246 5 view .LVU580
+ 1949 0342 12AF     		add	r7, sp, #72
+ 1950              	.LVL181:
+ 1951              		.loc 1 246 5 is_stmt 0 view .LVU581
+ 1952 0344 0A25     		movs	r5, #10
+ 1953 0346 0195     		str	r5, [sp, #4]
+ 1954 0348 0096     		str	r6, [sp]
+ 1955 034a 2B46     		mov	r3, r5
+ 1956 034c 3A46     		mov	r2, r7
+ 1957 034e 4946     		mov	r1, r9
+ 1958 0350 4046     		mov	r0, r8
+ 1959 0352 FFF7FEFF 		bl	mat_mul_bT
+ 1960              	.LVL182:
+ 247:Estimation/ukf.c **** 
+ 248:Estimation/ukf.c ****     mat_sub(ukf->P, KSKt, ukf->P, STATE_DIM, STATE_DIM);
+ 1961              		.loc 1 248 5 is_stmt 1 view .LVU582
+ 1962              		.loc 1 248 16 is_stmt 0 view .LVU583
+ 1963 0356 2834     		adds	r4, r4, #40
+ 1964              	.LVL183:
+ 1965              		.loc 1 248 5 view .LVU584
+ 1966 0358 0095     		str	r5, [sp]
+ARM GAS  /tmp/ccrqj9wF.s 			page 42
+
+
+ 1967 035a 2B46     		mov	r3, r5
+ 1968 035c 2246     		mov	r2, r4
+ 1969 035e 3946     		mov	r1, r7
+ 1970 0360 2046     		mov	r0, r4
+ 1971 0362 FFF7FEFF 		bl	mat_sub
+ 1972              	.LVL184:
+ 249:Estimation/ukf.c ****     mat_sym(ukf->P, STATE_DIM);
+ 1973              		.loc 1 249 5 is_stmt 1 view .LVU585
+ 1974 0366 2946     		mov	r1, r5
+ 1975 0368 2046     		mov	r0, r4
+ 1976 036a FFF7FEFF 		bl	mat_sym
+ 1977              	.LVL185:
+ 1978              	.L66:
+ 250:Estimation/ukf.c **** }
+ 1979              		.loc 1 250 1 is_stmt 0 view .LVU586
+ 1980 036e 0DF6440D 		addw	sp, sp, #2116
+ 1981              	.LCFI25:
+ 1982              		.cfi_def_cfa_offset 36
+ 1983              		@ sp needed
+ 1984 0372 BDEC028B 		vldm	sp!, {d8}
+ 1985              	.LCFI26:
+ 1986              		.cfi_restore 80
+ 1987              		.cfi_restore 81
+ 1988              		.cfi_def_cfa_offset 28
+ 1989              	.LVL186:
+ 1990              		.loc 1 250 1 view .LVU587
+ 1991 0376 BDE8F083 		pop	{r4, r5, r6, r7, r8, r9, pc}
+ 1992              	.L106:
+ 1993 037a 00BF     		.align	2
+ 1994              	.L105:
+ 1995 037c 00000000 		.word	0
+ 1996              		.cfi_endproc
+ 1997              	.LFE8:
+ 1999              		.section	.text.ukf_get_attitude,"ax",%progbits
+ 2000              		.align	1
+ 2001              		.global	ukf_get_attitude
+ 2002              		.syntax unified
+ 2003              		.thumb
+ 2004              		.thumb_func
+ 2006              	ukf_get_attitude:
+ 2007              	.LVL187:
+ 2008              	.LFB9:
+ 251:Estimation/ukf.c **** 
+ 252:Estimation/ukf.c **** void ukf_get_attitude(const ukf_t *ukf, float q[4])
+ 253:Estimation/ukf.c **** {
+ 2009              		.loc 1 253 1 is_stmt 1 view -0
+ 2010              		.cfi_startproc
+ 2011              		@ args = 0, pretend = 0, frame = 0
+ 2012              		@ frame_needed = 0, uses_anonymous_args = 0
+ 2013              		@ link register save eliminated.
+ 254:Estimation/ukf.c ****     q[0] = ukf->x[IDX_Q0];
+ 2014              		.loc 1 254 5 view .LVU589
+ 2015              		.loc 1 254 18 is_stmt 0 view .LVU590
+ 2016 0000 0368     		ldr	r3, [r0]	@ float
+ 2017              		.loc 1 254 10 view .LVU591
+ 2018 0002 0B60     		str	r3, [r1]	@ float
+ 255:Estimation/ukf.c ****     q[1] = ukf->x[IDX_Q1];
+ARM GAS  /tmp/ccrqj9wF.s 			page 43
+
+
+ 2019              		.loc 1 255 5 is_stmt 1 view .LVU592
+ 2020              		.loc 1 255 18 is_stmt 0 view .LVU593
+ 2021 0004 4368     		ldr	r3, [r0, #4]	@ float
+ 2022              		.loc 1 255 10 view .LVU594
+ 2023 0006 4B60     		str	r3, [r1, #4]	@ float
+ 256:Estimation/ukf.c ****     q[2] = ukf->x[IDX_Q2];
+ 2024              		.loc 1 256 5 is_stmt 1 view .LVU595
+ 2025              		.loc 1 256 18 is_stmt 0 view .LVU596
+ 2026 0008 8368     		ldr	r3, [r0, #8]	@ float
+ 2027              		.loc 1 256 10 view .LVU597
+ 2028 000a 8B60     		str	r3, [r1, #8]	@ float
+ 257:Estimation/ukf.c ****     q[3] = ukf->x[IDX_Q3];
+ 2029              		.loc 1 257 5 is_stmt 1 view .LVU598
+ 2030              		.loc 1 257 18 is_stmt 0 view .LVU599
+ 2031 000c C368     		ldr	r3, [r0, #12]	@ float
+ 2032              		.loc 1 257 10 view .LVU600
+ 2033 000e CB60     		str	r3, [r1, #12]	@ float
+ 258:Estimation/ukf.c **** }
+ 2034              		.loc 1 258 1 view .LVU601
+ 2035 0010 7047     		bx	lr
+ 2036              		.cfi_endproc
+ 2037              	.LFE9:
+ 2039              		.section	.text.ukf_get_rates,"ax",%progbits
+ 2040              		.align	1
+ 2041              		.global	ukf_get_rates
+ 2042              		.syntax unified
+ 2043              		.thumb
+ 2044              		.thumb_func
+ 2046              	ukf_get_rates:
+ 2047              	.LVL188:
+ 2048              	.LFB10:
+ 259:Estimation/ukf.c **** 
+ 260:Estimation/ukf.c **** void ukf_get_rates(const ukf_t *ukf, float omega[3])
+ 261:Estimation/ukf.c **** {
+ 2049              		.loc 1 261 1 is_stmt 1 view -0
+ 2050              		.cfi_startproc
+ 2051              		@ args = 0, pretend = 0, frame = 0
+ 2052              		@ frame_needed = 0, uses_anonymous_args = 0
+ 2053              		@ link register save eliminated.
+ 262:Estimation/ukf.c ****     omega[0] = ukf->x[IDX_WX];
+ 2054              		.loc 1 262 5 view .LVU603
+ 2055              		.loc 1 262 22 is_stmt 0 view .LVU604
+ 2056 0000 0369     		ldr	r3, [r0, #16]	@ float
+ 2057              		.loc 1 262 14 view .LVU605
+ 2058 0002 0B60     		str	r3, [r1]	@ float
+ 263:Estimation/ukf.c ****     omega[1] = ukf->x[IDX_WY];
+ 2059              		.loc 1 263 5 is_stmt 1 view .LVU606
+ 2060              		.loc 1 263 22 is_stmt 0 view .LVU607
+ 2061 0004 4369     		ldr	r3, [r0, #20]	@ float
+ 2062              		.loc 1 263 14 view .LVU608
+ 2063 0006 4B60     		str	r3, [r1, #4]	@ float
+ 264:Estimation/ukf.c ****     omega[2] = ukf->x[IDX_WZ];
+ 2064              		.loc 1 264 5 is_stmt 1 view .LVU609
+ 2065              		.loc 1 264 22 is_stmt 0 view .LVU610
+ 2066 0008 8369     		ldr	r3, [r0, #24]	@ float
+ 2067              		.loc 1 264 14 view .LVU611
+ 2068 000a 8B60     		str	r3, [r1, #8]	@ float
+ARM GAS  /tmp/ccrqj9wF.s 			page 44
+
+
+ 265:Estimation/ukf.c **** }
+ 2069              		.loc 1 265 1 view .LVU612
+ 2070 000c 7047     		bx	lr
+ 2071              		.cfi_endproc
+ 2072              	.LFE10:
+ 2074              		.text
+ 2075              	.Letext0:
+ 2076              		.file 2 "/usr/arm-none-eabi/include/machine/_default_types.h"
+ 2077              		.file 3 "/usr/arm-none-eabi/include/sys/_stdint.h"
+ 2078              		.file 4 "Estimation/ukf.h"
+ 2079              		.file 5 "Estimation/../Math/quaternion.h"
+ 2080              		.file 6 "Estimation/../Math/matrix.h"
+ 2081              		.file 7 "/usr/arm-none-eabi/include/string.h"
+ 2082              		.file 8 "<built-in>"
+ARM GAS  /tmp/ccrqj9wF.s 			page 45
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 ukf.c
+     /tmp/ccrqj9wF.s:21     .text.sigma_to_quat:00000000 $t
+     /tmp/ccrqj9wF.s:26     .text.sigma_to_quat:00000000 sigma_to_quat
+     /tmp/ccrqj9wF.s:60     .text.quat_to_sigma:00000000 $t
+     /tmp/ccrqj9wF.s:65     .text.quat_to_sigma:00000000 quat_to_sigma
+     /tmp/ccrqj9wF.s:99     .text.compute_sigma_points:00000000 $t
+     /tmp/ccrqj9wF.s:104    .text.compute_sigma_points:00000000 compute_sigma_points
+     /tmp/ccrqj9wF.s:348    .text.compute_sigma_points:00000130 $d
+     /tmp/ccrqj9wF.s:353    .text.process_sigma:00000000 $t
+     /tmp/ccrqj9wF.s:358    .text.process_sigma:00000000 process_sigma
+     /tmp/ccrqj9wF.s:428    .text.weighted_mean_state:00000000 $t
+     /tmp/ccrqj9wF.s:433    .text.weighted_mean_state:00000000 weighted_mean_state
+     /tmp/ccrqj9wF.s:580    .text.meas_sigma:00000000 $t
+     /tmp/ccrqj9wF.s:585    .text.meas_sigma:00000000 meas_sigma
+     /tmp/ccrqj9wF.s:678    .text.meas_sigma:00000068 $d
+     /tmp/ccrqj9wF.s:683    .text.ukf_init:00000000 $t
+     /tmp/ccrqj9wF.s:689    .text.ukf_init:00000000 ukf_init
+     /tmp/ccrqj9wF.s:1039   .text.ukf_init:00000184 $d
+     /tmp/ccrqj9wF.s:1048   .text.ukf_predict:00000000 $t
+     /tmp/ccrqj9wF.s:1054   .text.ukf_predict:00000000 ukf_predict
+     /tmp/ccrqj9wF.s:1294   .text.ukf_update:00000000 $t
+     /tmp/ccrqj9wF.s:1300   .text.ukf_update:00000000 ukf_update
+     /tmp/ccrqj9wF.s:1995   .text.ukf_update:0000037c $d
+     /tmp/ccrqj9wF.s:2000   .text.ukf_get_attitude:00000000 $t
+     /tmp/ccrqj9wF.s:2006   .text.ukf_get_attitude:00000000 ukf_get_attitude
+     /tmp/ccrqj9wF.s:2040   .text.ukf_get_rates:00000000 $t
+     /tmp/ccrqj9wF.s:2046   .text.ukf_get_rates:00000000 ukf_get_rates
+
+UNDEFINED SYMBOLS
+mat_scale
+mat_chol
+mat_copy
+quat_norm
+quat_integrate
+mat_zero
+quat_to_dcm
+memset
+mat_sym
+mat_inv
+mat_mul
+mat_mul_bT
+mat_sub

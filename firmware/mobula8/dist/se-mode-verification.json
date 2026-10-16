@@ -1,0 +1,21 @@
+{
+  "status": "PASS",
+  "switch": "SE",
+  "channel": "CH8 / AUX4",
+  "observed_channel_values": [
+    988,
+    1500,
+    2011
+  ],
+  "stable_samples_checked": 205,
+  "angle_high_verified": true,
+  "horizon_middle_verified": true,
+  "acro_low_verified": true,
+  "unexpected_setting_changes": {},
+  "arm_unchanged": true,
+  "crash_flip_unchanged": true,
+  "manual_beeper_assignment_removed": true,
+  "research_mode": "set fd_mode = 0",
+  "ukf": "set fd_ukf = 0",
+  "blackbox": "set blackbox_device = SPIFLASH"
+}

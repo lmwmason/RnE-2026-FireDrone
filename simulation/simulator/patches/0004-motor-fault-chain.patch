@@ -1,0 +1,244 @@
+--- a/Allocation/cam.c
++++ b/Allocation/cam.c
+@@ -29,7 +29,12 @@
+ 
+     rebuild_B(cam, k_t, k_m, arm_m);
+ 
+-    for (uint8_t i = 0; i < CAM_IN;  i++) cam->W1_diag[i] = 1.0f;
++    /* equal weight for a 1 N thrust error and the same force at the arm; yaw by its own scale */
++    float l = arm_m * 0.70710678f;
++    cam->W1_diag[0] = 1.0f;
++    cam->W1_diag[1] = 1.0f / (l * l);
++    cam->W1_diag[2] = 1.0f / (l * l);
++    cam->W1_diag[3] = 1.0f / (k_m * k_m);
+     for (uint8_t i = 0; i < CAM_OUT; i++) cam->W2_diag[i] = 1e-4f;
+ }
+ 
+@@ -42,13 +47,14 @@
+     uint8_t n_faulted = 0;
+     for (uint8_t i = 0; i < CAM_OUT; i++)
+         if (cam->fault_mask & (1u << i)) n_faulted++;
+-    if (n_faulted >= 1) cam->yaw_ctrl_en = 0;
++    if (n_faulted >= 1) { cam->yaw_ctrl_en = 0; cam->W1_diag[3] = 0.0f; }
+ }
+ 
+ void cam_clear_faults(cam_t *cam)
+ {
+     cam->fault_mask = 0;
+     cam->yaw_ctrl_en = 1;
++    cam->W1_diag[3] = 1.0f / (cam->B[13] * cam->B[13]);
+     for (uint8_t i = 0; i < CAM_OUT; i++) cam->W2_diag[i] = 1e-4f;
+ }
+ 
+--- a/Control/indi.c
++++ b/Control/indi.c
+@@ -64,6 +64,7 @@
+         float filt_new = oma * omega_meas[i] + omb * indi->omega_filt[i];
+         alpha_meas[i]  = (filt_new - indi->omega_filt[i]) / indi->dt;
+         indi->omega_filt[i] = filt_new;
++        indi->alpha_meas[i] = alpha_meas[i];
+     }
+ 
+     float da[INDI_AXES];
+--- a/Control/indi.h
++++ b/Control/indi.h
+@@ -8,6 +8,7 @@
+ 
+ typedef struct {
+     float G[INDI_AXES * INDI_MOTORS];
++    float alpha_meas[INDI_AXES];   /* last filtered angular acceleration, rad/s^2 */
+     float G_inv[INDI_MOTORS * INDI_AXES];
+     float omega_filt[INDI_AXES];
+     float alpha_filt;
+--- a/Core/Inc/fault_manager.h
++++ b/Core/Inc/fault_manager.h
+@@ -20,6 +20,9 @@
+     uint32_t      comm_timeout_ms;
+     uint32_t      motor_sat_start_ms[4];
+     uint32_t      motor_sat_timeout_ms;
++    float         diag_u_lp[4];     /* motor-command model (first-order lag) */
++    float         diag_r_lp[3];     /* low-passed torque residual, rad/s^2 */
++    uint16_t      diag_cnt[4];
+ } fault_ctx_t;
+ 
+ void fault_init(fault_ctx_t *ctx, uint32_t comm_timeout_ms, uint32_t motor_sat_timeout_ms);
+@@ -27,6 +30,13 @@
+ void fault_report_comm_rx(fault_ctx_t *ctx, uint32_t now_ms);
+ void fault_report_motor_saturated(fault_ctx_t *ctx, uint8_t motor_idx, uint32_t now_ms);
+ void fault_clear_motor_saturation(fault_ctx_t *ctx, uint8_t motor_idx, uint32_t now_ms);
++void fault_report_motor_failed(fault_ctx_t *ctx, uint8_t motor_idx);
++/* Residual isolation.  alpha_meas - G*u(lagged) is the disturbance torque.  A dead motor i gives
++ * -G[:,i]*u_i: a roll/pitch pattern AND a yaw part.  Wind and arm torque have no yaw part, so the
++ * two independent estimates of the missing command (roll/pitch vs yaw) must agree.
++ * Returns the index of a newly detected dead motor, or -1. */
++int  fault_motor_diag(fault_ctx_t *ctx, const float G[12], const float alpha_meas[3],
++                      const float u_cmd[4], float dt);
+ fault_state_t fault_update(fault_ctx_t *ctx, uint32_t now_ms);
+ bool fault_motor_failed(const fault_ctx_t *ctx, uint8_t motor_idx);
+ bool fault_is_recoverable(const fault_ctx_t *ctx);
+--- a/Core/Src/fault_manager.c
++++ b/Core/Src/fault_manager.c
+@@ -1,5 +1,6 @@
+ #include "fault_manager.h"
+ #include <string.h>
++#include <math.h>
+ 
+ void fault_init(fault_ctx_t *ctx, uint32_t comm_timeout_ms, uint32_t motor_sat_timeout_ms)
+ {
+@@ -46,6 +47,57 @@
+     return ctx->state != FAULT_EMERGENCY_LAND;
+ }
+ 
++void fault_report_motor_failed(fault_ctx_t *ctx, uint8_t motor_idx)
++{
++    if (motor_idx >= 4) return;
++    ctx->motor_fault_mask |= (uint8_t)(1u << motor_idx);
++}
++
++#define DIAG_MOTOR_TAU_S   0.025f   /* assumed ESC+motor lag, measure on the rig */
++#define DIAG_R_TAU_S       0.060f
++#define DIAG_MIN_CMD       0.10f
++#define DIAG_COS_MIN       0.85f    /* roll/pitch/yaw pattern vs the G column */
++#define DIAG_AGREE_LO      0.5f     /* yaw-based vs roll/pitch-based missing command */
++#define DIAG_AGREE_HI      2.0f
++#define DIAG_MISS_RATIO    0.7f     /* missing command / lagged command */
++#define DIAG_HOLD_TICKS    60U
++
++int fault_motor_diag(fault_ctx_t *ctx, const float G[12], const float alpha_meas[3],
++                     const float u_cmd[4], float dt)
++{
++    float ka = dt / DIAG_MOTOR_TAU_S;
++    float kr = dt / DIAG_R_TAU_S;
++    float pred[3] = { 0.0f, 0.0f, 0.0f };
++    for (int j = 0; j < 4; j++) {
++        ctx->diag_u_lp[j] += ka * (u_cmd[j] - ctx->diag_u_lp[j]);
++        for (int i = 0; i < 3; i++) pred[i] += G[i * 4 + j] * ctx->diag_u_lp[j];
++    }
++    for (int i = 0; i < 3; i++)
++        ctx->diag_r_lp[i] += kr * ((alpha_meas[i] - pred[i]) - ctx->diag_r_lp[i]);
++    const float *r = ctx->diag_r_lp;
++
++    int found = -1;
++    for (int j = 0; j < 4; j++) {
++        float gx = G[j], gy = G[4 + j], gz = G[8 + j];
++        float n2  = gx * gx + gy * gy + gz * gz;
++        float dot = -(gx * r[0] + gy * r[1] + gz * r[2]);                   /* r = -G_j * missing */
++        float rn2 = r[0] * r[0] + r[1] * r[1] + r[2] * r[2];
++        float miss_rp  = -(gx * r[0] + gy * r[1]) / (gx * gx + gy * gy);    /* roll + pitch */
++        float miss_yaw = -(gz * r[2]) / (gz * gz);                          /* yaw */
++
++        bool bad = ctx->diag_u_lp[j] > DIAG_MIN_CMD
++                && dot > DIAG_COS_MIN * sqrtf(n2 * rn2 + 1e-9f)
++                && miss_rp > DIAG_MISS_RATIO * ctx->diag_u_lp[j]
++                && miss_yaw > DIAG_AGREE_LO * miss_rp && miss_yaw < DIAG_AGREE_HI * miss_rp;
++        ctx->diag_cnt[j] = bad ? (uint16_t)(ctx->diag_cnt[j] + 1u) : 0u;
++        if (ctx->diag_cnt[j] >= DIAG_HOLD_TICKS && !(ctx->motor_fault_mask & (1u << j))) {
++            fault_report_motor_failed(ctx, (uint8_t)j);
++            found = j;
++        }
++    }
++    return found;
++}
++
+ fault_state_t fault_update(fault_ctx_t *ctx, uint32_t now_ms)
+ {
+     if (ctx->state == FAULT_EMERGENCY_LAND)
+--- a/Core/Src/main.c
++++ b/Core/Src/main.c
+@@ -76,8 +76,11 @@
+ #define FS_HOLD_MS          500U        /* keep the hover throttle first */
+ #define FS_DISARM_MS        60000U      /* give up and disarm */
+ #define FS_VZ_FAST          (-0.7f)     /* m/s */
+-#define FS_VZ_SLOW          (-0.3f)     /* m/s below FS_SLOW_ALT_M */
+-#define FS_SLOW_ALT_M       1.0f
++#define FS_VZ_SLOW          (-0.3f)     /* m/s, slowest descent near the ground */
++#define FS_SLOW_GAIN        0.9f        /* descent rate = gain * height, between the limits */
++#define FS_VZ_MFAULT        (-2.0f)     /* m/s, controlled fall after losing a motor */
++#define FS_KV_MFAULT        0.15f
++#define DIAG_MIN_ALT_M      0.8f        /* on the ground the airframe does not answer the motors */
+ #define FS_KV               0.06f       /* throttle per m/s of descent-rate error */
+ #define FS_TOUCH_ALT_M      0.25f
+ #define FS_TOUCH_MS         1000U
+@@ -168,18 +171,19 @@
+     bool failsafe = (g_arm == STATE_ARMED) && (!link_up || fst >= FAULT_EMERGENCY_LAND);
+     if (!failsafe) {
+         g_fs_start_ms = 0;
+-        g_touch_ms    = 0;
++        if (!(g_arm == STATE_ARMED && g_fault.motor_fault_mask != 0)) g_touch_ms = 0;
+     } else if (g_fs_start_ms == 0) {
+         g_fs_start_ms = now_ms ? now_ms : 1u;
+     }
+     uint32_t fs_ms = failsafe ? now_ms - g_fs_start_ms : 0;
++    bool motor_fault = g_fault.motor_fault_mask != 0;
+ 
+     /* Arming FSM */
+-    if (failsafe) {
++    if (failsafe || (g_arm == STATE_ARMED && motor_fault)) {
+         bool touched = g_alt_f < FS_TOUCH_ALT_M && g_vz_f > -0.5f && g_vz_f < 0.5f;
+         if (!touched)              g_touch_ms = 0;
+         else if (g_touch_ms == 0)  g_touch_ms = now_ms ? now_ms : 1u;
+-        if (fs_ms > FS_DISARM_MS || (g_touch_ms && now_ms - g_touch_ms > FS_TOUCH_MS))
++        if ((failsafe && fs_ms > FS_DISARM_MS) || (g_touch_ms && now_ms - g_touch_ms > FS_TOUCH_MS))
+             g_arm = STATE_DISARMED;
+     } else if (g_arm == STATE_DISARMED
+                && link_up && fst < FAULT_COMM_LOST
+@@ -238,11 +242,15 @@
+     if (throttle < 0.0f) throttle = 0.0f;
+     if (throttle > 1.0f) throttle = 1.0f;
+     throttle = MOTOR_IDLE + throttle * (1.0f - MOTOR_IDLE);
+-    if (!failsafe) {
++    if (!failsafe && !motor_fault) {
+         g_thr_hover += 0.002f * (throttle - g_thr_hover);
+-    } else if (fs_ms > FS_HOLD_MS) {
+-        float vz_ref = (g_alt_f > FS_SLOW_ALT_M) ? FS_VZ_FAST : FS_VZ_SLOW;
+-        throttle = g_thr_hover + FS_KV * (vz_ref - g_vz_f);
++    } else if (motor_fault || fs_ms > FS_HOLD_MS) {
++        /* the pilot's throttle can no longer be trusted: hold a barometric descent rate */
++        float vz_max = motor_fault ? FS_VZ_MFAULT : FS_VZ_FAST;          /* negative, m/s */
++        float vz_ref = -FS_SLOW_GAIN * g_alt_f;                          /* slow down towards the ground */
++        if (vz_ref < vz_max)      vz_ref = vz_max;
++        if (vz_ref > FS_VZ_SLOW)  vz_ref = FS_VZ_SLOW;
++        throttle = g_thr_hover + (motor_fault ? FS_KV_MFAULT : FS_KV) * (vz_ref - g_vz_f);
+         if (throttle < MOTOR_IDLE) throttle = MOTOR_IDLE;
+         if (throttle > 0.9f)       throttle = 0.9f;
+     } else {
+@@ -251,17 +259,36 @@
+ 
+     /* INDI: compute motor commands */
+     float u_motor[4];
+-    if (fst == FAULT_MOTOR_FAULT) {
++    if (motor_fault) {
+         /* CAM fault-tolerant allocation */
+         float tau[4];
+         float I[3] = { IXX, IYY, IZZ };
+         tau[0] = throttle * K_THRUST * 4.0f;
+-        tau[1] = alpha_ref[0] * I[0];
+-        tau[2] = alpha_ref[1] * I[1];
++        /* Three motors cannot hold roll/pitch torque in every direction (the opposite motor would have
++         * to go negative), and a closed rate loop only winds up on that limit.  Keep the airframe
++         * as level as it got and let the thrust do the work. */
++        tau[1] = 0.0f;
++        tau[2] = 0.0f;
+         tau[3] = alpha_ref[2] * I[2];
++        for (uint8_t m = 0; m < 4; m++)
++            if ((g_fault.motor_fault_mask & (1u << m)) && !(g_cam.fault_mask & (1u << m)))
++                cam_set_fault(&g_cam, m);
+         cam_solve(&g_cam, tau, u_motor);
++        for (int i = 0; i < 3; i++) {                  /* what the allocation really delivers */
++            g_alpha_cmd[i] = 0.0f;
++            for (int j = 0; j < 4; j++) g_alpha_cmd[i] += g_indi.G[i * 4 + j] * u_motor[j];
++        }
+     } else {
++        float u_old[4];
++        memcpy(u_old, g_indi.u_prev, sizeof(u_old));
+         indi_update(&g_indi, g_omega_meas, alpha_ref, throttle, u_motor);
++        for (int i = 0; i < 3; i++) {                  /* what the clamped motors really ask for */
++            g_alpha_cmd[i] = g_indi.alpha_meas[i];
++            for (int j = 0; j < 4; j++)
++                g_alpha_cmd[i] += g_indi.G[i * 4 + j] * (u_motor[j] - u_old[j]);
++        }
++        if (g_alt_f > DIAG_MIN_ALT_M)
++            fault_motor_diag(&g_fault, g_indi.G, g_indi.alpha_meas, u_motor, DT_CTRL);
+     }
+ 
+     motor_set_all(u_motor);

@@ -1,0 +1,952 @@
+ARM GAS  /tmp/ccO3SBDm.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 1
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"cam.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.file 1 "Allocation/cam.c"
+  20              		.section	.text.rebuild_B,"ax",%progbits
+  21              		.align	1
+  22              		.syntax unified
+  23              		.thumb
+  24              		.thumb_func
+  26              	rebuild_B:
+  27              	.LVL0:
+  28              	.LFB0:
+   1:Allocation/cam.c **** #include "cam.h"
+   2:Allocation/cam.c **** #include "../Math/matrix.h"
+   3:Allocation/cam.c **** #include <string.h>
+   4:Allocation/cam.c **** 
+   5:Allocation/cam.c **** /* B [CAM_IN × CAM_OUT] maps motor commands → [Fz, τx, τy, τz].
+   6:Allocation/cam.c ****  * Motor order: M1=rear-right(CCW), M2=front-right(CW),
+   7:Allocation/cam.c ****  *              M3=rear-left(CW),   M4=front-left(CCW).
+   8:Allocation/cam.c ****  *
+   9:Allocation/cam.c ****  * Row 0 (Fz):  [k_t,    k_t,    k_t,    k_t  ]
+  10:Allocation/cam.c ****  * Row 1 (τx):  [-k_t*l, -k_t*l, +k_t*l, +k_t*l]   l = arm/√2
+  11:Allocation/cam.c ****  * Row 2 (τy):  [+k_t*l, -k_t*l, +k_t*l, -k_t*l]
+  12:Allocation/cam.c ****  * Row 3 (τz):  [-k_m,   +k_m,   +k_m,   -k_m  ] */
+  13:Allocation/cam.c **** 
+  14:Allocation/cam.c **** static void rebuild_B(cam_t *cam, float k_t, float k_m, float arm_m)
+  15:Allocation/cam.c **** {
+  29              		.loc 1 15 1 view -0
+  30              		.cfi_startproc
+  31              		@ args = 0, pretend = 0, frame = 0
+  32              		@ frame_needed = 0, uses_anonymous_args = 0
+  33              		@ link register save eliminated.
+  16:Allocation/cam.c ****     float l = arm_m * 0.70710678f;
+  34              		.loc 1 16 5 view .LVU1
+  35              		.loc 1 16 11 is_stmt 0 view .LVU2
+  36 0000 DFED157A 		vldr.32	s15, .L2
+  37 0004 21EE271A 		vmul.f32	s2, s2, s15
+  38              	.LVL1:
+  17:Allocation/cam.c ****     float *B = cam->B;
+  39              		.loc 1 17 5 is_stmt 1 view .LVU3
+  18:Allocation/cam.c **** 
+  19:Allocation/cam.c ****     B[0]  =  k_t;   B[1]  =  k_t;   B[2]  =  k_t;   B[3]  =  k_t;
+ARM GAS  /tmp/ccO3SBDm.s 			page 2
+
+
+  40              		.loc 1 19 5 view .LVU4
+  41              		.loc 1 19 11 is_stmt 0 view .LVU5
+  42 0008 80ED000A 		vstr.32	s0, [r0]
+  43              		.loc 1 19 21 is_stmt 1 view .LVU6
+  44              		.loc 1 19 27 is_stmt 0 view .LVU7
+  45 000c 80ED010A 		vstr.32	s0, [r0, #4]
+  46              		.loc 1 19 37 is_stmt 1 view .LVU8
+  47              		.loc 1 19 43 is_stmt 0 view .LVU9
+  48 0010 80ED020A 		vstr.32	s0, [r0, #8]
+  49              		.loc 1 19 53 is_stmt 1 view .LVU10
+  50              		.loc 1 19 59 is_stmt 0 view .LVU11
+  51 0014 80ED030A 		vstr.32	s0, [r0, #12]
+  20:Allocation/cam.c ****     B[4]  = -k_t*l; B[5]  = -k_t*l; B[6]  =  k_t*l; B[7]  =  k_t*l;
+  52              		.loc 1 20 5 is_stmt 1 view .LVU12
+  53              		.loc 1 20 17 is_stmt 0 view .LVU13
+  54 0018 20EE410A 		vnmul.f32	s0, s0, s2
+  55              	.LVL2:
+  56              		.loc 1 20 11 view .LVU14
+  57 001c 80ED040A 		vstr.32	s0, [r0, #16]
+  58              		.loc 1 20 21 is_stmt 1 view .LVU15
+  59              		.loc 1 20 27 is_stmt 0 view .LVU16
+  60 0020 80ED050A 		vstr.32	s0, [r0, #20]
+  61              		.loc 1 20 37 is_stmt 1 view .LVU17
+  62 0024 F1EE407A 		vneg.f32	s15, s0
+  63              		.loc 1 20 43 is_stmt 0 view .LVU18
+  64 0028 C0ED067A 		vstr.32	s15, [r0, #24]
+  65              		.loc 1 20 53 is_stmt 1 view .LVU19
+  66              		.loc 1 20 59 is_stmt 0 view .LVU20
+  67 002c C0ED077A 		vstr.32	s15, [r0, #28]
+  21:Allocation/cam.c ****     B[8]  =  k_t*l; B[9]  = -k_t*l; B[10] =  k_t*l; B[11] = -k_t*l;
+  68              		.loc 1 21 5 is_stmt 1 view .LVU21
+  69              		.loc 1 21 11 is_stmt 0 view .LVU22
+  70 0030 C0ED087A 		vstr.32	s15, [r0, #32]
+  71              		.loc 1 21 21 is_stmt 1 view .LVU23
+  72              		.loc 1 21 27 is_stmt 0 view .LVU24
+  73 0034 80ED090A 		vstr.32	s0, [r0, #36]
+  74              		.loc 1 21 37 is_stmt 1 view .LVU25
+  75              		.loc 1 21 43 is_stmt 0 view .LVU26
+  76 0038 C0ED0A7A 		vstr.32	s15, [r0, #40]
+  77              		.loc 1 21 53 is_stmt 1 view .LVU27
+  78              		.loc 1 21 59 is_stmt 0 view .LVU28
+  79 003c 80ED0B0A 		vstr.32	s0, [r0, #44]
+  22:Allocation/cam.c ****     B[12] = -k_m;   B[13] =  k_m;   B[14] =  k_m;   B[15] = -k_m;
+  80              		.loc 1 22 5 is_stmt 1 view .LVU29
+  81              		.loc 1 22 13 is_stmt 0 view .LVU30
+  82 0040 F1EE607A 		vneg.f32	s15, s1
+  83              		.loc 1 22 11 view .LVU31
+  84 0044 C0ED0C7A 		vstr.32	s15, [r0, #48]
+  85              		.loc 1 22 21 is_stmt 1 view .LVU32
+  86              		.loc 1 22 27 is_stmt 0 view .LVU33
+  87 0048 C0ED0D0A 		vstr.32	s1, [r0, #52]
+  88              		.loc 1 22 37 is_stmt 1 view .LVU34
+  89              		.loc 1 22 43 is_stmt 0 view .LVU35
+  90 004c C0ED0E0A 		vstr.32	s1, [r0, #56]
+  91              		.loc 1 22 53 is_stmt 1 view .LVU36
+  92              		.loc 1 22 59 is_stmt 0 view .LVU37
+  93 0050 C0ED0F7A 		vstr.32	s15, [r0, #60]
+ARM GAS  /tmp/ccO3SBDm.s 			page 3
+
+
+  23:Allocation/cam.c **** }
+  94              		.loc 1 23 1 view .LVU38
+  95 0054 7047     		bx	lr
+  96              	.L3:
+  97 0056 00BF     		.align	2
+  98              	.L2:
+  99 0058 F304353F 		.word	1060439283
+ 100              		.cfi_endproc
+ 101              	.LFE0:
+ 103              		.section	.text.cam_init,"ax",%progbits
+ 104              		.align	1
+ 105              		.global	cam_init
+ 106              		.syntax unified
+ 107              		.thumb
+ 108              		.thumb_func
+ 110              	cam_init:
+ 111              	.LVL3:
+ 112              	.LFB1:
+  24:Allocation/cam.c **** 
+  25:Allocation/cam.c **** void cam_init(cam_t *cam, float k_t, float k_m, float arm_m)
+  26:Allocation/cam.c **** {
+ 113              		.loc 1 26 1 is_stmt 1 view -0
+ 114              		.cfi_startproc
+ 115              		@ args = 0, pretend = 0, frame = 0
+ 116              		@ frame_needed = 0, uses_anonymous_args = 0
+ 117              		.loc 1 26 1 is_stmt 0 view .LVU40
+ 118 0000 10B5     		push	{r4, lr}
+ 119              	.LCFI0:
+ 120              		.cfi_def_cfa_offset 8
+ 121              		.cfi_offset 4, -8
+ 122              		.cfi_offset 14, -4
+ 123 0002 2DED048B 		vpush.64	{d8, d9}
+ 124              	.LCFI1:
+ 125              		.cfi_def_cfa_offset 24
+ 126              		.cfi_offset 80, -24
+ 127              		.cfi_offset 81, -20
+ 128              		.cfi_offset 82, -16
+ 129              		.cfi_offset 83, -12
+ 130 0006 0446     		mov	r4, r0
+ 131 0008 B0EE409A 		vmov.f32	s18, s0
+ 132 000c F0EE608A 		vmov.f32	s17, s1
+ 133 0010 B0EE418A 		vmov.f32	s16, s2
+  27:Allocation/cam.c ****     memset(cam, 0, sizeof(cam_t));
+ 134              		.loc 1 27 5 is_stmt 1 view .LVU41
+ 135 0014 6422     		movs	r2, #100
+ 136 0016 0021     		movs	r1, #0
+ 137 0018 FFF7FEFF 		bl	memset
+ 138              	.LVL4:
+  28:Allocation/cam.c ****     cam->yaw_ctrl_en = 1;
+ 139              		.loc 1 28 5 view .LVU42
+ 140              		.loc 1 28 22 is_stmt 0 view .LVU43
+ 141 001c 0123     		movs	r3, #1
+ 142 001e 84F86130 		strb	r3, [r4, #97]
+  29:Allocation/cam.c **** 
+  30:Allocation/cam.c ****     rebuild_B(cam, k_t, k_m, arm_m);
+ 143              		.loc 1 30 5 is_stmt 1 view .LVU44
+ 144 0022 B0EE481A 		vmov.f32	s2, s16
+ARM GAS  /tmp/ccO3SBDm.s 			page 4
+
+
+ 145 0026 F0EE680A 		vmov.f32	s1, s17
+ 146 002a B0EE490A 		vmov.f32	s0, s18
+ 147 002e 2046     		mov	r0, r4
+ 148 0030 FFF7FEFF 		bl	rebuild_B
+ 149              	.LVL5:
+  31:Allocation/cam.c **** 
+  32:Allocation/cam.c ****     for (uint8_t i = 0; i < CAM_IN;  i++) cam->W1_diag[i] = 1.0f;
+ 150              		.loc 1 32 5 view .LVU45
+ 151              	.LBB2:
+ 152              		.loc 1 32 10 view .LVU46
+ 153              		.loc 1 32 18 is_stmt 0 view .LVU47
+ 154 0034 0023     		movs	r3, #0
+ 155              		.loc 1 32 5 view .LVU48
+ 156 0036 08E0     		b	.L5
+ 157              	.LVL6:
+ 158              	.L6:
+ 159              		.loc 1 32 43 is_stmt 1 discriminator 3 view .LVU49
+ 160              		.loc 1 32 59 is_stmt 0 discriminator 3 view .LVU50
+ 161 0038 03F11002 		add	r2, r3, #16
+ 162 003c 04EB8202 		add	r2, r4, r2, lsl #2
+ 163 0040 4FF07E51 		mov	r1, #1065353216
+ 164 0044 1160     		str	r1, [r2]	@ float
+ 165              		.loc 1 32 39 is_stmt 1 discriminator 3 view .LVU51
+ 166 0046 0133     		adds	r3, r3, #1
+ 167              	.LVL7:
+ 168              		.loc 1 32 39 is_stmt 0 discriminator 3 view .LVU52
+ 169 0048 DBB2     		uxtb	r3, r3
+ 170              	.LVL8:
+ 171              	.L5:
+ 172              		.loc 1 32 27 is_stmt 1 discriminator 1 view .LVU53
+ 173 004a 032B     		cmp	r3, #3
+ 174 004c F4D9     		bls	.L6
+ 175              	.LBE2:
+ 176              	.LBB3:
+  33:Allocation/cam.c ****     for (uint8_t i = 0; i < CAM_OUT; i++) cam->W2_diag[i] = 1e-4f;
+ 177              		.loc 1 33 18 is_stmt 0 view .LVU54
+ 178 004e 0023     		movs	r3, #0
+ 179              	.LVL9:
+ 180              		.loc 1 33 18 view .LVU55
+ 181 0050 07E0     		b	.L7
+ 182              	.LVL10:
+ 183              	.L8:
+ 184              		.loc 1 33 43 is_stmt 1 discriminator 3 view .LVU56
+ 185              		.loc 1 33 59 is_stmt 0 discriminator 3 view .LVU57
+ 186 0052 03F11402 		add	r2, r3, #20
+ 187 0056 04EB8202 		add	r2, r4, r2, lsl #2
+ 188 005a 0449     		ldr	r1, .L10
+ 189 005c 1160     		str	r1, [r2]	@ float
+ 190              		.loc 1 33 39 is_stmt 1 discriminator 3 view .LVU58
+ 191 005e 0133     		adds	r3, r3, #1
+ 192              	.LVL11:
+ 193              		.loc 1 33 39 is_stmt 0 discriminator 3 view .LVU59
+ 194 0060 DBB2     		uxtb	r3, r3
+ 195              	.LVL12:
+ 196              	.L7:
+ 197              		.loc 1 33 27 is_stmt 1 discriminator 1 view .LVU60
+ 198 0062 032B     		cmp	r3, #3
+ARM GAS  /tmp/ccO3SBDm.s 			page 5
+
+
+ 199 0064 F5D9     		bls	.L8
+ 200              	.LBE3:
+  34:Allocation/cam.c **** }
+ 201              		.loc 1 34 1 is_stmt 0 view .LVU61
+ 202 0066 BDEC048B 		vldm	sp!, {d8-d9}
+ 203              	.LCFI2:
+ 204              		.cfi_restore 82
+ 205              		.cfi_restore 83
+ 206              		.cfi_restore 80
+ 207              		.cfi_restore 81
+ 208              		.cfi_def_cfa_offset 8
+ 209              	.LVL13:
+ 210              		.loc 1 34 1 view .LVU62
+ 211 006a 10BD     		pop	{r4, pc}
+ 212              	.LVL14:
+ 213              	.L11:
+ 214              		.loc 1 34 1 view .LVU63
+ 215              		.align	2
+ 216              	.L10:
+ 217 006c 17B7D138 		.word	953267991
+ 218              		.cfi_endproc
+ 219              	.LFE1:
+ 221              		.section	.text.cam_set_fault,"ax",%progbits
+ 222              		.align	1
+ 223              		.global	cam_set_fault
+ 224              		.syntax unified
+ 225              		.thumb
+ 226              		.thumb_func
+ 228              	cam_set_fault:
+ 229              	.LVL15:
+ 230              	.LFB2:
+  35:Allocation/cam.c **** 
+  36:Allocation/cam.c **** void cam_set_fault(cam_t *cam, uint8_t motor_idx)
+  37:Allocation/cam.c **** {
+ 231              		.loc 1 37 1 is_stmt 1 view -0
+ 232              		.cfi_startproc
+ 233              		@ args = 0, pretend = 0, frame = 0
+ 234              		@ frame_needed = 0, uses_anonymous_args = 0
+ 235              		@ link register save eliminated.
+  38:Allocation/cam.c ****     if (motor_idx >= CAM_OUT) return;
+ 236              		.loc 1 38 5 view .LVU65
+ 237              		.loc 1 38 8 is_stmt 0 view .LVU66
+ 238 0000 0329     		cmp	r1, #3
+ 239 0002 20D8     		bhi	.L12
+  39:Allocation/cam.c ****     cam->fault_mask |= (uint8_t)(1u << motor_idx);
+ 240              		.loc 1 39 5 is_stmt 1 view .LVU67
+ 241              		.loc 1 39 8 is_stmt 0 view .LVU68
+ 242 0004 90F860C0 		ldrb	ip, [r0, #96]	@ zero_extendqisi2
+ 243              		.loc 1 39 37 view .LVU69
+ 244 0008 0123     		movs	r3, #1
+ 245 000a 8B40     		lsls	r3, r3, r1
+ 246              		.loc 1 39 24 view .LVU70
+ 247 000c DBB2     		uxtb	r3, r3
+ 248              		.loc 1 39 21 view .LVU71
+ 249 000e 4CEA030C 		orr	ip, ip, r3
+ 250 0012 80F860C0 		strb	ip, [r0, #96]
+  40:Allocation/cam.c ****     cam->W2_diag[motor_idx] = 1e9f;
+ARM GAS  /tmp/ccO3SBDm.s 			page 6
+
+
+ 251              		.loc 1 40 5 is_stmt 1 view .LVU72
+ 252              		.loc 1 40 29 is_stmt 0 view .LVU73
+ 253 0016 1431     		adds	r1, r1, #20
+ 254              	.LVL16:
+ 255              		.loc 1 40 29 view .LVU74
+ 256 0018 00EB8101 		add	r1, r0, r1, lsl #2
+ 257              	.LVL17:
+ 258              		.loc 1 40 29 view .LVU75
+ 259 001c 0A4B     		ldr	r3, .L18
+ 260 001e 0B60     		str	r3, [r1]	@ float
+  41:Allocation/cam.c **** 
+  42:Allocation/cam.c ****     uint8_t n_faulted = 0;
+ 261              		.loc 1 42 5 is_stmt 1 view .LVU76
+ 262              	.LVL18:
+  43:Allocation/cam.c ****     for (uint8_t i = 0; i < CAM_OUT; i++)
+ 263              		.loc 1 43 5 view .LVU77
+ 264              	.LBB4:
+ 265              		.loc 1 43 10 view .LVU78
+ 266              		.loc 1 43 18 is_stmt 0 view .LVU79
+ 267 0020 0023     		movs	r3, #0
+ 268              	.LBE4:
+  42:Allocation/cam.c ****     for (uint8_t i = 0; i < CAM_OUT; i++)
+ 269              		.loc 1 42 13 view .LVU80
+ 270 0022 1A46     		mov	r2, r3
+ 271              	.LBB5:
+ 272              		.loc 1 43 5 view .LVU81
+ 273 0024 01E0     		b	.L14
+ 274              	.LVL19:
+ 275              	.L15:
+ 276              		.loc 1 43 39 is_stmt 1 discriminator 2 view .LVU82
+ 277 0026 0133     		adds	r3, r3, #1
+ 278              	.LVL20:
+ 279              		.loc 1 43 39 is_stmt 0 discriminator 2 view .LVU83
+ 280 0028 DBB2     		uxtb	r3, r3
+ 281              	.LVL21:
+ 282              	.L14:
+ 283              		.loc 1 43 27 is_stmt 1 discriminator 1 view .LVU84
+ 284 002a 032B     		cmp	r3, #3
+ 285 002c 07D8     		bhi	.L17
+  44:Allocation/cam.c ****         if (cam->fault_mask & (1u << i)) n_faulted++;
+ 286              		.loc 1 44 9 view .LVU85
+ 287              		.loc 1 44 13 is_stmt 0 view .LVU86
+ 288 002e 2CFA03F1 		lsr	r1, ip, r3
+ 289              		.loc 1 44 12 view .LVU87
+ 290 0032 11F0010F 		tst	r1, #1
+ 291 0036 F6D0     		beq	.L15
+ 292              		.loc 1 44 42 is_stmt 1 discriminator 1 view .LVU88
+ 293              		.loc 1 44 51 is_stmt 0 discriminator 1 view .LVU89
+ 294 0038 0132     		adds	r2, r2, #1
+ 295              	.LVL22:
+ 296              		.loc 1 44 51 discriminator 1 view .LVU90
+ 297 003a D2B2     		uxtb	r2, r2
+ 298              	.LVL23:
+ 299              		.loc 1 44 51 discriminator 1 view .LVU91
+ 300 003c F3E7     		b	.L15
+ 301              	.LVL24:
+ 302              	.L17:
+ARM GAS  /tmp/ccO3SBDm.s 			page 7
+
+
+ 303              		.loc 1 44 51 discriminator 1 view .LVU92
+ 304              	.LBE5:
+  45:Allocation/cam.c ****     if (n_faulted >= 1) cam->yaw_ctrl_en = 0;
+ 305              		.loc 1 45 5 is_stmt 1 view .LVU93
+ 306              		.loc 1 45 8 is_stmt 0 view .LVU94
+ 307 003e 12B1     		cbz	r2, .L12
+ 308              		.loc 1 45 25 is_stmt 1 discriminator 1 view .LVU95
+ 309              		.loc 1 45 42 is_stmt 0 discriminator 1 view .LVU96
+ 310 0040 0023     		movs	r3, #0
+ 311              	.LVL25:
+ 312              		.loc 1 45 42 discriminator 1 view .LVU97
+ 313 0042 80F86130 		strb	r3, [r0, #97]
+ 314              	.LVL26:
+ 315              	.L12:
+  46:Allocation/cam.c **** }
+ 316              		.loc 1 46 1 view .LVU98
+ 317 0046 7047     		bx	lr
+ 318              	.L19:
+ 319              		.align	2
+ 320              	.L18:
+ 321 0048 286B6E4E 		.word	1315859240
+ 322              		.cfi_endproc
+ 323              	.LFE2:
+ 325              		.section	.text.cam_clear_faults,"ax",%progbits
+ 326              		.align	1
+ 327              		.global	cam_clear_faults
+ 328              		.syntax unified
+ 329              		.thumb
+ 330              		.thumb_func
+ 332              	cam_clear_faults:
+ 333              	.LVL27:
+ 334              	.LFB3:
+  47:Allocation/cam.c **** 
+  48:Allocation/cam.c **** void cam_clear_faults(cam_t *cam)
+  49:Allocation/cam.c **** {
+ 335              		.loc 1 49 1 is_stmt 1 view -0
+ 336              		.cfi_startproc
+ 337              		@ args = 0, pretend = 0, frame = 0
+ 338              		@ frame_needed = 0, uses_anonymous_args = 0
+ 339              		@ link register save eliminated.
+  50:Allocation/cam.c ****     cam->fault_mask = 0;
+ 340              		.loc 1 50 5 view .LVU100
+ 341              		.loc 1 50 21 is_stmt 0 view .LVU101
+ 342 0000 0023     		movs	r3, #0
+ 343 0002 80F86030 		strb	r3, [r0, #96]
+  51:Allocation/cam.c ****     cam->yaw_ctrl_en = 1;
+ 344              		.loc 1 51 5 is_stmt 1 view .LVU102
+ 345              		.loc 1 51 22 is_stmt 0 view .LVU103
+ 346 0006 0122     		movs	r2, #1
+ 347 0008 80F86120 		strb	r2, [r0, #97]
+  52:Allocation/cam.c ****     for (uint8_t i = 0; i < CAM_OUT; i++) cam->W2_diag[i] = 1e-4f;
+ 348              		.loc 1 52 5 is_stmt 1 view .LVU104
+ 349              	.LBB6:
+ 350              		.loc 1 52 10 view .LVU105
+ 351              	.LVL28:
+ 352              		.loc 1 52 5 is_stmt 0 view .LVU106
+ 353 000c 07E0     		b	.L21
+ARM GAS  /tmp/ccO3SBDm.s 			page 8
+
+
+ 354              	.LVL29:
+ 355              	.L22:
+ 356              		.loc 1 52 43 is_stmt 1 discriminator 3 view .LVU107
+ 357              		.loc 1 52 59 is_stmt 0 discriminator 3 view .LVU108
+ 358 000e 03F11402 		add	r2, r3, #20
+ 359 0012 00EB8202 		add	r2, r0, r2, lsl #2
+ 360 0016 0349     		ldr	r1, .L23
+ 361 0018 1160     		str	r1, [r2]	@ float
+ 362              		.loc 1 52 39 is_stmt 1 discriminator 3 view .LVU109
+ 363 001a 0133     		adds	r3, r3, #1
+ 364              	.LVL30:
+ 365              		.loc 1 52 39 is_stmt 0 discriminator 3 view .LVU110
+ 366 001c DBB2     		uxtb	r3, r3
+ 367              	.LVL31:
+ 368              	.L21:
+ 369              		.loc 1 52 27 is_stmt 1 discriminator 1 view .LVU111
+ 370 001e 032B     		cmp	r3, #3
+ 371 0020 F5D9     		bls	.L22
+ 372              	.LBE6:
+  53:Allocation/cam.c **** }
+ 373              		.loc 1 53 1 is_stmt 0 view .LVU112
+ 374 0022 7047     		bx	lr
+ 375              	.L24:
+ 376              		.align	2
+ 377              	.L23:
+ 378 0024 17B7D138 		.word	953267991
+ 379              		.cfi_endproc
+ 380              	.LFE3:
+ 382              		.section	.text.cam_solve,"ax",%progbits
+ 383              		.align	1
+ 384              		.global	cam_solve
+ 385              		.syntax unified
+ 386              		.thumb
+ 387              		.thumb_func
+ 389              	cam_solve:
+ 390              	.LVL32:
+ 391              	.LFB4:
+  54:Allocation/cam.c **** 
+  55:Allocation/cam.c **** int cam_solve(cam_t *cam, const float tau_des[CAM_IN], float u_out[CAM_OUT])
+  56:Allocation/cam.c **** {
+ 392              		.loc 1 56 1 is_stmt 1 view -0
+ 393              		.cfi_startproc
+ 394              		@ args = 0, pretend = 0, frame = 160
+ 395              		@ frame_needed = 0, uses_anonymous_args = 0
+ 396              		.loc 1 56 1 is_stmt 0 view .LVU114
+ 397 0000 30B5     		push	{r4, r5, lr}
+ 398              	.LCFI3:
+ 399              		.cfi_def_cfa_offset 12
+ 400              		.cfi_offset 4, -12
+ 401              		.cfi_offset 5, -8
+ 402              		.cfi_offset 14, -4
+ 403 0002 ABB0     		sub	sp, sp, #172
+ 404              	.LCFI4:
+ 405              		.cfi_def_cfa_offset 184
+ 406 0004 1446     		mov	r4, r2
+  57:Allocation/cam.c ****     float tau[CAM_IN];
+ 407              		.loc 1 57 5 is_stmt 1 view .LVU115
+ARM GAS  /tmp/ccO3SBDm.s 			page 9
+
+
+  58:Allocation/cam.c ****     for (uint8_t i = 0; i < CAM_IN; i++) tau[i] = tau_des[i];
+ 408              		.loc 1 58 5 view .LVU116
+ 409              	.LBB7:
+ 410              		.loc 1 58 10 view .LVU117
+ 411              	.LVL33:
+ 412              		.loc 1 58 18 is_stmt 0 view .LVU118
+ 413 0006 0023     		movs	r3, #0
+ 414              		.loc 1 58 5 view .LVU119
+ 415 0008 0AE0     		b	.L26
+ 416              	.LVL34:
+ 417              	.L27:
+ 418              		.loc 1 58 42 is_stmt 1 discriminator 3 view .LVU120
+ 419              		.loc 1 58 58 is_stmt 0 discriminator 3 view .LVU121
+ 420 000a 01EB8302 		add	r2, r1, r3, lsl #2
+ 421 000e D2F800C0 		ldr	ip, [r2]	@ float
+ 422              		.loc 1 58 49 discriminator 3 view .LVU122
+ 423 0012 2AAA     		add	r2, sp, #168
+ 424 0014 02EB8302 		add	r2, r2, r3, lsl #2
+ 425 0018 42F810CC 		str	ip, [r2, #-16]	@ float
+ 426              		.loc 1 58 38 is_stmt 1 discriminator 3 view .LVU123
+ 427 001c 0133     		adds	r3, r3, #1
+ 428              	.LVL35:
+ 429              		.loc 1 58 38 is_stmt 0 discriminator 3 view .LVU124
+ 430 001e DBB2     		uxtb	r3, r3
+ 431              	.LVL36:
+ 432              	.L26:
+ 433              		.loc 1 58 27 is_stmt 1 discriminator 1 view .LVU125
+ 434 0020 032B     		cmp	r3, #3
+ 435 0022 F2D9     		bls	.L27
+ 436              	.LBE7:
+  59:Allocation/cam.c ****     if (!cam->yaw_ctrl_en) tau[3] = 0.0f;
+ 437              		.loc 1 59 5 view .LVU126
+ 438              		.loc 1 59 13 is_stmt 0 view .LVU127
+ 439 0024 90F86130 		ldrb	r3, [r0, #97]	@ zero_extendqisi2
+ 440              	.LVL37:
+ 441              		.loc 1 59 8 view .LVU128
+ 442 0028 0BB9     		cbnz	r3, .L28
+ 443              		.loc 1 59 28 is_stmt 1 discriminator 1 view .LVU129
+ 444              		.loc 1 59 35 is_stmt 0 discriminator 1 view .LVU130
+ 445 002a 0023     		movs	r3, #0
+ 446 002c 2993     		str	r3, [sp, #164]	@ float
+ 447              	.L28:
+ 448              	.LBB8:
+ 449              	.LBB9:
+  60:Allocation/cam.c **** 
+  61:Allocation/cam.c ****     float A[CAM_OUT * CAM_OUT];
+  62:Allocation/cam.c ****     float b[CAM_OUT];
+  63:Allocation/cam.c **** 
+  64:Allocation/cam.c ****     for (uint8_t i = 0; i < CAM_OUT; i++) {
+  65:Allocation/cam.c ****         b[i] = 0.0f;
+  66:Allocation/cam.c ****         for (uint8_t k = 0; k < CAM_IN; k++)
+  67:Allocation/cam.c ****             b[i] += cam->B[(uint16_t)k * CAM_OUT + i] * cam->W1_diag[k] * tau[k];
+  68:Allocation/cam.c **** 
+  69:Allocation/cam.c ****         for (uint8_t j = 0; j < CAM_OUT; j++) {
+ 450              		.loc 1 69 22 view .LVU131
+ 451 002e 4FF0000C 		mov	ip, #0
+ 452 0032 5BE0     		b	.L36
+ARM GAS  /tmp/ccO3SBDm.s 			page 10
+
+
+ 453              	.LVL38:
+ 454              	.L30:
+ 455              		.loc 1 69 22 view .LVU132
+ 456              	.LBE9:
+ 457              	.LBB13:
+  67:Allocation/cam.c **** 
+ 458              		.loc 1 67 13 is_stmt 1 view .LVU133
+  67:Allocation/cam.c **** 
+ 459              		.loc 1 67 14 is_stmt 0 view .LVU134
+ 460 0034 2AAA     		add	r2, sp, #168
+ 461 0036 02EB8E01 		add	r1, r2, lr, lsl #2
+ 462 003a 11ED187A 		vldr.32	s14, [r1, #-96]
+  67:Allocation/cam.c **** 
+ 463              		.loc 1 67 50 view .LVU135
+ 464 003e 0CEB8302 		add	r2, ip, r3, lsl #2
+  67:Allocation/cam.c **** 
+ 465              		.loc 1 67 27 view .LVU136
+ 466 0042 00EB8202 		add	r2, r0, r2, lsl #2
+ 467 0046 D2ED007A 		vldr.32	s15, [r2]
+  67:Allocation/cam.c **** 
+ 468              		.loc 1 67 69 view .LVU137
+ 469 004a 03F11002 		add	r2, r3, #16
+ 470 004e 00EB8202 		add	r2, r0, r2, lsl #2
+ 471 0052 D2ED006A 		vldr.32	s13, [r2]
+  67:Allocation/cam.c **** 
+ 472              		.loc 1 67 55 view .LVU138
+ 473 0056 67EEA67A 		vmul.f32	s15, s15, s13
+  67:Allocation/cam.c **** 
+ 474              		.loc 1 67 78 view .LVU139
+ 475 005a 2AAA     		add	r2, sp, #168
+ 476 005c 02EB8302 		add	r2, r2, r3, lsl #2
+ 477 0060 52ED046A 		vldr.32	s13, [r2, #-16]
+  67:Allocation/cam.c **** 
+ 478              		.loc 1 67 73 view .LVU140
+ 479 0064 67EEA67A 		vmul.f32	s15, s15, s13
+  67:Allocation/cam.c **** 
+ 480              		.loc 1 67 18 view .LVU141
+ 481 0068 77EE277A 		vadd.f32	s15, s14, s15
+ 482 006c 41ED187A 		vstr.32	s15, [r1, #-96]
+  66:Allocation/cam.c ****             b[i] += cam->B[(uint16_t)k * CAM_OUT + i] * cam->W1_diag[k] * tau[k];
+ 483              		.loc 1 66 42 is_stmt 1 discriminator 3 view .LVU142
+ 484 0070 0133     		adds	r3, r3, #1
+ 485              	.LVL39:
+  66:Allocation/cam.c ****             b[i] += cam->B[(uint16_t)k * CAM_OUT + i] * cam->W1_diag[k] * tau[k];
+ 486              		.loc 1 66 42 is_stmt 0 discriminator 3 view .LVU143
+ 487 0072 DBB2     		uxtb	r3, r3
+ 488              	.LVL40:
+ 489              	.L29:
+  66:Allocation/cam.c ****             b[i] += cam->B[(uint16_t)k * CAM_OUT + i] * cam->W1_diag[k] * tau[k];
+ 490              		.loc 1 66 31 is_stmt 1 discriminator 1 view .LVU144
+ 491 0074 032B     		cmp	r3, #3
+ 492 0076 DDD9     		bls	.L30
+ 493              	.LBE13:
+ 494              	.LBB14:
+ 495              		.loc 1 69 22 is_stmt 0 view .LVU145
+ 496 0078 0022     		movs	r2, #0
+ 497 007a 2BE0     		b	.L31
+ARM GAS  /tmp/ccO3SBDm.s 			page 11
+
+
+ 498              	.LVL41:
+ 499              	.L55:
+ 500              	.LBB10:
+  70:Allocation/cam.c ****             float s = (i == j) ? cam->W2_diag[i] : 0.0f;
+ 501              		.loc 1 70 19 discriminator 1 view .LVU146
+ 502 007c 0EF11403 		add	r3, lr, #20
+ 503 0080 00EB8303 		add	r3, r0, r3, lsl #2
+ 504 0084 93ED007A 		vldr.32	s14, [r3]
+ 505              	.LVL42:
+ 506              		.loc 1 70 19 discriminator 1 view .LVU147
+ 507 0088 2AE0     		b	.L32
+ 508              	.LVL43:
+ 509              	.L34:
+ 510              	.LBB11:
+  71:Allocation/cam.c ****             for (uint8_t k = 0; k < CAM_IN; k++)
+  72:Allocation/cam.c ****                 s += cam->B[(uint16_t)k * CAM_OUT + i]
+ 511              		.loc 1 72 17 is_stmt 1 view .LVU148
+ 512              		.loc 1 72 51 is_stmt 0 view .LVU149
+ 513 008a 0CEB8301 		add	r1, ip, r3, lsl #2
+ 514              		.loc 1 72 28 view .LVU150
+ 515 008e 00EB8101 		add	r1, r0, r1, lsl #2
+ 516 0092 D1ED007A 		vldr.32	s15, [r1]
+  73:Allocation/cam.c ****                    * cam->W1_diag[k]
+ 517              		.loc 1 73 34 view .LVU151
+ 518 0096 03F11001 		add	r1, r3, #16
+ 519 009a 00EB8101 		add	r1, r0, r1, lsl #2
+ 520 009e D1ED006A 		vldr.32	s13, [r1]
+ 521              		.loc 1 73 20 view .LVU152
+ 522 00a2 67EEA67A 		vmul.f32	s15, s15, s13
+  74:Allocation/cam.c ****                    * cam->B[(uint16_t)k * CAM_OUT + j];
+ 523              		.loc 1 74 51 view .LVU153
+ 524 00a6 02EB8301 		add	r1, r2, r3, lsl #2
+ 525              		.loc 1 74 28 view .LVU154
+ 526 00aa 00EB8101 		add	r1, r0, r1, lsl #2
+ 527 00ae D1ED006A 		vldr.32	s13, [r1]
+ 528              		.loc 1 74 20 view .LVU155
+ 529 00b2 67EEA67A 		vmul.f32	s15, s15, s13
+  72:Allocation/cam.c ****                    * cam->W1_diag[k]
+ 530              		.loc 1 72 19 view .LVU156
+ 531 00b6 37EE277A 		vadd.f32	s14, s14, s15
+ 532              	.LVL44:
+  71:Allocation/cam.c ****                 s += cam->B[(uint16_t)k * CAM_OUT + i]
+ 533              		.loc 1 71 46 is_stmt 1 discriminator 3 view .LVU157
+ 534 00ba 0133     		adds	r3, r3, #1
+ 535              	.LVL45:
+  71:Allocation/cam.c ****                 s += cam->B[(uint16_t)k * CAM_OUT + i]
+ 536              		.loc 1 71 46 is_stmt 0 discriminator 3 view .LVU158
+ 537 00bc DBB2     		uxtb	r3, r3
+ 538              	.LVL46:
+ 539              	.L33:
+  71:Allocation/cam.c ****                 s += cam->B[(uint16_t)k * CAM_OUT + i]
+ 540              		.loc 1 71 35 is_stmt 1 discriminator 1 view .LVU159
+ 541 00be 032B     		cmp	r3, #3
+ 542 00c0 E3D9     		bls	.L34
+ 543              	.LBE11:
+  75:Allocation/cam.c ****             A[(uint16_t)i * CAM_OUT + j] = s;
+ 544              		.loc 1 75 13 view .LVU160
+ARM GAS  /tmp/ccO3SBDm.s 			page 12
+
+
+ 545              		.loc 1 75 37 is_stmt 0 view .LVU161
+ 546 00c2 02EB8C03 		add	r3, r2, ip, lsl #2
+ 547              	.LVL47:
+ 548              		.loc 1 75 42 view .LVU162
+ 549 00c6 2AA9     		add	r1, sp, #168
+ 550 00c8 01EB8303 		add	r3, r1, r3, lsl #2
+ 551 00cc 03ED147A 		vstr.32	s14, [r3, #-80]
+ 552              	.LBE10:
+  69:Allocation/cam.c ****             float s = (i == j) ? cam->W2_diag[i] : 0.0f;
+ 553              		.loc 1 69 43 is_stmt 1 discriminator 2 view .LVU163
+ 554 00d0 0132     		adds	r2, r2, #1
+ 555              	.LVL48:
+  69:Allocation/cam.c ****             float s = (i == j) ? cam->W2_diag[i] : 0.0f;
+ 556              		.loc 1 69 43 is_stmt 0 discriminator 2 view .LVU164
+ 557 00d2 D2B2     		uxtb	r2, r2
+ 558              	.LVL49:
+ 559              	.L31:
+  69:Allocation/cam.c ****             float s = (i == j) ? cam->W2_diag[i] : 0.0f;
+ 560              		.loc 1 69 31 is_stmt 1 discriminator 1 view .LVU165
+ 561 00d4 032A     		cmp	r2, #3
+ 562 00d6 05D8     		bhi	.L54
+ 563              	.LBB12:
+  70:Allocation/cam.c ****             for (uint8_t k = 0; k < CAM_IN; k++)
+ 564              		.loc 1 70 13 view .LVU166
+  70:Allocation/cam.c ****             for (uint8_t k = 0; k < CAM_IN; k++)
+ 565              		.loc 1 70 50 is_stmt 0 view .LVU167
+ 566 00d8 9445     		cmp	ip, r2
+ 567 00da CFD0     		beq	.L55
+  70:Allocation/cam.c ****             for (uint8_t k = 0; k < CAM_IN; k++)
+ 568              		.loc 1 70 19 discriminator 2 view .LVU168
+ 569 00dc 9FED287A 		vldr.32	s14, .L60
+ 570              	.L32:
+ 571 00e0 0023     		movs	r3, #0
+ 572 00e2 ECE7     		b	.L33
+ 573              	.L54:
+ 574              	.LBE12:
+ 575              	.LBE14:
+  64:Allocation/cam.c ****         b[i] = 0.0f;
+ 576              		.loc 1 64 39 is_stmt 1 discriminator 2 view .LVU169
+ 577 00e4 0CF1010C 		add	ip, ip, #1
+ 578              	.LVL50:
+  64:Allocation/cam.c ****         b[i] = 0.0f;
+ 579              		.loc 1 64 39 is_stmt 0 discriminator 2 view .LVU170
+ 580 00e8 5FFA8CFC 		uxtb	ip, ip
+ 581              	.LVL51:
+ 582              	.L36:
+  64:Allocation/cam.c ****         b[i] = 0.0f;
+ 583              		.loc 1 64 27 is_stmt 1 discriminator 1 view .LVU171
+ 584 00ec BCF1030F 		cmp	ip, #3
+ 585 00f0 08D8     		bhi	.L56
+  65:Allocation/cam.c ****         for (uint8_t k = 0; k < CAM_IN; k++)
+ 586              		.loc 1 65 9 view .LVU172
+  65:Allocation/cam.c ****         for (uint8_t k = 0; k < CAM_IN; k++)
+ 587              		.loc 1 65 10 is_stmt 0 view .LVU173
+ 588 00f2 E646     		mov	lr, ip
+  65:Allocation/cam.c ****         for (uint8_t k = 0; k < CAM_IN; k++)
+ 589              		.loc 1 65 14 view .LVU174
+ARM GAS  /tmp/ccO3SBDm.s 			page 13
+
+
+ 590 00f4 0022     		movs	r2, #0
+ 591 00f6 2AAB     		add	r3, sp, #168
+ 592 00f8 03EB8C03 		add	r3, r3, ip, lsl #2
+ 593 00fc 43F8602C 		str	r2, [r3, #-96]	@ float
+  66:Allocation/cam.c ****             b[i] += cam->B[(uint16_t)k * CAM_OUT + i] * cam->W1_diag[k] * tau[k];
+ 594              		.loc 1 66 9 is_stmt 1 view .LVU175
+ 595              	.LBB15:
+  66:Allocation/cam.c ****             b[i] += cam->B[(uint16_t)k * CAM_OUT + i] * cam->W1_diag[k] * tau[k];
+ 596              		.loc 1 66 14 view .LVU176
+ 597              	.LVL52:
+  66:Allocation/cam.c ****             b[i] += cam->B[(uint16_t)k * CAM_OUT + i] * cam->W1_diag[k] * tau[k];
+ 598              		.loc 1 66 22 is_stmt 0 view .LVU177
+ 599 0100 0023     		movs	r3, #0
+  66:Allocation/cam.c ****             b[i] += cam->B[(uint16_t)k * CAM_OUT + i] * cam->W1_diag[k] * tau[k];
+ 600              		.loc 1 66 9 view .LVU178
+ 601 0102 B7E7     		b	.L29
+ 602              	.LVL53:
+ 603              	.L56:
+  66:Allocation/cam.c ****             b[i] += cam->B[(uint16_t)k * CAM_OUT + i] * cam->W1_diag[k] * tau[k];
+ 604              		.loc 1 66 9 view .LVU179
+ 605              	.LBE15:
+ 606              	.LBE8:
+  76:Allocation/cam.c ****         }
+  77:Allocation/cam.c ****     }
+  78:Allocation/cam.c **** 
+  79:Allocation/cam.c ****     float A_inv[CAM_OUT * CAM_OUT];
+ 607              		.loc 1 79 5 is_stmt 1 view .LVU180
+  80:Allocation/cam.c ****     if (mat_inv(A, A_inv, CAM_OUT) != 0) {
+ 608              		.loc 1 80 5 view .LVU181
+ 609              		.loc 1 80 9 is_stmt 0 view .LVU182
+ 610 0104 0422     		movs	r2, #4
+ 611 0106 02A9     		add	r1, sp, #8
+ 612 0108 16A8     		add	r0, sp, #88
+ 613              	.LVL54:
+ 614              		.loc 1 80 9 view .LVU183
+ 615 010a FFF7FEFF 		bl	mat_inv
+ 616              	.LVL55:
+ 617              		.loc 1 80 8 discriminator 1 view .LVU184
+ 618 010e 0546     		mov	r5, r0
+ 619 0110 50B9     		cbnz	r0, .L57
+  81:Allocation/cam.c ****         for (uint8_t i = 0; i < CAM_OUT; i++) u_out[i] = 0.0f;
+  82:Allocation/cam.c ****         return -1;
+  83:Allocation/cam.c ****     }
+  84:Allocation/cam.c **** 
+  85:Allocation/cam.c ****     mat_mul(A_inv, b, u_out, CAM_OUT, CAM_OUT, 1);
+ 620              		.loc 1 85 5 is_stmt 1 view .LVU185
+ 621 0112 0123     		movs	r3, #1
+ 622 0114 0193     		str	r3, [sp, #4]
+ 623 0116 0423     		movs	r3, #4
+ 624 0118 0093     		str	r3, [sp]
+ 625 011a 2246     		mov	r2, r4
+ 626 011c 12A9     		add	r1, sp, #72
+ 627 011e 02A8     		add	r0, sp, #8
+ 628 0120 FFF7FEFF 		bl	mat_mul
+ 629              	.LVL56:
+  86:Allocation/cam.c **** 
+  87:Allocation/cam.c ****     for (uint8_t i = 0; i < CAM_OUT; i++) {
+ARM GAS  /tmp/ccO3SBDm.s 			page 14
+
+
+ 630              		.loc 1 87 5 view .LVU186
+ 631              	.LBB16:
+ 632              		.loc 1 87 10 view .LVU187
+ 633              		.loc 1 87 18 is_stmt 0 view .LVU188
+ 634 0124 0023     		movs	r3, #0
+ 635              		.loc 1 87 5 view .LVU189
+ 636 0126 14E0     		b	.L42
+ 637              	.LVL57:
+ 638              	.L57:
+ 639              		.loc 1 87 5 view .LVU190
+ 640              	.LBE16:
+ 641              	.LBB17:
+  81:Allocation/cam.c ****         for (uint8_t i = 0; i < CAM_OUT; i++) u_out[i] = 0.0f;
+ 642              		.loc 1 81 22 view .LVU191
+ 643 0128 0023     		movs	r3, #0
+ 644              	.L38:
+ 645              	.LVL58:
+  81:Allocation/cam.c ****         for (uint8_t i = 0; i < CAM_OUT; i++) u_out[i] = 0.0f;
+ 646              		.loc 1 81 31 is_stmt 1 discriminator 1 view .LVU192
+ 647 012a 032B     		cmp	r3, #3
+ 648 012c 06D8     		bhi	.L58
+  81:Allocation/cam.c ****         for (uint8_t i = 0; i < CAM_OUT; i++) u_out[i] = 0.0f;
+ 649              		.loc 1 81 47 discriminator 3 view .LVU193
+  81:Allocation/cam.c ****         for (uint8_t i = 0; i < CAM_OUT; i++) u_out[i] = 0.0f;
+ 650              		.loc 1 81 52 is_stmt 0 discriminator 3 view .LVU194
+ 651 012e 04EB8302 		add	r2, r4, r3, lsl #2
+  81:Allocation/cam.c ****         for (uint8_t i = 0; i < CAM_OUT; i++) u_out[i] = 0.0f;
+ 652              		.loc 1 81 56 discriminator 3 view .LVU195
+ 653 0132 0021     		movs	r1, #0
+ 654 0134 1160     		str	r1, [r2]	@ float
+  81:Allocation/cam.c ****         for (uint8_t i = 0; i < CAM_OUT; i++) u_out[i] = 0.0f;
+ 655              		.loc 1 81 43 is_stmt 1 discriminator 3 view .LVU196
+ 656 0136 0133     		adds	r3, r3, #1
+ 657              	.LVL59:
+  81:Allocation/cam.c ****         for (uint8_t i = 0; i < CAM_OUT; i++) u_out[i] = 0.0f;
+ 658              		.loc 1 81 43 is_stmt 0 discriminator 3 view .LVU197
+ 659 0138 DBB2     		uxtb	r3, r3
+ 660              	.LVL60:
+  81:Allocation/cam.c ****         for (uint8_t i = 0; i < CAM_OUT; i++) u_out[i] = 0.0f;
+ 661              		.loc 1 81 43 discriminator 3 view .LVU198
+ 662 013a F6E7     		b	.L38
+ 663              	.L58:
+  81:Allocation/cam.c ****         for (uint8_t i = 0; i < CAM_OUT; i++) u_out[i] = 0.0f;
+ 664              		.loc 1 81 43 discriminator 3 view .LVU199
+ 665              	.LBE17:
+  82:Allocation/cam.c ****     }
+ 666              		.loc 1 82 16 view .LVU200
+ 667 013c 4FF0FF33 		mov	r3, #-1
+ 668              	.LVL61:
+  82:Allocation/cam.c ****     }
+ 669              		.loc 1 82 16 view .LVU201
+ 670 0140 1D46     		mov	r5, r3
+ 671              	.LVL62:
+ 672              	.L25:
+  88:Allocation/cam.c ****         if (u_out[i] < 0.0f) u_out[i] = 0.0f;
+  89:Allocation/cam.c ****         if (u_out[i] > 1.0f) u_out[i] = 1.0f;
+  90:Allocation/cam.c ****     }
+ARM GAS  /tmp/ccO3SBDm.s 			page 15
+
+
+  91:Allocation/cam.c **** 
+  92:Allocation/cam.c ****     return 0;
+  93:Allocation/cam.c **** }
+ 673              		.loc 1 93 1 view .LVU202
+ 674 0142 2846     		mov	r0, r5
+ 675 0144 2BB0     		add	sp, sp, #172
+ 676              	.LCFI5:
+ 677              		.cfi_remember_state
+ 678              		.cfi_def_cfa_offset 12
+ 679              		@ sp needed
+ 680 0146 30BD     		pop	{r4, r5, pc}
+ 681              	.LVL63:
+ 682              	.L59:
+ 683              	.LCFI6:
+ 684              		.cfi_restore_state
+ 685              	.LBB18:
+  88:Allocation/cam.c ****         if (u_out[i] < 0.0f) u_out[i] = 0.0f;
+ 686              		.loc 1 88 30 is_stmt 1 discriminator 1 view .LVU203
+  88:Allocation/cam.c ****         if (u_out[i] < 0.0f) u_out[i] = 0.0f;
+ 687              		.loc 1 88 39 is_stmt 0 discriminator 1 view .LVU204
+ 688 0148 0021     		movs	r1, #0
+ 689 014a 1160     		str	r1, [r2]	@ float
+ 690 014c 0CE0     		b	.L43
+ 691              	.L45:
+  87:Allocation/cam.c ****         if (u_out[i] < 0.0f) u_out[i] = 0.0f;
+ 692              		.loc 1 87 39 is_stmt 1 discriminator 2 view .LVU205
+ 693 014e 0133     		adds	r3, r3, #1
+ 694              	.LVL64:
+  87:Allocation/cam.c ****         if (u_out[i] < 0.0f) u_out[i] = 0.0f;
+ 695              		.loc 1 87 39 is_stmt 0 discriminator 2 view .LVU206
+ 696 0150 DBB2     		uxtb	r3, r3
+ 697              	.LVL65:
+ 698              	.L42:
+  87:Allocation/cam.c ****         if (u_out[i] < 0.0f) u_out[i] = 0.0f;
+ 699              		.loc 1 87 27 is_stmt 1 discriminator 1 view .LVU207
+ 700 0152 032B     		cmp	r3, #3
+ 701 0154 F5D8     		bhi	.L25
+  88:Allocation/cam.c ****         if (u_out[i] < 0.0f) u_out[i] = 0.0f;
+ 702              		.loc 1 88 9 view .LVU208
+  88:Allocation/cam.c ****         if (u_out[i] < 0.0f) u_out[i] = 0.0f;
+ 703              		.loc 1 88 18 is_stmt 0 view .LVU209
+ 704 0156 04EB8302 		add	r2, r4, r3, lsl #2
+ 705 015a D2ED007A 		vldr.32	s15, [r2]
+  88:Allocation/cam.c ****         if (u_out[i] < 0.0f) u_out[i] = 0.0f;
+ 706              		.loc 1 88 12 view .LVU210
+ 707 015e F5EEC07A 		vcmpe.f32	s15, #0
+ 708 0162 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 709 0166 EFD4     		bmi	.L59
+ 710              	.L43:
+  89:Allocation/cam.c ****     }
+ 711              		.loc 1 89 9 is_stmt 1 view .LVU211
+  89:Allocation/cam.c ****     }
+ 712              		.loc 1 89 18 is_stmt 0 view .LVU212
+ 713 0168 92ED007A 		vldr.32	s14, [r2]
+  89:Allocation/cam.c ****     }
+ 714              		.loc 1 89 12 view .LVU213
+ 715 016c F7EE007A 		vmov.f32	s15, #1.0e+0
+ARM GAS  /tmp/ccO3SBDm.s 			page 16
+
+
+ 716 0170 B4EEE77A 		vcmpe.f32	s14, s15
+ 717 0174 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 718 0178 E9DD     		ble	.L45
+  89:Allocation/cam.c ****     }
+ 719              		.loc 1 89 30 is_stmt 1 discriminator 1 view .LVU214
+  89:Allocation/cam.c ****     }
+ 720              		.loc 1 89 39 is_stmt 0 discriminator 1 view .LVU215
+ 721 017a C2ED007A 		vstr.32	s15, [r2]
+ 722 017e E6E7     		b	.L45
+ 723              	.L61:
+ 724              		.align	2
+ 725              	.L60:
+ 726 0180 00000000 		.word	0
+ 727              	.LBE18:
+ 728              		.cfi_endproc
+ 729              	.LFE4:
+ 731              		.text
+ 732              	.Letext0:
+ 733              		.file 2 "/usr/arm-none-eabi/include/machine/_default_types.h"
+ 734              		.file 3 "/usr/arm-none-eabi/include/sys/_stdint.h"
+ 735              		.file 4 "Allocation/cam.h"
+ 736              		.file 5 "Allocation/../Math/matrix.h"
+ 737              		.file 6 "/usr/arm-none-eabi/include/string.h"
+ 738              		.file 7 "<built-in>"
+ARM GAS  /tmp/ccO3SBDm.s 			page 17
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 cam.c
+     /tmp/ccO3SBDm.s:21     .text.rebuild_B:00000000 $t
+     /tmp/ccO3SBDm.s:26     .text.rebuild_B:00000000 rebuild_B
+     /tmp/ccO3SBDm.s:99     .text.rebuild_B:00000058 $d
+     /tmp/ccO3SBDm.s:104    .text.cam_init:00000000 $t
+     /tmp/ccO3SBDm.s:110    .text.cam_init:00000000 cam_init
+     /tmp/ccO3SBDm.s:217    .text.cam_init:0000006c $d
+     /tmp/ccO3SBDm.s:222    .text.cam_set_fault:00000000 $t
+     /tmp/ccO3SBDm.s:228    .text.cam_set_fault:00000000 cam_set_fault
+     /tmp/ccO3SBDm.s:321    .text.cam_set_fault:00000048 $d
+     /tmp/ccO3SBDm.s:326    .text.cam_clear_faults:00000000 $t
+     /tmp/ccO3SBDm.s:332    .text.cam_clear_faults:00000000 cam_clear_faults
+     /tmp/ccO3SBDm.s:378    .text.cam_clear_faults:00000024 $d
+     /tmp/ccO3SBDm.s:383    .text.cam_solve:00000000 $t
+     /tmp/ccO3SBDm.s:389    .text.cam_solve:00000000 cam_solve
+     /tmp/ccO3SBDm.s:726    .text.cam_solve:00000180 $d
+
+UNDEFINED SYMBOLS
+memset
+mat_inv
+mat_mul

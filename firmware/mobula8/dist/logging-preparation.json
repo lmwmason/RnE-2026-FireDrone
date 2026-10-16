@@ -1,0 +1,14 @@
+{
+  "logging_enabled": true,
+  "blackbox_device": "SPIFLASH",
+  "blackbox_mode": "NORMAL",
+  "sample_rate": "1/2",
+  "research_enabled": false,
+  "ukf_enabled": false,
+  "unexpected_setting_changes": {},
+  "flash_used_bytes": 0,
+  "flash_capacity_bytes": 8388608,
+  "old_logs_erased_with_user_authorization": true,
+  "firmware_reflashed": false,
+  "flight_log_collected": false
+}

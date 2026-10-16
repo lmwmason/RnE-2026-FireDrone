@@ -1,0 +1,857 @@
+ARM GAS  /tmp/ccfchMFw.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 1
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"crsf.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.file 1 "Core/Src/crsf.c"
+  20              		.section	.text.CRSF_Crc8,"ax",%progbits
+  21              		.align	1
+  22              		.syntax unified
+  23              		.thumb
+  24              		.thumb_func
+  26              	CRSF_Crc8:
+  27              	.LVL0:
+  28              	.LFB134:
+   1:Core/Src/crsf.c **** #include "crsf.h"
+   2:Core/Src/crsf.c **** #include "main.h"
+   3:Core/Src/crsf.c **** #include <string.h>
+   4:Core/Src/crsf.c **** 
+   5:Core/Src/crsf.c **** extern UART_HandleTypeDef huart2;
+   6:Core/Src/crsf.c **** 
+   7:Core/Src/crsf.c **** #define CRSF_SYNC_BYTE      0xC8
+   8:Core/Src/crsf.c **** #define CRSF_TYPE_RC_CHANNELS 0x16
+   9:Core/Src/crsf.c **** #define CRSF_RX_BUF_SIZE    64
+  10:Core/Src/crsf.c **** #define CRSF_NUM_CHANNELS   16
+  11:Core/Src/crsf.c **** 
+  12:Core/Src/crsf.c **** static uint8_t s_rxBuf[CRSF_RX_BUF_SIZE];
+  13:Core/Src/crsf.c **** static uint16_t s_channelsRaw[CRSF_NUM_CHANNELS];
+  14:Core/Src/crsf.c **** static volatile uint32_t s_lastFrameTick;
+  15:Core/Src/crsf.c **** 
+  16:Core/Src/crsf.c **** static uint8_t CRSF_Crc8(const uint8_t *data, uint8_t len)
+  17:Core/Src/crsf.c **** {
+  29              		.loc 1 17 1 view -0
+  30              		.cfi_startproc
+  31              		@ args = 0, pretend = 0, frame = 0
+  32              		@ frame_needed = 0, uses_anonymous_args = 0
+  33              		.loc 1 17 1 is_stmt 0 view .LVU1
+  34 0000 00B5     		push	{lr}
+  35              	.LCFI0:
+  36              		.cfi_def_cfa_offset 4
+  37              		.cfi_offset 14, -4
+  38 0002 8646     		mov	lr, r0
+  18:Core/Src/crsf.c ****     uint8_t crc = 0;
+  39              		.loc 1 18 5 is_stmt 1 view .LVU2
+  40              	.LVL1:
+ARM GAS  /tmp/ccfchMFw.s 			page 2
+
+
+  19:Core/Src/crsf.c **** 
+  20:Core/Src/crsf.c ****     for (uint8_t i = 0; i < len; i++) {
+  41              		.loc 1 20 5 view .LVU3
+  42              	.LBB2:
+  43              		.loc 1 20 10 view .LVU4
+  44              		.loc 1 20 18 is_stmt 0 view .LVU5
+  45 0004 4FF0000C 		mov	ip, #0
+  46              	.LBE2:
+  18:Core/Src/crsf.c ****     uint8_t crc = 0;
+  47              		.loc 1 18 13 view .LVU6
+  48 0008 6046     		mov	r0, ip
+  49              	.LVL2:
+  50              	.LBB5:
+  51              		.loc 1 20 5 view .LVU7
+  52 000a 12E0     		b	.L2
+  53              	.LVL3:
+  54              	.L10:
+  55              	.LBB3:
+  21:Core/Src/crsf.c ****         crc ^= data[i];
+  22:Core/Src/crsf.c ****         for (uint8_t b = 0; b < 8; b++) {
+  23:Core/Src/crsf.c ****             crc = (crc & 0x80) ? (uint8_t)((crc << 1) ^ 0xD5) : (uint8_t)(crc << 1);
+  56              		.loc 1 23 55 discriminator 1 view .LVU8
+  57 000c 6FF02A00 		mvn	r0, #42
+  58              	.LVL4:
+  59              		.loc 1 23 55 discriminator 1 view .LVU9
+  60 0010 80EA4200 		eor	r0, r0, r2, lsl #1
+  61              		.loc 1 23 17 discriminator 1 view .LVU10
+  62 0014 C0B2     		uxtb	r0, r0
+  63              	.LVL5:
+  64              	.L5:
+  22:Core/Src/crsf.c ****             crc = (crc & 0x80) ? (uint8_t)((crc << 1) ^ 0xD5) : (uint8_t)(crc << 1);
+  65              		.loc 1 22 37 is_stmt 1 discriminator 2 view .LVU11
+  66 0016 0133     		adds	r3, r3, #1
+  67              	.LVL6:
+  22:Core/Src/crsf.c ****             crc = (crc & 0x80) ? (uint8_t)((crc << 1) ^ 0xD5) : (uint8_t)(crc << 1);
+  68              		.loc 1 22 37 is_stmt 0 discriminator 2 view .LVU12
+  69 0018 DBB2     		uxtb	r3, r3
+  70              	.LVL7:
+  71              	.L3:
+  22:Core/Src/crsf.c ****             crc = (crc & 0x80) ? (uint8_t)((crc << 1) ^ 0xD5) : (uint8_t)(crc << 1);
+  72              		.loc 1 22 31 is_stmt 1 discriminator 1 view .LVU13
+  73 001a 072B     		cmp	r3, #7
+  74 001c 05D8     		bhi	.L9
+  75              		.loc 1 23 13 view .LVU14
+  76              		.loc 1 23 32 is_stmt 0 view .LVU15
+  77 001e 42B2     		sxtb	r2, r0
+  78              		.loc 1 23 17 view .LVU16
+  79 0020 002A     		cmp	r2, #0
+  80 0022 F3DB     		blt	.L10
+  81              		.loc 1 23 17 discriminator 2 view .LVU17
+  82 0024 4000     		lsls	r0, r0, #1
+  83              	.LVL8:
+  84              		.loc 1 23 17 discriminator 2 view .LVU18
+  85 0026 C0B2     		uxtb	r0, r0
+  86 0028 F5E7     		b	.L5
+  87              	.LVL9:
+  88              	.L9:
+ARM GAS  /tmp/ccfchMFw.s 			page 3
+
+
+  89              		.loc 1 23 17 discriminator 2 view .LVU19
+  90              	.LBE3:
+  20:Core/Src/crsf.c ****         crc ^= data[i];
+  91              		.loc 1 20 35 is_stmt 1 discriminator 2 view .LVU20
+  92 002a 0CF1010C 		add	ip, ip, #1
+  93              	.LVL10:
+  20:Core/Src/crsf.c ****         crc ^= data[i];
+  94              		.loc 1 20 35 is_stmt 0 discriminator 2 view .LVU21
+  95 002e 5FFA8CFC 		uxtb	ip, ip
+  96              	.LVL11:
+  97              	.L2:
+  20:Core/Src/crsf.c ****         crc ^= data[i];
+  98              		.loc 1 20 27 is_stmt 1 discriminator 1 view .LVU22
+  99 0032 8C45     		cmp	ip, r1
+ 100 0034 04D2     		bcs	.L11
+  21:Core/Src/crsf.c ****         crc ^= data[i];
+ 101              		.loc 1 21 9 view .LVU23
+  21:Core/Src/crsf.c ****         crc ^= data[i];
+ 102              		.loc 1 21 20 is_stmt 0 view .LVU24
+ 103 0036 1EF80C30 		ldrb	r3, [lr, ip]	@ zero_extendqisi2
+  21:Core/Src/crsf.c ****         crc ^= data[i];
+ 104              		.loc 1 21 13 view .LVU25
+ 105 003a 5840     		eors	r0, r0, r3
+ 106              	.LVL12:
+  22:Core/Src/crsf.c ****             crc = (crc & 0x80) ? (uint8_t)((crc << 1) ^ 0xD5) : (uint8_t)(crc << 1);
+ 107              		.loc 1 22 9 is_stmt 1 view .LVU26
+ 108              	.LBB4:
+  22:Core/Src/crsf.c ****             crc = (crc & 0x80) ? (uint8_t)((crc << 1) ^ 0xD5) : (uint8_t)(crc << 1);
+ 109              		.loc 1 22 14 view .LVU27
+  22:Core/Src/crsf.c ****             crc = (crc & 0x80) ? (uint8_t)((crc << 1) ^ 0xD5) : (uint8_t)(crc << 1);
+ 110              		.loc 1 22 22 is_stmt 0 view .LVU28
+ 111 003c 0023     		movs	r3, #0
+  22:Core/Src/crsf.c ****             crc = (crc & 0x80) ? (uint8_t)((crc << 1) ^ 0xD5) : (uint8_t)(crc << 1);
+ 112              		.loc 1 22 9 view .LVU29
+ 113 003e ECE7     		b	.L3
+ 114              	.LVL13:
+ 115              	.L11:
+  22:Core/Src/crsf.c ****             crc = (crc & 0x80) ? (uint8_t)((crc << 1) ^ 0xD5) : (uint8_t)(crc << 1);
+ 116              		.loc 1 22 9 view .LVU30
+ 117              	.LBE4:
+ 118              	.LBE5:
+  24:Core/Src/crsf.c ****         }
+  25:Core/Src/crsf.c ****     }
+  26:Core/Src/crsf.c ****     return crc;
+ 119              		.loc 1 26 5 is_stmt 1 view .LVU31
+  27:Core/Src/crsf.c **** }
+ 120              		.loc 1 27 1 is_stmt 0 view .LVU32
+ 121 0040 00BD     		pop	{pc}
+ 122              		.cfi_endproc
+ 123              	.LFE134:
+ 125              		.section	.text.CRSF_UnpackChannels,"ax",%progbits
+ 126              		.align	1
+ 127              		.syntax unified
+ 128              		.thumb
+ 129              		.thumb_func
+ 131              	CRSF_UnpackChannels:
+ 132              	.LVL14:
+ARM GAS  /tmp/ccfchMFw.s 			page 4
+
+
+ 133              	.LFB135:
+  28:Core/Src/crsf.c **** 
+  29:Core/Src/crsf.c **** static void CRSF_UnpackChannels(const uint8_t *payload)
+  30:Core/Src/crsf.c **** {
+ 134              		.loc 1 30 1 is_stmt 1 view -0
+ 135              		.cfi_startproc
+ 136              		@ args = 0, pretend = 0, frame = 0
+ 137              		@ frame_needed = 0, uses_anonymous_args = 0
+ 138              		.loc 1 30 1 is_stmt 0 view .LVU34
+ 139 0000 10B5     		push	{r4, lr}
+ 140              	.LCFI1:
+ 141              		.cfi_def_cfa_offset 8
+ 142              		.cfi_offset 4, -8
+ 143              		.cfi_offset 14, -4
+  31:Core/Src/crsf.c ****     /* 16 channels x 11 bits, little-endian packed */
+  32:Core/Src/crsf.c ****     uint32_t bitBuf = 0;
+ 144              		.loc 1 32 5 is_stmt 1 view .LVU35
+ 145              	.LVL15:
+  33:Core/Src/crsf.c ****     uint8_t bitCount = 0;
+ 146              		.loc 1 33 5 view .LVU36
+  34:Core/Src/crsf.c ****     uint8_t byteIdx = 0;
+ 147              		.loc 1 34 5 view .LVU37
+  35:Core/Src/crsf.c **** 
+  36:Core/Src/crsf.c ****     for (uint8_t ch = 0; ch < CRSF_NUM_CHANNELS; ch++) {
+ 148              		.loc 1 36 5 view .LVU38
+ 149              	.LBB6:
+ 150              		.loc 1 36 10 view .LVU39
+ 151              		.loc 1 36 18 is_stmt 0 view .LVU40
+ 152 0002 4FF0000E 		mov	lr, #0
+ 153              	.LBE6:
+  34:Core/Src/crsf.c ****     uint8_t byteIdx = 0;
+ 154              		.loc 1 34 13 view .LVU41
+ 155 0006 7246     		mov	r2, lr
+  33:Core/Src/crsf.c ****     uint8_t byteIdx = 0;
+ 156              		.loc 1 33 13 view .LVU42
+ 157 0008 7346     		mov	r3, lr
+  32:Core/Src/crsf.c ****     uint8_t bitCount = 0;
+ 158              		.loc 1 32 14 view .LVU43
+ 159 000a 7146     		mov	r1, lr
+ 160              	.LBB7:
+ 161              		.loc 1 36 5 view .LVU44
+ 162 000c 16E0     		b	.L13
+ 163              	.LVL16:
+ 164              	.L14:
+  37:Core/Src/crsf.c ****         while (bitCount < 11) {
+  38:Core/Src/crsf.c ****             bitBuf |= ((uint32_t)payload[byteIdx++]) << bitCount;
+ 165              		.loc 1 38 13 is_stmt 1 view .LVU45
+ 166              		.loc 1 38 49 is_stmt 0 view .LVU46
+ 167 000e 02F1010C 		add	ip, r2, #1
+ 168              	.LVL17:
+ 169              		.loc 1 38 41 view .LVU47
+ 170 0012 825C     		ldrb	r2, [r0, r2]	@ zero_extendqisi2
+ 171              		.loc 1 38 54 view .LVU48
+ 172 0014 9A40     		lsls	r2, r2, r3
+ 173              		.loc 1 38 20 view .LVU49
+ 174 0016 1143     		orrs	r1, r1, r2
+ 175              	.LVL18:
+ARM GAS  /tmp/ccfchMFw.s 			page 5
+
+
+  39:Core/Src/crsf.c ****             bitCount += 8;
+ 176              		.loc 1 39 13 is_stmt 1 view .LVU50
+ 177              		.loc 1 39 22 is_stmt 0 view .LVU51
+ 178 0018 0833     		adds	r3, r3, #8
+ 179              	.LVL19:
+ 180              		.loc 1 39 22 view .LVU52
+ 181 001a DBB2     		uxtb	r3, r3
+ 182              	.LVL20:
+  38:Core/Src/crsf.c ****             bitCount += 8;
+ 183              		.loc 1 38 49 view .LVU53
+ 184 001c 5FFA8CF2 		uxtb	r2, ip
+ 185              	.LVL21:
+ 186              	.L15:
+  37:Core/Src/crsf.c ****         while (bitCount < 11) {
+ 187              		.loc 1 37 25 is_stmt 1 view .LVU54
+ 188 0020 0A2B     		cmp	r3, #10
+ 189 0022 F4D9     		bls	.L14
+  40:Core/Src/crsf.c ****         }
+  41:Core/Src/crsf.c ****         s_channelsRaw[ch] = (uint16_t)(bitBuf & 0x07FF);
+ 190              		.loc 1 41 9 view .LVU55
+ 191              		.loc 1 41 29 is_stmt 0 view .LVU56
+ 192 0024 C1F30A0C 		ubfx	ip, r1, #0, #11
+ 193              		.loc 1 41 27 view .LVU57
+ 194 0028 064C     		ldr	r4, .L17
+ 195 002a 24F81EC0 		strh	ip, [r4, lr, lsl #1]	@ movhi
+  42:Core/Src/crsf.c ****         bitBuf >>= 11;
+ 196              		.loc 1 42 9 is_stmt 1 view .LVU58
+ 197              		.loc 1 42 16 is_stmt 0 view .LVU59
+ 198 002e C90A     		lsrs	r1, r1, #11
+ 199              	.LVL22:
+  43:Core/Src/crsf.c ****         bitCount -= 11;
+ 200              		.loc 1 43 9 is_stmt 1 view .LVU60
+ 201              		.loc 1 43 18 is_stmt 0 view .LVU61
+ 202 0030 0B3B     		subs	r3, r3, #11
+ 203              	.LVL23:
+ 204              		.loc 1 43 18 view .LVU62
+ 205 0032 DBB2     		uxtb	r3, r3
+ 206              	.LVL24:
+  36:Core/Src/crsf.c ****         while (bitCount < 11) {
+ 207              		.loc 1 36 52 is_stmt 1 discriminator 2 view .LVU63
+ 208 0034 0EF1010E 		add	lr, lr, #1
+ 209              	.LVL25:
+  36:Core/Src/crsf.c ****         while (bitCount < 11) {
+ 210              		.loc 1 36 52 is_stmt 0 discriminator 2 view .LVU64
+ 211 0038 5FFA8EFE 		uxtb	lr, lr
+ 212              	.LVL26:
+ 213              	.L13:
+  36:Core/Src/crsf.c ****         while (bitCount < 11) {
+ 214              		.loc 1 36 29 is_stmt 1 discriminator 1 view .LVU65
+ 215 003c BEF10F0F 		cmp	lr, #15
+ 216 0040 EED9     		bls	.L15
+ 217              	.LBE7:
+  44:Core/Src/crsf.c ****     }
+  45:Core/Src/crsf.c **** }
+ 218              		.loc 1 45 1 is_stmt 0 view .LVU66
+ 219 0042 10BD     		pop	{r4, pc}
+ 220              	.L18:
+ARM GAS  /tmp/ccfchMFw.s 			page 6
+
+
+ 221              		.align	2
+ 222              	.L17:
+ 223 0044 00000000 		.word	s_channelsRaw
+ 224              		.cfi_endproc
+ 225              	.LFE135:
+ 227              		.section	.text.CRSF_ParseFrame,"ax",%progbits
+ 228              		.align	1
+ 229              		.syntax unified
+ 230              		.thumb
+ 231              		.thumb_func
+ 233              	CRSF_ParseFrame:
+ 234              	.LVL27:
+ 235              	.LFB136:
+  46:Core/Src/crsf.c **** 
+  47:Core/Src/crsf.c **** static void CRSF_ParseFrame(const uint8_t *buf, uint16_t size)
+  48:Core/Src/crsf.c **** {
+ 236              		.loc 1 48 1 is_stmt 1 view -0
+ 237              		.cfi_startproc
+ 238              		@ args = 0, pretend = 0, frame = 0
+ 239              		@ frame_needed = 0, uses_anonymous_args = 0
+  49:Core/Src/crsf.c ****     if (size < 4 || buf[0] != CRSF_SYNC_BYTE) {
+ 240              		.loc 1 49 5 view .LVU68
+ 241              		.loc 1 49 8 is_stmt 0 view .LVU69
+ 242 0000 0329     		cmp	r1, #3
+ 243 0002 20D9     		bls	.L22
+  48:Core/Src/crsf.c ****     if (size < 4 || buf[0] != CRSF_SYNC_BYTE) {
+ 244              		.loc 1 48 1 view .LVU70
+ 245 0004 70B5     		push	{r4, r5, r6, lr}
+ 246              	.LCFI2:
+ 247              		.cfi_def_cfa_offset 16
+ 248              		.cfi_offset 4, -16
+ 249              		.cfi_offset 5, -12
+ 250              		.cfi_offset 6, -8
+ 251              		.cfi_offset 14, -4
+ 252 0006 0646     		mov	r6, r0
+ 253              		.loc 1 49 24 discriminator 1 view .LVU71
+ 254 0008 0378     		ldrb	r3, [r0]	@ zero_extendqisi2
+ 255              		.loc 1 49 18 discriminator 1 view .LVU72
+ 256 000a C82B     		cmp	r3, #200
+ 257 000c 11D1     		bne	.L19
+  50:Core/Src/crsf.c ****         return;
+  51:Core/Src/crsf.c ****     }
+  52:Core/Src/crsf.c **** 
+  53:Core/Src/crsf.c ****     uint8_t len = buf[1];
+ 258              		.loc 1 53 5 is_stmt 1 view .LVU73
+ 259              		.loc 1 53 13 is_stmt 0 view .LVU74
+ 260 000e 4378     		ldrb	r3, [r0, #1]	@ zero_extendqisi2
+ 261              	.LVL28:
+  54:Core/Src/crsf.c ****     if (len < 2 || (uint16_t)(len + 2) > size) {
+ 262              		.loc 1 54 5 is_stmt 1 view .LVU75
+ 263              		.loc 1 54 8 is_stmt 0 view .LVU76
+ 264 0010 012B     		cmp	r3, #1
+ 265 0012 0ED9     		bls	.L19
+ 266              		.loc 1 54 20 discriminator 1 view .LVU77
+ 267 0014 9A1C     		adds	r2, r3, #2
+ 268              		.loc 1 54 17 discriminator 1 view .LVU78
+ 269 0016 8A42     		cmp	r2, r1
+ARM GAS  /tmp/ccfchMFw.s 			page 7
+
+
+ 270 0018 0BD8     		bhi	.L19
+  55:Core/Src/crsf.c ****         return;
+  56:Core/Src/crsf.c ****     }
+  57:Core/Src/crsf.c **** 
+  58:Core/Src/crsf.c ****     uint8_t type = buf[2];
+ 271              		.loc 1 58 5 is_stmt 1 view .LVU79
+ 272              		.loc 1 58 13 is_stmt 0 view .LVU80
+ 273 001a 8578     		ldrb	r5, [r0, #2]	@ zero_extendqisi2
+ 274              	.LVL29:
+  59:Core/Src/crsf.c ****     uint8_t crcReceived = buf[2 + len - 1];
+ 275              		.loc 1 59 5 is_stmt 1 view .LVU81
+ 276              		.loc 1 59 39 is_stmt 0 view .LVU82
+ 277 001c 5A1C     		adds	r2, r3, #1
+ 278              		.loc 1 59 13 view .LVU83
+ 279 001e 845C     		ldrb	r4, [r0, r2]	@ zero_extendqisi2
+ 280              	.LVL30:
+  60:Core/Src/crsf.c ****     uint8_t crcCalc = CRSF_Crc8(&buf[2], (uint8_t)(len - 1));
+ 281              		.loc 1 60 5 is_stmt 1 view .LVU84
+ 282              		.loc 1 60 42 is_stmt 0 view .LVU85
+ 283 0020 591E     		subs	r1, r3, #1
+ 284              	.LVL31:
+ 285              		.loc 1 60 23 view .LVU86
+ 286 0022 C9B2     		uxtb	r1, r1
+ 287 0024 0230     		adds	r0, r0, #2
+ 288              	.LVL32:
+ 289              		.loc 1 60 23 view .LVU87
+ 290 0026 FFF7FEFF 		bl	CRSF_Crc8
+ 291              	.LVL33:
+  61:Core/Src/crsf.c **** 
+  62:Core/Src/crsf.c ****     if (crcCalc != crcReceived) {
+ 292              		.loc 1 62 5 is_stmt 1 view .LVU88
+ 293              		.loc 1 62 8 is_stmt 0 view .LVU89
+ 294 002a 8442     		cmp	r4, r0
+ 295 002c 01D1     		bne	.L19
+  63:Core/Src/crsf.c ****         return;
+  64:Core/Src/crsf.c ****     }
+  65:Core/Src/crsf.c **** 
+  66:Core/Src/crsf.c ****     if (type == CRSF_TYPE_RC_CHANNELS) {
+ 296              		.loc 1 66 5 is_stmt 1 view .LVU90
+ 297              		.loc 1 66 8 is_stmt 0 view .LVU91
+ 298 002e 162D     		cmp	r5, #22
+ 299 0030 00D0     		beq	.L25
+ 300              	.LVL34:
+ 301              	.L19:
+  67:Core/Src/crsf.c ****         CRSF_UnpackChannels(&buf[3]);
+  68:Core/Src/crsf.c ****         s_lastFrameTick = HAL_GetTick();
+  69:Core/Src/crsf.c ****     }
+  70:Core/Src/crsf.c **** }
+ 302              		.loc 1 70 1 view .LVU92
+ 303 0032 70BD     		pop	{r4, r5, r6, pc}
+ 304              	.LVL35:
+ 305              	.L25:
+  67:Core/Src/crsf.c ****         CRSF_UnpackChannels(&buf[3]);
+ 306              		.loc 1 67 9 is_stmt 1 view .LVU93
+ 307 0034 3046     		mov	r0, r6
+ 308              	.LVL36:
+  67:Core/Src/crsf.c ****         CRSF_UnpackChannels(&buf[3]);
+ARM GAS  /tmp/ccfchMFw.s 			page 8
+
+
+ 309              		.loc 1 67 9 is_stmt 0 view .LVU94
+ 310 0036 0330     		adds	r0, r0, #3
+ 311 0038 FFF7FEFF 		bl	CRSF_UnpackChannels
+ 312              	.LVL37:
+  68:Core/Src/crsf.c ****     }
+ 313              		.loc 1 68 9 is_stmt 1 view .LVU95
+  68:Core/Src/crsf.c ****     }
+ 314              		.loc 1 68 27 is_stmt 0 view .LVU96
+ 315 003c FFF7FEFF 		bl	HAL_GetTick
+ 316              	.LVL38:
+  68:Core/Src/crsf.c ****     }
+ 317              		.loc 1 68 25 discriminator 1 view .LVU97
+ 318 0040 014B     		ldr	r3, .L26
+ 319 0042 1860     		str	r0, [r3]
+ 320 0044 F5E7     		b	.L19
+ 321              	.LVL39:
+ 322              	.L22:
+ 323              	.LCFI3:
+ 324              		.cfi_def_cfa_offset 0
+ 325              		.cfi_restore 4
+ 326              		.cfi_restore 5
+ 327              		.cfi_restore 6
+ 328              		.cfi_restore 14
+  68:Core/Src/crsf.c ****     }
+ 329              		.loc 1 68 25 discriminator 1 view .LVU98
+ 330 0046 7047     		bx	lr
+ 331              	.L27:
+ 332              		.align	2
+ 333              	.L26:
+ 334 0048 00000000 		.word	s_lastFrameTick
+ 335              		.cfi_endproc
+ 336              	.LFE136:
+ 338              		.section	.text.CRSF_Init,"ax",%progbits
+ 339              		.align	1
+ 340              		.global	CRSF_Init
+ 341              		.syntax unified
+ 342              		.thumb
+ 343              		.thumb_func
+ 345              	CRSF_Init:
+ 346              	.LFB137:
+  71:Core/Src/crsf.c **** 
+  72:Core/Src/crsf.c **** void CRSF_Init(void)
+  73:Core/Src/crsf.c **** {
+ 347              		.loc 1 73 1 is_stmt 1 view -0
+ 348              		.cfi_startproc
+ 349              		@ args = 0, pretend = 0, frame = 0
+ 350              		@ frame_needed = 0, uses_anonymous_args = 0
+ 351 0000 08B5     		push	{r3, lr}
+ 352              	.LCFI4:
+ 353              		.cfi_def_cfa_offset 8
+ 354              		.cfi_offset 3, -8
+ 355              		.cfi_offset 14, -4
+  74:Core/Src/crsf.c ****     for (uint8_t i = 0; i < CRSF_NUM_CHANNELS; i++) {
+ 356              		.loc 1 74 5 view .LVU100
+ 357              	.LBB8:
+ 358              		.loc 1 74 10 view .LVU101
+ 359              	.LVL40:
+ARM GAS  /tmp/ccfchMFw.s 			page 9
+
+
+ 360              		.loc 1 74 18 is_stmt 0 view .LVU102
+ 361 0002 0023     		movs	r3, #0
+ 362              		.loc 1 74 5 view .LVU103
+ 363 0004 06E0     		b	.L29
+ 364              	.LVL41:
+ 365              	.L30:
+  75:Core/Src/crsf.c ****         s_channelsRaw[i] = 992; /* center */
+ 366              		.loc 1 75 9 is_stmt 1 view .LVU104
+ 367              		.loc 1 75 26 is_stmt 0 view .LVU105
+ 368 0006 094A     		ldr	r2, .L32
+ 369 0008 4FF47871 		mov	r1, #992
+ 370 000c 22F81310 		strh	r1, [r2, r3, lsl #1]	@ movhi
+  74:Core/Src/crsf.c ****     for (uint8_t i = 0; i < CRSF_NUM_CHANNELS; i++) {
+ 371              		.loc 1 74 49 is_stmt 1 discriminator 3 view .LVU106
+ 372 0010 0133     		adds	r3, r3, #1
+ 373              	.LVL42:
+  74:Core/Src/crsf.c ****     for (uint8_t i = 0; i < CRSF_NUM_CHANNELS; i++) {
+ 374              		.loc 1 74 49 is_stmt 0 discriminator 3 view .LVU107
+ 375 0012 DBB2     		uxtb	r3, r3
+ 376              	.LVL43:
+ 377              	.L29:
+  74:Core/Src/crsf.c ****     for (uint8_t i = 0; i < CRSF_NUM_CHANNELS; i++) {
+ 378              		.loc 1 74 27 is_stmt 1 discriminator 1 view .LVU108
+ 379 0014 0F2B     		cmp	r3, #15
+ 380 0016 F6D9     		bls	.L30
+ 381              	.LBE8:
+  76:Core/Src/crsf.c ****     }
+  77:Core/Src/crsf.c ****     s_lastFrameTick = 0;
+ 382              		.loc 1 77 5 view .LVU109
+ 383              		.loc 1 77 21 is_stmt 0 view .LVU110
+ 384 0018 054B     		ldr	r3, .L32+4
+ 385              	.LVL44:
+ 386              		.loc 1 77 21 view .LVU111
+ 387 001a 0022     		movs	r2, #0
+ 388 001c 1A60     		str	r2, [r3]
+  78:Core/Src/crsf.c ****     HAL_UARTEx_ReceiveToIdle_IT(&huart2, s_rxBuf, CRSF_RX_BUF_SIZE);
+ 389              		.loc 1 78 5 is_stmt 1 view .LVU112
+ 390 001e 4022     		movs	r2, #64
+ 391 0020 0449     		ldr	r1, .L32+8
+ 392 0022 0548     		ldr	r0, .L32+12
+ 393 0024 FFF7FEFF 		bl	HAL_UARTEx_ReceiveToIdle_IT
+ 394              	.LVL45:
+  79:Core/Src/crsf.c **** }
+ 395              		.loc 1 79 1 is_stmt 0 view .LVU113
+ 396 0028 08BD     		pop	{r3, pc}
+ 397              	.L33:
+ 398 002a 00BF     		.align	2
+ 399              	.L32:
+ 400 002c 00000000 		.word	s_channelsRaw
+ 401 0030 00000000 		.word	s_lastFrameTick
+ 402 0034 00000000 		.word	s_rxBuf
+ 403 0038 00000000 		.word	huart2
+ 404              		.cfi_endproc
+ 405              	.LFE137:
+ 407              		.section	.text.CRSF_OnUartEvent,"ax",%progbits
+ 408              		.align	1
+ 409              		.global	CRSF_OnUartEvent
+ARM GAS  /tmp/ccfchMFw.s 			page 10
+
+
+ 410              		.syntax unified
+ 411              		.thumb
+ 412              		.thumb_func
+ 414              	CRSF_OnUartEvent:
+ 415              	.LVL46:
+ 416              	.LFB138:
+  80:Core/Src/crsf.c **** 
+  81:Core/Src/crsf.c **** void CRSF_OnUartEvent(uint16_t size)
+  82:Core/Src/crsf.c **** {
+ 417              		.loc 1 82 1 is_stmt 1 view -0
+ 418              		.cfi_startproc
+ 419              		@ args = 0, pretend = 0, frame = 0
+ 420              		@ frame_needed = 0, uses_anonymous_args = 0
+ 421              		.loc 1 82 1 is_stmt 0 view .LVU115
+ 422 0000 10B5     		push	{r4, lr}
+ 423              	.LCFI5:
+ 424              		.cfi_def_cfa_offset 8
+ 425              		.cfi_offset 4, -8
+ 426              		.cfi_offset 14, -4
+ 427 0002 0146     		mov	r1, r0
+  83:Core/Src/crsf.c ****     CRSF_ParseFrame(s_rxBuf, size);
+ 428              		.loc 1 83 5 is_stmt 1 view .LVU116
+ 429 0004 044C     		ldr	r4, .L36
+ 430 0006 2046     		mov	r0, r4
+ 431              	.LVL47:
+ 432              		.loc 1 83 5 is_stmt 0 view .LVU117
+ 433 0008 FFF7FEFF 		bl	CRSF_ParseFrame
+ 434              	.LVL48:
+  84:Core/Src/crsf.c ****     HAL_UARTEx_ReceiveToIdle_IT(&huart2, s_rxBuf, CRSF_RX_BUF_SIZE);
+ 435              		.loc 1 84 5 is_stmt 1 view .LVU118
+ 436 000c 4022     		movs	r2, #64
+ 437 000e 2146     		mov	r1, r4
+ 438 0010 0248     		ldr	r0, .L36+4
+ 439 0012 FFF7FEFF 		bl	HAL_UARTEx_ReceiveToIdle_IT
+ 440              	.LVL49:
+  85:Core/Src/crsf.c **** }
+ 441              		.loc 1 85 1 is_stmt 0 view .LVU119
+ 442 0016 10BD     		pop	{r4, pc}
+ 443              	.L37:
+ 444              		.align	2
+ 445              	.L36:
+ 446 0018 00000000 		.word	s_rxBuf
+ 447 001c 00000000 		.word	huart2
+ 448              		.cfi_endproc
+ 449              	.LFE138:
+ 451              		.section	.text.CRSF_IsLinkUp,"ax",%progbits
+ 452              		.align	1
+ 453              		.global	CRSF_IsLinkUp
+ 454              		.syntax unified
+ 455              		.thumb
+ 456              		.thumb_func
+ 458              	CRSF_IsLinkUp:
+ 459              	.LVL50:
+ 460              	.LFB139:
+  86:Core/Src/crsf.c **** 
+  87:Core/Src/crsf.c **** bool CRSF_IsLinkUp(uint32_t now_ms)
+  88:Core/Src/crsf.c **** {
+ARM GAS  /tmp/ccfchMFw.s 			page 11
+
+
+ 461              		.loc 1 88 1 is_stmt 1 view -0
+ 462              		.cfi_startproc
+ 463              		@ args = 0, pretend = 0, frame = 0
+ 464              		@ frame_needed = 0, uses_anonymous_args = 0
+ 465              		@ link register save eliminated.
+  89:Core/Src/crsf.c ****     return (now_ms - s_lastFrameTick) < CRSF_FAILSAFE_TIMEOUT_MS;
+ 466              		.loc 1 89 5 view .LVU121
+ 467              		.loc 1 89 20 is_stmt 0 view .LVU122
+ 468 0000 044B     		ldr	r3, .L39
+ 469 0002 1B68     		ldr	r3, [r3]
+ 470 0004 C01A     		subs	r0, r0, r3
+ 471              	.LVL51:
+  90:Core/Src/crsf.c **** }
+ 472              		.loc 1 90 1 view .LVU123
+ 473 0006 B0F5967F 		cmp	r0, #300
+ 474 000a 2CBF     		ite	cs
+ 475 000c 0020     		movcs	r0, #0
+ 476 000e 0120     		movcc	r0, #1
+ 477 0010 7047     		bx	lr
+ 478              	.L40:
+ 479 0012 00BF     		.align	2
+ 480              	.L39:
+ 481 0014 00000000 		.word	s_lastFrameTick
+ 482              		.cfi_endproc
+ 483              	.LFE139:
+ 485              		.section	.text.CRSF_GetChannelUs,"ax",%progbits
+ 486              		.align	1
+ 487              		.global	CRSF_GetChannelUs
+ 488              		.syntax unified
+ 489              		.thumb
+ 490              		.thumb_func
+ 492              	CRSF_GetChannelUs:
+ 493              	.LVL52:
+ 494              	.LFB140:
+  91:Core/Src/crsf.c **** 
+  92:Core/Src/crsf.c **** uint16_t CRSF_GetChannelUs(uint8_t index)
+  93:Core/Src/crsf.c **** {
+ 495              		.loc 1 93 1 is_stmt 1 view -0
+ 496              		.cfi_startproc
+ 497              		@ args = 0, pretend = 0, frame = 0
+ 498              		@ frame_needed = 0, uses_anonymous_args = 0
+ 499              		@ link register save eliminated.
+  94:Core/Src/crsf.c ****     if (index >= CRSF_NUM_CHANNELS) {
+ 500              		.loc 1 94 5 view .LVU125
+ 501              		.loc 1 94 8 is_stmt 0 view .LVU126
+ 502 0000 0F28     		cmp	r0, #15
+ 503 0002 29D8     		bhi	.L44
+  95:Core/Src/crsf.c ****         return 1500;
+  96:Core/Src/crsf.c ****     }
+  97:Core/Src/crsf.c ****     float us = 988.0f + ((float)s_channelsRaw[index] - 172.0f) * 0.62477f;
+ 504              		.loc 1 97 5 is_stmt 1 view .LVU127
+ 505              		.loc 1 97 46 is_stmt 0 view .LVU128
+ 506 0004 164B     		ldr	r3, .L47
+ 507 0006 33F81030 		ldrh	r3, [r3, r0, lsl #1]
+ 508 000a 07EE903A 		vmov	s15, r3	@ int
+ 509              		.loc 1 97 26 view .LVU129
+ 510 000e F8EE677A 		vcvt.f32.u32	s15, s15
+ARM GAS  /tmp/ccfchMFw.s 			page 12
+
+
+ 511              		.loc 1 97 54 view .LVU130
+ 512 0012 9FED147A 		vldr.32	s14, .L47+4
+ 513 0016 77EEC77A 		vsub.f32	s15, s15, s14
+ 514              		.loc 1 97 64 view .LVU131
+ 515 001a 9FED137A 		vldr.32	s14, .L47+8
+ 516 001e 67EE877A 		vmul.f32	s15, s15, s14
+ 517              		.loc 1 97 11 view .LVU132
+ 518 0022 9FED127A 		vldr.32	s14, .L47+12
+ 519 0026 77EE877A 		vadd.f32	s15, s15, s14
+ 520              	.LVL53:
+  98:Core/Src/crsf.c ****     if (us < 988.0f)  us = 988.0f;
+ 521              		.loc 1 98 5 is_stmt 1 view .LVU133
+ 522              		.loc 1 98 8 is_stmt 0 view .LVU134
+ 523 002a F4EEC77A 		vcmpe.f32	s15, s14
+ 524 002e F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 525 0032 09D4     		bmi	.L45
+  99:Core/Src/crsf.c ****     if (us > 2012.0f) us = 2012.0f;
+ 526              		.loc 1 99 5 is_stmt 1 view .LVU135
+ 527              		.loc 1 99 8 is_stmt 0 view .LVU136
+ 528 0034 9FED0E7A 		vldr.32	s14, .L47+16
+ 529 0038 F4EEC77A 		vcmpe.f32	s15, s14
+ 530 003c F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 531 0040 04DD     		ble	.L43
+ 532              		.loc 1 99 26 discriminator 1 view .LVU137
+ 533 0042 DFED0B7A 		vldr.32	s15, .L47+16
+ 534              	.LVL54:
+ 535              		.loc 1 99 26 discriminator 1 view .LVU138
+ 536 0046 01E0     		b	.L43
+ 537              	.LVL55:
+ 538              	.L45:
+  98:Core/Src/crsf.c ****     if (us < 988.0f)  us = 988.0f;
+ 539              		.loc 1 98 26 discriminator 1 view .LVU139
+ 540 0048 DFED087A 		vldr.32	s15, .L47+12
+ 541              	.LVL56:
+ 542              	.L43:
+ 100:Core/Src/crsf.c ****     return (uint16_t)us;
+ 543              		.loc 1 100 5 is_stmt 1 view .LVU140
+ 544              		.loc 1 100 12 is_stmt 0 view .LVU141
+ 545 004c FCEEE77A 		vcvt.u32.f32	s15, s15
+ 546              	.LVL57:
+ 547              		.loc 1 100 12 view .LVU142
+ 548 0050 17EE903A 		vmov	r3, s15	@ int
+ 549 0054 98B2     		uxth	r0, r3
+ 550              	.LVL58:
+ 551              		.loc 1 100 12 view .LVU143
+ 552 0056 7047     		bx	lr
+ 553              	.LVL59:
+ 554              	.L44:
+  95:Core/Src/crsf.c ****     }
+ 555              		.loc 1 95 16 view .LVU144
+ 556 0058 40F2DC50 		movw	r0, #1500
+ 557              	.LVL60:
+ 101:Core/Src/crsf.c **** }
+ 558              		.loc 1 101 1 view .LVU145
+ 559 005c 7047     		bx	lr
+ 560              	.L48:
+ 561 005e 00BF     		.align	2
+ARM GAS  /tmp/ccfchMFw.s 			page 13
+
+
+ 562              	.L47:
+ 563 0060 00000000 		.word	s_channelsRaw
+ 564 0064 00002C43 		.word	1126957056
+ 565 0068 EDF01F3F 		.word	1059057901
+ 566 006c 00007744 		.word	1148649472
+ 567 0070 0080FB44 		.word	1157332992
+ 568              		.cfi_endproc
+ 569              	.LFE140:
+ 571              		.section	.text.HAL_UARTEx_RxEventCallback,"ax",%progbits
+ 572              		.align	1
+ 573              		.global	HAL_UARTEx_RxEventCallback
+ 574              		.syntax unified
+ 575              		.thumb
+ 576              		.thumb_func
+ 578              	HAL_UARTEx_RxEventCallback:
+ 579              	.LVL61:
+ 580              	.LFB141:
+ 102:Core/Src/crsf.c **** 
+ 103:Core/Src/crsf.c **** void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t size)
+ 104:Core/Src/crsf.c **** {
+ 581              		.loc 1 104 1 is_stmt 1 view -0
+ 582              		.cfi_startproc
+ 583              		@ args = 0, pretend = 0, frame = 0
+ 584              		@ frame_needed = 0, uses_anonymous_args = 0
+ 585              		.loc 1 104 1 is_stmt 0 view .LVU147
+ 586 0000 08B5     		push	{r3, lr}
+ 587              	.LCFI6:
+ 588              		.cfi_def_cfa_offset 8
+ 589              		.cfi_offset 3, -8
+ 590              		.cfi_offset 14, -4
+ 105:Core/Src/crsf.c ****     if (huart->Instance == USART2) {
+ 591              		.loc 1 105 5 is_stmt 1 view .LVU148
+ 592              		.loc 1 105 14 is_stmt 0 view .LVU149
+ 593 0002 0268     		ldr	r2, [r0]
+ 594              		.loc 1 105 8 view .LVU150
+ 595 0004 034B     		ldr	r3, .L53
+ 596 0006 9A42     		cmp	r2, r3
+ 597 0008 00D0     		beq	.L52
+ 598              	.LVL62:
+ 599              	.L49:
+ 106:Core/Src/crsf.c ****         CRSF_OnUartEvent(size);
+ 107:Core/Src/crsf.c ****     }
+ 108:Core/Src/crsf.c **** }
+ 600              		.loc 1 108 1 view .LVU151
+ 601 000a 08BD     		pop	{r3, pc}
+ 602              	.LVL63:
+ 603              	.L52:
+ 106:Core/Src/crsf.c ****         CRSF_OnUartEvent(size);
+ 604              		.loc 1 106 9 is_stmt 1 view .LVU152
+ 605 000c 0846     		mov	r0, r1
+ 606              	.LVL64:
+ 106:Core/Src/crsf.c ****         CRSF_OnUartEvent(size);
+ 607              		.loc 1 106 9 is_stmt 0 view .LVU153
+ 608 000e FFF7FEFF 		bl	CRSF_OnUartEvent
+ 609              	.LVL65:
+ 610              		.loc 1 108 1 view .LVU154
+ 611 0012 FAE7     		b	.L49
+ARM GAS  /tmp/ccfchMFw.s 			page 14
+
+
+ 612              	.L54:
+ 613              		.align	2
+ 614              	.L53:
+ 615 0014 00440040 		.word	1073759232
+ 616              		.cfi_endproc
+ 617              	.LFE141:
+ 619              		.section	.bss.s_lastFrameTick,"aw",%nobits
+ 620              		.align	2
+ 623              	s_lastFrameTick:
+ 624 0000 00000000 		.space	4
+ 625              		.section	.bss.s_channelsRaw,"aw",%nobits
+ 626              		.align	2
+ 629              	s_channelsRaw:
+ 630 0000 00000000 		.space	32
+ 630      00000000 
+ 630      00000000 
+ 630      00000000 
+ 630      00000000 
+ 631              		.section	.bss.s_rxBuf,"aw",%nobits
+ 632              		.align	2
+ 635              	s_rxBuf:
+ 636 0000 00000000 		.space	64
+ 636      00000000 
+ 636      00000000 
+ 636      00000000 
+ 636      00000000 
+ 637              		.text
+ 638              	.Letext0:
+ 639              		.file 2 "/usr/arm-none-eabi/include/machine/_default_types.h"
+ 640              		.file 3 "/usr/arm-none-eabi/include/sys/_stdint.h"
+ 641              		.file 4 "Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f405xx.h"
+ 642              		.file 5 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h"
+ 643              		.file 6 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_dma.h"
+ 644              		.file 7 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h"
+ 645              		.file 8 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h"
+ARM GAS  /tmp/ccfchMFw.s 			page 15
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 crsf.c
+     /tmp/ccfchMFw.s:21     .text.CRSF_Crc8:00000000 $t
+     /tmp/ccfchMFw.s:26     .text.CRSF_Crc8:00000000 CRSF_Crc8
+     /tmp/ccfchMFw.s:126    .text.CRSF_UnpackChannels:00000000 $t
+     /tmp/ccfchMFw.s:131    .text.CRSF_UnpackChannels:00000000 CRSF_UnpackChannels
+     /tmp/ccfchMFw.s:223    .text.CRSF_UnpackChannels:00000044 $d
+     /tmp/ccfchMFw.s:629    .bss.s_channelsRaw:00000000 s_channelsRaw
+     /tmp/ccfchMFw.s:228    .text.CRSF_ParseFrame:00000000 $t
+     /tmp/ccfchMFw.s:233    .text.CRSF_ParseFrame:00000000 CRSF_ParseFrame
+     /tmp/ccfchMFw.s:334    .text.CRSF_ParseFrame:00000048 $d
+     /tmp/ccfchMFw.s:623    .bss.s_lastFrameTick:00000000 s_lastFrameTick
+     /tmp/ccfchMFw.s:339    .text.CRSF_Init:00000000 $t
+     /tmp/ccfchMFw.s:345    .text.CRSF_Init:00000000 CRSF_Init
+     /tmp/ccfchMFw.s:400    .text.CRSF_Init:0000002c $d
+     /tmp/ccfchMFw.s:635    .bss.s_rxBuf:00000000 s_rxBuf
+     /tmp/ccfchMFw.s:408    .text.CRSF_OnUartEvent:00000000 $t
+     /tmp/ccfchMFw.s:414    .text.CRSF_OnUartEvent:00000000 CRSF_OnUartEvent
+     /tmp/ccfchMFw.s:446    .text.CRSF_OnUartEvent:00000018 $d
+     /tmp/ccfchMFw.s:452    .text.CRSF_IsLinkUp:00000000 $t
+     /tmp/ccfchMFw.s:458    .text.CRSF_IsLinkUp:00000000 CRSF_IsLinkUp
+     /tmp/ccfchMFw.s:481    .text.CRSF_IsLinkUp:00000014 $d
+     /tmp/ccfchMFw.s:486    .text.CRSF_GetChannelUs:00000000 $t
+     /tmp/ccfchMFw.s:492    .text.CRSF_GetChannelUs:00000000 CRSF_GetChannelUs
+     /tmp/ccfchMFw.s:563    .text.CRSF_GetChannelUs:00000060 $d
+     /tmp/ccfchMFw.s:572    .text.HAL_UARTEx_RxEventCallback:00000000 $t
+     /tmp/ccfchMFw.s:578    .text.HAL_UARTEx_RxEventCallback:00000000 HAL_UARTEx_RxEventCallback
+     /tmp/ccfchMFw.s:615    .text.HAL_UARTEx_RxEventCallback:00000014 $d
+     /tmp/ccfchMFw.s:620    .bss.s_lastFrameTick:00000000 $d
+     /tmp/ccfchMFw.s:626    .bss.s_channelsRaw:00000000 $d
+     /tmp/ccfchMFw.s:632    .bss.s_rxBuf:00000000 $d
+
+UNDEFINED SYMBOLS
+HAL_GetTick
+HAL_UARTEx_ReceiveToIdle_IT
+huart2

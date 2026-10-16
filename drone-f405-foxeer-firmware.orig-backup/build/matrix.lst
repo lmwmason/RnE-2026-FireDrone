@@ -1,0 +1,2010 @@
+ARM GAS  /tmp/ccghoRKV.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 1
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"matrix.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.file 1 "Math/matrix.c"
+  20              		.section	.text.mat_add,"ax",%progbits
+  21              		.align	1
+  22              		.global	mat_add
+  23              		.syntax unified
+  24              		.thumb
+  25              		.thumb_func
+  27              	mat_add:
+  28              	.LVL0:
+  29              	.LFB0:
+   1:Math/matrix.c **** #include "matrix.h"
+   2:Math/matrix.c **** #include <math.h>
+   3:Math/matrix.c **** #include <string.h>
+   4:Math/matrix.c **** 
+   5:Math/matrix.c **** void mat_add(const float *A, const float *B, float *C, uint8_t r, uint8_t c)
+   6:Math/matrix.c **** {
+  30              		.loc 1 6 1 view -0
+  31              		.cfi_startproc
+  32              		@ args = 4, pretend = 0, frame = 0
+  33              		@ frame_needed = 0, uses_anonymous_args = 0
+  34              		.loc 1 6 1 is_stmt 0 view .LVU1
+  35 0000 00B5     		push	{lr}
+  36              	.LCFI0:
+  37              		.cfi_def_cfa_offset 4
+  38              		.cfi_offset 14, -4
+   7:Math/matrix.c ****     uint16_t n = (uint16_t)r * c;
+  39              		.loc 1 7 5 is_stmt 1 view .LVU2
+  40              		.loc 1 7 14 is_stmt 0 view .LVU3
+  41 0002 9DF804C0 		ldrb	ip, [sp, #4]	@ zero_extendqisi2
+  42 0006 03FB0CF3 		mul	r3, r3, ip
+  43              	.LVL1:
+   8:Math/matrix.c ****     for (uint16_t i = 0; i < n; i++) C[i] = A[i] + B[i];
+  44              		.loc 1 8 5 is_stmt 1 view .LVU4
+  45              	.LBB2:
+  46              		.loc 1 8 10 view .LVU5
+  47              		.loc 1 8 19 is_stmt 0 view .LVU6
+  48 000a 4FF0000C 		mov	ip, #0
+  49              		.loc 1 8 5 view .LVU7
+  50 000e 11E0     		b	.L2
+ARM GAS  /tmp/ccghoRKV.s 			page 2
+
+
+  51              	.LVL2:
+  52              	.L3:
+  53              		.loc 1 8 38 is_stmt 1 discriminator 3 view .LVU8
+  54              		.loc 1 8 46 is_stmt 0 discriminator 3 view .LVU9
+  55 0010 00EB8C0E 		add	lr, r0, ip, lsl #2
+  56 0014 DEED007A 		vldr.32	s15, [lr]
+  57              		.loc 1 8 53 discriminator 3 view .LVU10
+  58 0018 01EB8C0E 		add	lr, r1, ip, lsl #2
+  59 001c 9EED007A 		vldr.32	s14, [lr]
+  60              		.loc 1 8 39 discriminator 3 view .LVU11
+  61 0020 02EB8C0E 		add	lr, r2, ip, lsl #2
+  62              		.loc 1 8 50 discriminator 3 view .LVU12
+  63 0024 77EE877A 		vadd.f32	s15, s15, s14
+  64              		.loc 1 8 43 discriminator 3 view .LVU13
+  65 0028 CEED007A 		vstr.32	s15, [lr]
+  66              		.loc 1 8 34 is_stmt 1 discriminator 3 view .LVU14
+  67 002c 0CF1010C 		add	ip, ip, #1
+  68              	.LVL3:
+  69              		.loc 1 8 34 is_stmt 0 discriminator 3 view .LVU15
+  70 0030 1FFA8CFC 		uxth	ip, ip
+  71              	.LVL4:
+  72              	.L2:
+  73              		.loc 1 8 28 is_stmt 1 discriminator 1 view .LVU16
+  74 0034 9C45     		cmp	ip, r3
+  75 0036 EBD3     		bcc	.L3
+  76              	.LBE2:
+   9:Math/matrix.c **** }
+  77              		.loc 1 9 1 is_stmt 0 view .LVU17
+  78 0038 00BD     		pop	{pc}
+  79              		.loc 1 9 1 view .LVU18
+  80              		.cfi_endproc
+  81              	.LFE0:
+  83              		.section	.text.mat_sub,"ax",%progbits
+  84              		.align	1
+  85              		.global	mat_sub
+  86              		.syntax unified
+  87              		.thumb
+  88              		.thumb_func
+  90              	mat_sub:
+  91              	.LVL5:
+  92              	.LFB1:
+  10:Math/matrix.c **** 
+  11:Math/matrix.c **** void mat_sub(const float *A, const float *B, float *C, uint8_t r, uint8_t c)
+  12:Math/matrix.c **** {
+  93              		.loc 1 12 1 is_stmt 1 view -0
+  94              		.cfi_startproc
+  95              		@ args = 4, pretend = 0, frame = 0
+  96              		@ frame_needed = 0, uses_anonymous_args = 0
+  97              		.loc 1 12 1 is_stmt 0 view .LVU20
+  98 0000 00B5     		push	{lr}
+  99              	.LCFI1:
+ 100              		.cfi_def_cfa_offset 4
+ 101              		.cfi_offset 14, -4
+  13:Math/matrix.c ****     uint16_t n = (uint16_t)r * c;
+ 102              		.loc 1 13 5 is_stmt 1 view .LVU21
+ 103              		.loc 1 13 14 is_stmt 0 view .LVU22
+ 104 0002 9DF804C0 		ldrb	ip, [sp, #4]	@ zero_extendqisi2
+ARM GAS  /tmp/ccghoRKV.s 			page 3
+
+
+ 105 0006 03FB0CF3 		mul	r3, r3, ip
+ 106              	.LVL6:
+  14:Math/matrix.c ****     for (uint16_t i = 0; i < n; i++) C[i] = A[i] - B[i];
+ 107              		.loc 1 14 5 is_stmt 1 view .LVU23
+ 108              	.LBB3:
+ 109              		.loc 1 14 10 view .LVU24
+ 110              		.loc 1 14 19 is_stmt 0 view .LVU25
+ 111 000a 4FF0000C 		mov	ip, #0
+ 112              		.loc 1 14 5 view .LVU26
+ 113 000e 11E0     		b	.L6
+ 114              	.LVL7:
+ 115              	.L7:
+ 116              		.loc 1 14 38 is_stmt 1 discriminator 3 view .LVU27
+ 117              		.loc 1 14 46 is_stmt 0 discriminator 3 view .LVU28
+ 118 0010 00EB8C0E 		add	lr, r0, ip, lsl #2
+ 119 0014 DEED007A 		vldr.32	s15, [lr]
+ 120              		.loc 1 14 53 discriminator 3 view .LVU29
+ 121 0018 01EB8C0E 		add	lr, r1, ip, lsl #2
+ 122 001c 9EED007A 		vldr.32	s14, [lr]
+ 123              		.loc 1 14 39 discriminator 3 view .LVU30
+ 124 0020 02EB8C0E 		add	lr, r2, ip, lsl #2
+ 125              		.loc 1 14 50 discriminator 3 view .LVU31
+ 126 0024 77EEC77A 		vsub.f32	s15, s15, s14
+ 127              		.loc 1 14 43 discriminator 3 view .LVU32
+ 128 0028 CEED007A 		vstr.32	s15, [lr]
+ 129              		.loc 1 14 34 is_stmt 1 discriminator 3 view .LVU33
+ 130 002c 0CF1010C 		add	ip, ip, #1
+ 131              	.LVL8:
+ 132              		.loc 1 14 34 is_stmt 0 discriminator 3 view .LVU34
+ 133 0030 1FFA8CFC 		uxth	ip, ip
+ 134              	.LVL9:
+ 135              	.L6:
+ 136              		.loc 1 14 28 is_stmt 1 discriminator 1 view .LVU35
+ 137 0034 9C45     		cmp	ip, r3
+ 138 0036 EBD3     		bcc	.L7
+ 139              	.LBE3:
+  15:Math/matrix.c **** }
+ 140              		.loc 1 15 1 is_stmt 0 view .LVU36
+ 141 0038 00BD     		pop	{pc}
+ 142              		.loc 1 15 1 view .LVU37
+ 143              		.cfi_endproc
+ 144              	.LFE1:
+ 146              		.section	.text.mat_scale,"ax",%progbits
+ 147              		.align	1
+ 148              		.global	mat_scale
+ 149              		.syntax unified
+ 150              		.thumb
+ 151              		.thumb_func
+ 153              	mat_scale:
+ 154              	.LVL10:
+ 155              	.LFB2:
+  16:Math/matrix.c **** 
+  17:Math/matrix.c **** void mat_scale(const float *A, float s, float *C, uint8_t r, uint8_t c)
+  18:Math/matrix.c **** {
+ 156              		.loc 1 18 1 is_stmt 1 view -0
+ 157              		.cfi_startproc
+ 158              		@ args = 0, pretend = 0, frame = 0
+ARM GAS  /tmp/ccghoRKV.s 			page 4
+
+
+ 159              		@ frame_needed = 0, uses_anonymous_args = 0
+  19:Math/matrix.c ****     uint16_t n = (uint16_t)r * c;
+ 160              		.loc 1 19 5 view .LVU39
+ 161              		.loc 1 19 14 is_stmt 0 view .LVU40
+ 162 0000 02FB03F3 		mul	r3, r2, r3
+ 163              	.LVL11:
+  20:Math/matrix.c ****     for (uint16_t i = 0; i < n; i++) C[i] = A[i] * s;
+ 164              		.loc 1 20 5 is_stmt 1 view .LVU41
+ 165              	.LBB4:
+ 166              		.loc 1 20 10 view .LVU42
+ 167              		.loc 1 20 19 is_stmt 0 view .LVU43
+ 168 0004 4FF0000C 		mov	ip, #0
+ 169              	.LVL12:
+ 170              		.loc 1 20 28 is_stmt 1 discriminator 1 view .LVU44
+ 171 0008 9C45     		cmp	ip, r3
+ 172 000a 11D2     		bcs	.L15
+ 173              	.LBE4:
+  18:Math/matrix.c ****     uint16_t n = (uint16_t)r * c;
+ 174              		.loc 1 18 1 is_stmt 0 view .LVU45
+ 175 000c 00B5     		push	{lr}
+ 176              	.LCFI2:
+ 177              		.cfi_def_cfa_offset 4
+ 178              		.cfi_offset 14, -4
+ 179              	.L11:
+ 180              	.LBB5:
+ 181              		.loc 1 20 38 is_stmt 1 discriminator 3 view .LVU46
+ 182              		.loc 1 20 46 is_stmt 0 discriminator 3 view .LVU47
+ 183 000e 00EB8C0E 		add	lr, r0, ip, lsl #2
+ 184 0012 DEED007A 		vldr.32	s15, [lr]
+ 185              		.loc 1 20 39 discriminator 3 view .LVU48
+ 186 0016 01EB8C0E 		add	lr, r1, ip, lsl #2
+ 187              		.loc 1 20 50 discriminator 3 view .LVU49
+ 188 001a 67EE807A 		vmul.f32	s15, s15, s0
+ 189              		.loc 1 20 43 discriminator 3 view .LVU50
+ 190 001e CEED007A 		vstr.32	s15, [lr]
+ 191              		.loc 1 20 34 is_stmt 1 discriminator 3 view .LVU51
+ 192 0022 0CF1010C 		add	ip, ip, #1
+ 193              	.LVL13:
+ 194              		.loc 1 20 34 is_stmt 0 discriminator 3 view .LVU52
+ 195 0026 1FFA8CFC 		uxth	ip, ip
+ 196              	.LVL14:
+ 197              		.loc 1 20 28 is_stmt 1 discriminator 1 view .LVU53
+ 198 002a 9C45     		cmp	ip, r3
+ 199 002c EFD3     		bcc	.L11
+ 200              	.LBE5:
+  21:Math/matrix.c **** }
+ 201              		.loc 1 21 1 is_stmt 0 view .LVU54
+ 202 002e 00BD     		pop	{pc}
+ 203              	.L15:
+ 204              	.LCFI3:
+ 205              		.cfi_def_cfa_offset 0
+ 206              		.cfi_restore 14
+ 207              		.loc 1 21 1 view .LVU55
+ 208 0030 7047     		bx	lr
+ 209              		.cfi_endproc
+ 210              	.LFE2:
+ 212              		.section	.text.mat_copy,"ax",%progbits
+ARM GAS  /tmp/ccghoRKV.s 			page 5
+
+
+ 213              		.align	1
+ 214              		.global	mat_copy
+ 215              		.syntax unified
+ 216              		.thumb
+ 217              		.thumb_func
+ 219              	mat_copy:
+ 220              	.LVL15:
+ 221              	.LFB3:
+  22:Math/matrix.c **** 
+  23:Math/matrix.c **** void mat_copy(const float *src, float *dst, uint8_t r, uint8_t c)
+  24:Math/matrix.c **** {
+ 222              		.loc 1 24 1 is_stmt 1 view -0
+ 223              		.cfi_startproc
+ 224              		@ args = 0, pretend = 0, frame = 0
+ 225              		@ frame_needed = 0, uses_anonymous_args = 0
+ 226              		.loc 1 24 1 is_stmt 0 view .LVU57
+ 227 0000 08B5     		push	{r3, lr}
+ 228              	.LCFI4:
+ 229              		.cfi_def_cfa_offset 8
+ 230              		.cfi_offset 3, -8
+ 231              		.cfi_offset 14, -4
+ 232 0002 8446     		mov	ip, r0
+ 233 0004 0846     		mov	r0, r1
+ 234              	.LVL16:
+  25:Math/matrix.c ****     memcpy(dst, src, (uint16_t)r * c * sizeof(float));
+ 235              		.loc 1 25 5 is_stmt 1 view .LVU58
+ 236              		.loc 1 25 34 is_stmt 0 view .LVU59
+ 237 0006 03FB02F2 		mul	r2, r3, r2
+ 238              	.LVL17:
+ 239              		.loc 1 25 5 view .LVU60
+ 240 000a 9200     		lsls	r2, r2, #2
+ 241 000c 6146     		mov	r1, ip
+ 242              	.LVL18:
+ 243              		.loc 1 25 5 view .LVU61
+ 244 000e FFF7FEFF 		bl	memcpy
+ 245              	.LVL19:
+  26:Math/matrix.c **** }
+ 246              		.loc 1 26 1 view .LVU62
+ 247 0012 08BD     		pop	{r3, pc}
+ 248              		.cfi_endproc
+ 249              	.LFE3:
+ 251              		.section	.text.mat_zero,"ax",%progbits
+ 252              		.align	1
+ 253              		.global	mat_zero
+ 254              		.syntax unified
+ 255              		.thumb
+ 256              		.thumb_func
+ 258              	mat_zero:
+ 259              	.LVL20:
+ 260              	.LFB4:
+  27:Math/matrix.c **** 
+  28:Math/matrix.c **** void mat_zero(float *A, uint8_t r, uint8_t c)
+  29:Math/matrix.c **** {
+ 261              		.loc 1 29 1 is_stmt 1 view -0
+ 262              		.cfi_startproc
+ 263              		@ args = 0, pretend = 0, frame = 0
+ 264              		@ frame_needed = 0, uses_anonymous_args = 0
+ARM GAS  /tmp/ccghoRKV.s 			page 6
+
+
+ 265              		.loc 1 29 1 is_stmt 0 view .LVU64
+ 266 0000 08B5     		push	{r3, lr}
+ 267              	.LCFI5:
+ 268              		.cfi_def_cfa_offset 8
+ 269              		.cfi_offset 3, -8
+ 270              		.cfi_offset 14, -4
+  30:Math/matrix.c ****     memset(A, 0, (uint16_t)r * c * sizeof(float));
+ 271              		.loc 1 30 5 is_stmt 1 view .LVU65
+ 272              		.loc 1 30 30 is_stmt 0 view .LVU66
+ 273 0002 01FB02F2 		mul	r2, r1, r2
+ 274              	.LVL21:
+ 275              		.loc 1 30 5 view .LVU67
+ 276 0006 9200     		lsls	r2, r2, #2
+ 277 0008 0021     		movs	r1, #0
+ 278              	.LVL22:
+ 279              		.loc 1 30 5 view .LVU68
+ 280 000a FFF7FEFF 		bl	memset
+ 281              	.LVL23:
+  31:Math/matrix.c **** }
+ 282              		.loc 1 31 1 view .LVU69
+ 283 000e 08BD     		pop	{r3, pc}
+ 284              		.cfi_endproc
+ 285              	.LFE4:
+ 287              		.section	.text.mat_identity,"ax",%progbits
+ 288              		.align	1
+ 289              		.global	mat_identity
+ 290              		.syntax unified
+ 291              		.thumb
+ 292              		.thumb_func
+ 294              	mat_identity:
+ 295              	.LVL24:
+ 296              	.LFB5:
+  32:Math/matrix.c **** 
+  33:Math/matrix.c **** void mat_identity(float *A, uint8_t n)
+  34:Math/matrix.c **** {
+ 297              		.loc 1 34 1 is_stmt 1 view -0
+ 298              		.cfi_startproc
+ 299              		@ args = 0, pretend = 0, frame = 0
+ 300              		@ frame_needed = 0, uses_anonymous_args = 0
+ 301              		.loc 1 34 1 is_stmt 0 view .LVU71
+ 302 0000 38B5     		push	{r3, r4, r5, lr}
+ 303              	.LCFI6:
+ 304              		.cfi_def_cfa_offset 16
+ 305              		.cfi_offset 3, -16
+ 306              		.cfi_offset 4, -12
+ 307              		.cfi_offset 5, -8
+ 308              		.cfi_offset 14, -4
+ 309 0002 0546     		mov	r5, r0
+ 310 0004 0C46     		mov	r4, r1
+  35:Math/matrix.c ****     mat_zero(A, n, n);
+ 311              		.loc 1 35 5 is_stmt 1 view .LVU72
+ 312 0006 0A46     		mov	r2, r1
+ 313 0008 FFF7FEFF 		bl	mat_zero
+ 314              	.LVL25:
+  36:Math/matrix.c ****     for (uint8_t i = 0; i < n; i++) A[(uint16_t)i * n + i] = 1.0f;
+ 315              		.loc 1 36 5 view .LVU73
+ 316              	.LBB6:
+ARM GAS  /tmp/ccghoRKV.s 			page 7
+
+
+ 317              		.loc 1 36 10 view .LVU74
+ 318              		.loc 1 36 18 is_stmt 0 view .LVU75
+ 319 000c 0023     		movs	r3, #0
+ 320              		.loc 1 36 5 view .LVU76
+ 321 000e 08E0     		b	.L21
+ 322              	.LVL26:
+ 323              	.L22:
+ 324              		.loc 1 36 37 is_stmt 1 discriminator 3 view .LVU77
+ 325              		.loc 1 36 55 is_stmt 0 discriminator 3 view .LVU78
+ 326 0010 03FB0432 		mla	r2, r3, r4, r3
+ 327              		.loc 1 36 38 discriminator 3 view .LVU79
+ 328 0014 05EB8202 		add	r2, r5, r2, lsl #2
+ 329              		.loc 1 36 60 discriminator 3 view .LVU80
+ 330 0018 4FF07E51 		mov	r1, #1065353216
+ 331 001c 1160     		str	r1, [r2]	@ float
+ 332              		.loc 1 36 33 is_stmt 1 discriminator 3 view .LVU81
+ 333 001e 0133     		adds	r3, r3, #1
+ 334              	.LVL27:
+ 335              		.loc 1 36 33 is_stmt 0 discriminator 3 view .LVU82
+ 336 0020 DBB2     		uxtb	r3, r3
+ 337              	.LVL28:
+ 338              	.L21:
+ 339              		.loc 1 36 27 is_stmt 1 discriminator 1 view .LVU83
+ 340 0022 A342     		cmp	r3, r4
+ 341 0024 F4D3     		bcc	.L22
+ 342              	.LBE6:
+  37:Math/matrix.c **** }
+ 343              		.loc 1 37 1 is_stmt 0 view .LVU84
+ 344 0026 38BD     		pop	{r3, r4, r5, pc}
+ 345              		.loc 1 37 1 view .LVU85
+ 346              		.cfi_endproc
+ 347              	.LFE5:
+ 349              		.section	.text.mat_trans,"ax",%progbits
+ 350              		.align	1
+ 351              		.global	mat_trans
+ 352              		.syntax unified
+ 353              		.thumb
+ 354              		.thumb_func
+ 356              	mat_trans:
+ 357              	.LVL29:
+ 358              	.LFB6:
+  38:Math/matrix.c **** 
+  39:Math/matrix.c **** void mat_trans(const float *A, float *At, uint8_t r, uint8_t c)
+  40:Math/matrix.c **** {
+ 359              		.loc 1 40 1 is_stmt 1 view -0
+ 360              		.cfi_startproc
+ 361              		@ args = 0, pretend = 0, frame = 0
+ 362              		@ frame_needed = 0, uses_anonymous_args = 0
+ 363              		.loc 1 40 1 is_stmt 0 view .LVU87
+ 364 0000 30B5     		push	{r4, r5, lr}
+ 365              	.LCFI7:
+ 366              		.cfi_def_cfa_offset 12
+ 367              		.cfi_offset 4, -12
+ 368              		.cfi_offset 5, -8
+ 369              		.cfi_offset 14, -4
+ 370 0002 0C46     		mov	r4, r1
+ 371 0004 1546     		mov	r5, r2
+ARM GAS  /tmp/ccghoRKV.s 			page 8
+
+
+  41:Math/matrix.c ****     for (uint8_t i = 0; i < r; i++)
+ 372              		.loc 1 41 5 is_stmt 1 view .LVU88
+ 373              	.LBB7:
+ 374              		.loc 1 41 10 view .LVU89
+ 375              	.LVL30:
+ 376              		.loc 1 41 18 is_stmt 0 view .LVU90
+ 377 0006 0021     		movs	r1, #0
+ 378              	.LVL31:
+ 379              		.loc 1 41 5 view .LVU91
+ 380 0008 12E0     		b	.L25
+ 381              	.LVL32:
+ 382              	.L26:
+ 383              	.LBB8:
+  42:Math/matrix.c ****         for (uint8_t j = 0; j < c; j++)
+  43:Math/matrix.c ****             At[(uint16_t)j * r + i] = A[(uint16_t)i * c + j];
+ 384              		.loc 1 43 13 is_stmt 1 view .LVU92
+ 385              		.loc 1 43 57 is_stmt 0 view .LVU93
+ 386 000a 01FB03C2 		mla	r2, r1, r3, ip
+ 387              		.loc 1 43 32 view .LVU94
+ 388 000e 0CFB051E 		mla	lr, ip, r5, r1
+ 389              		.loc 1 43 15 view .LVU95
+ 390 0012 04EB8E0E 		add	lr, r4, lr, lsl #2
+ 391              		.loc 1 43 40 view .LVU96
+ 392 0016 00EB8202 		add	r2, r0, r2, lsl #2
+ 393 001a 1268     		ldr	r2, [r2]	@ float
+ 394              		.loc 1 43 37 view .LVU97
+ 395 001c CEF80020 		str	r2, [lr]	@ float
+  42:Math/matrix.c ****         for (uint8_t j = 0; j < c; j++)
+ 396              		.loc 1 42 37 is_stmt 1 discriminator 3 view .LVU98
+ 397 0020 0CF1010C 		add	ip, ip, #1
+ 398              	.LVL33:
+  42:Math/matrix.c ****         for (uint8_t j = 0; j < c; j++)
+ 399              		.loc 1 42 37 is_stmt 0 discriminator 3 view .LVU99
+ 400 0024 5FFA8CFC 		uxtb	ip, ip
+ 401              	.LVL34:
+ 402              	.L27:
+  42:Math/matrix.c ****         for (uint8_t j = 0; j < c; j++)
+ 403              		.loc 1 42 31 is_stmt 1 discriminator 1 view .LVU100
+ 404 0028 9C45     		cmp	ip, r3
+ 405 002a EED3     		bcc	.L26
+ 406              	.LBE8:
+  41:Math/matrix.c ****     for (uint8_t i = 0; i < r; i++)
+ 407              		.loc 1 41 33 discriminator 2 view .LVU101
+ 408 002c 0131     		adds	r1, r1, #1
+ 409              	.LVL35:
+  41:Math/matrix.c ****     for (uint8_t i = 0; i < r; i++)
+ 410              		.loc 1 41 33 is_stmt 0 discriminator 2 view .LVU102
+ 411 002e C9B2     		uxtb	r1, r1
+ 412              	.LVL36:
+ 413              	.L25:
+  41:Math/matrix.c ****     for (uint8_t i = 0; i < r; i++)
+ 414              		.loc 1 41 27 is_stmt 1 discriminator 1 view .LVU103
+ 415 0030 A942     		cmp	r1, r5
+ 416 0032 02D2     		bcs	.L30
+ 417              	.LBB9:
+  42:Math/matrix.c ****         for (uint8_t j = 0; j < c; j++)
+ 418              		.loc 1 42 22 is_stmt 0 view .LVU104
+ARM GAS  /tmp/ccghoRKV.s 			page 9
+
+
+ 419 0034 4FF0000C 		mov	ip, #0
+ 420 0038 F6E7     		b	.L27
+ 421              	.L30:
+ 422              	.LBE9:
+ 423              	.LBE7:
+  44:Math/matrix.c **** }
+ 424              		.loc 1 44 1 view .LVU105
+ 425 003a 30BD     		pop	{r4, r5, pc}
+ 426              		.loc 1 44 1 view .LVU106
+ 427              		.cfi_endproc
+ 428              	.LFE6:
+ 430              		.section	.text.mat_sym,"ax",%progbits
+ 431              		.align	1
+ 432              		.global	mat_sym
+ 433              		.syntax unified
+ 434              		.thumb
+ 435              		.thumb_func
+ 437              	mat_sym:
+ 438              	.LVL37:
+ 439              	.LFB7:
+  45:Math/matrix.c **** 
+  46:Math/matrix.c **** void mat_sym(float *A, uint8_t n)
+  47:Math/matrix.c **** {
+ 440              		.loc 1 47 1 is_stmt 1 view -0
+ 441              		.cfi_startproc
+ 442              		@ args = 0, pretend = 0, frame = 0
+ 443              		@ frame_needed = 0, uses_anonymous_args = 0
+ 444              		.loc 1 47 1 is_stmt 0 view .LVU108
+ 445 0000 10B5     		push	{r4, lr}
+ 446              	.LCFI8:
+ 447              		.cfi_def_cfa_offset 8
+ 448              		.cfi_offset 4, -8
+ 449              		.cfi_offset 14, -4
+  48:Math/matrix.c ****     for (uint8_t i = 0; i < n; i++) {
+ 450              		.loc 1 48 5 is_stmt 1 view .LVU109
+ 451              	.LBB10:
+ 452              		.loc 1 48 10 view .LVU110
+ 453              	.LVL38:
+ 454              		.loc 1 48 18 is_stmt 0 view .LVU111
+ 455 0002 4FF0000E 		mov	lr, #0
+ 456              		.loc 1 48 5 view .LVU112
+ 457 0006 1AE0     		b	.L32
+ 458              	.LVL39:
+ 459              	.L34:
+ 460              	.LBB11:
+ 461              	.LBB12:
+  49:Math/matrix.c ****         for (uint8_t j = i + 1; j < n; j++) {
+  50:Math/matrix.c ****             float v = 0.5f * (A[(uint16_t)i * n + j] + A[(uint16_t)j * n + i]);
+ 462              		.loc 1 50 13 is_stmt 1 view .LVU113
+ 463              		.loc 1 50 49 is_stmt 0 view .LVU114
+ 464 0008 01FB0E3C 		mla	ip, r1, lr, r3
+ 465              		.loc 1 50 32 view .LVU115
+ 466 000c 00EB8C0C 		add	ip, r0, ip, lsl #2
+ 467 0010 DCED007A 		vldr.32	s15, [ip]
+ 468              		.loc 1 50 74 view .LVU116
+ 469 0014 03FB01E2 		mla	r2, r3, r1, lr
+ 470              		.loc 1 50 57 view .LVU117
+ARM GAS  /tmp/ccghoRKV.s 			page 10
+
+
+ 471 0018 00EB8202 		add	r2, r0, r2, lsl #2
+ 472 001c 92ED007A 		vldr.32	s14, [r2]
+ 473              		.loc 1 50 54 view .LVU118
+ 474 0020 77EE877A 		vadd.f32	s15, s15, s14
+ 475              		.loc 1 50 19 view .LVU119
+ 476 0024 B6EE007A 		vmov.f32	s14, #5.0e-1
+ 477 0028 67EE877A 		vmul.f32	s15, s15, s14
+ 478              	.LVL40:
+  51:Math/matrix.c ****             A[(uint16_t)i * n + j] = v;
+ 479              		.loc 1 51 13 is_stmt 1 view .LVU120
+ 480              		.loc 1 51 36 is_stmt 0 view .LVU121
+ 481 002c CCED007A 		vstr.32	s15, [ip]
+  52:Math/matrix.c ****             A[(uint16_t)j * n + i] = v;
+ 482              		.loc 1 52 13 is_stmt 1 view .LVU122
+ 483              		.loc 1 52 36 is_stmt 0 view .LVU123
+ 484 0030 C2ED007A 		vstr.32	s15, [r2]
+ 485              	.LBE12:
+  49:Math/matrix.c ****         for (uint8_t j = i + 1; j < n; j++) {
+ 486              		.loc 1 49 41 is_stmt 1 discriminator 3 view .LVU124
+ 487 0034 0133     		adds	r3, r3, #1
+ 488              	.LVL41:
+  49:Math/matrix.c ****         for (uint8_t j = i + 1; j < n; j++) {
+ 489              		.loc 1 49 41 is_stmt 0 discriminator 3 view .LVU125
+ 490 0036 DBB2     		uxtb	r3, r3
+ 491              	.LVL42:
+ 492              	.L33:
+  49:Math/matrix.c ****         for (uint8_t j = i + 1; j < n; j++) {
+ 493              		.loc 1 49 35 is_stmt 1 discriminator 1 view .LVU126
+ 494 0038 8B42     		cmp	r3, r1
+ 495 003a E5D3     		bcc	.L34
+ 496              	.LBE11:
+  48:Math/matrix.c ****         for (uint8_t j = i + 1; j < n; j++) {
+ 497              		.loc 1 48 33 is_stmt 0 discriminator 2 view .LVU127
+ 498 003c A646     		mov	lr, r4
+ 499              	.LVL43:
+ 500              	.L32:
+  48:Math/matrix.c ****         for (uint8_t j = i + 1; j < n; j++) {
+ 501              		.loc 1 48 27 is_stmt 1 discriminator 1 view .LVU128
+ 502 003e 8E45     		cmp	lr, r1
+ 503 0040 04D2     		bcs	.L37
+  49:Math/matrix.c ****             float v = 0.5f * (A[(uint16_t)i * n + j] + A[(uint16_t)j * n + i]);
+ 504              		.loc 1 49 9 view .LVU129
+ 505              	.LBB13:
+  49:Math/matrix.c ****             float v = 0.5f * (A[(uint16_t)i * n + j] + A[(uint16_t)j * n + i]);
+ 506              		.loc 1 49 14 view .LVU130
+  49:Math/matrix.c ****             float v = 0.5f * (A[(uint16_t)i * n + j] + A[(uint16_t)j * n + i]);
+ 507              		.loc 1 49 22 is_stmt 0 view .LVU131
+ 508 0042 0EF10104 		add	r4, lr, #1
+ 509 0046 E4B2     		uxtb	r4, r4
+ 510              	.LVL44:
+  49:Math/matrix.c ****             float v = 0.5f * (A[(uint16_t)i * n + j] + A[(uint16_t)j * n + i]);
+ 511              		.loc 1 49 22 view .LVU132
+ 512 0048 2346     		mov	r3, r4
+  49:Math/matrix.c ****             float v = 0.5f * (A[(uint16_t)i * n + j] + A[(uint16_t)j * n + i]);
+ 513              		.loc 1 49 9 view .LVU133
+ 514 004a F5E7     		b	.L33
+ 515              	.LVL45:
+ARM GAS  /tmp/ccghoRKV.s 			page 11
+
+
+ 516              	.L37:
+  49:Math/matrix.c ****             float v = 0.5f * (A[(uint16_t)i * n + j] + A[(uint16_t)j * n + i]);
+ 517              		.loc 1 49 9 view .LVU134
+ 518              	.LBE13:
+ 519              	.LBE10:
+  53:Math/matrix.c ****         }
+  54:Math/matrix.c ****     }
+  55:Math/matrix.c **** }
+ 520              		.loc 1 55 1 view .LVU135
+ 521 004c 10BD     		pop	{r4, pc}
+ 522              		.cfi_endproc
+ 523              	.LFE7:
+ 525              		.section	.text.mat_mul,"ax",%progbits
+ 526              		.align	1
+ 527              		.global	mat_mul
+ 528              		.syntax unified
+ 529              		.thumb
+ 530              		.thumb_func
+ 532              	mat_mul:
+ 533              	.LVL46:
+ 534              	.LFB8:
+  56:Math/matrix.c **** 
+  57:Math/matrix.c **** void mat_mul(const float *A, const float *B, float *C, uint8_t n, uint8_t m, uint8_t p)
+  58:Math/matrix.c **** {
+ 535              		.loc 1 58 1 is_stmt 1 view -0
+ 536              		.cfi_startproc
+ 537              		@ args = 8, pretend = 0, frame = 0
+ 538              		@ frame_needed = 0, uses_anonymous_args = 0
+ 539              		.loc 1 58 1 is_stmt 0 view .LVU137
+ 540 0000 F0B5     		push	{r4, r5, r6, r7, lr}
+ 541              	.LCFI9:
+ 542              		.cfi_def_cfa_offset 20
+ 543              		.cfi_offset 4, -20
+ 544              		.cfi_offset 5, -16
+ 545              		.cfi_offset 6, -12
+ 546              		.cfi_offset 7, -8
+ 547              		.cfi_offset 14, -4
+ 548 0002 0446     		mov	r4, r0
+ 549 0004 0D46     		mov	r5, r1
+ 550 0006 1646     		mov	r6, r2
+ 551 0008 1F46     		mov	r7, r3
+ 552 000a 9DF81410 		ldrb	r1, [sp, #20]	@ zero_extendqisi2
+ 553              	.LVL47:
+ 554              		.loc 1 58 1 view .LVU138
+ 555 000e 9DF818C0 		ldrb	ip, [sp, #24]	@ zero_extendqisi2
+  59:Math/matrix.c ****     for (uint8_t i = 0; i < n; i++) {
+ 556              		.loc 1 59 5 is_stmt 1 view .LVU139
+ 557              	.LBB14:
+ 558              		.loc 1 59 10 view .LVU140
+ 559              	.LVL48:
+ 560              		.loc 1 59 18 is_stmt 0 view .LVU141
+ 561 0012 4FF0000E 		mov	lr, #0
+ 562              		.loc 1 59 5 view .LVU142
+ 563 0016 25E0     		b	.L39
+ 564              	.LVL49:
+ 565              	.L40:
+ 566              	.LBB15:
+ARM GAS  /tmp/ccghoRKV.s 			page 12
+
+
+ 567              	.LBB16:
+ 568              	.LBB17:
+  60:Math/matrix.c ****         for (uint8_t k = 0; k < p; k++) {
+  61:Math/matrix.c ****             float s = 0.0f;
+  62:Math/matrix.c ****             for (uint8_t j = 0; j < m; j++)
+  63:Math/matrix.c ****                 s += A[(uint16_t)i * m + j] * B[(uint16_t)j * p + k];
+ 569              		.loc 1 63 17 is_stmt 1 view .LVU143
+ 570              		.loc 1 63 40 is_stmt 0 view .LVU144
+ 571 0018 0EFB0132 		mla	r2, lr, r1, r3
+ 572              		.loc 1 63 23 view .LVU145
+ 573 001c 04EB8202 		add	r2, r4, r2, lsl #2
+ 574 0020 D2ED007A 		vldr.32	s15, [r2]
+ 575              		.loc 1 63 65 view .LVU146
+ 576 0024 03FB0C02 		mla	r2, r3, ip, r0
+ 577              		.loc 1 63 48 view .LVU147
+ 578 0028 05EB8202 		add	r2, r5, r2, lsl #2
+ 579 002c D2ED006A 		vldr.32	s13, [r2]
+ 580              		.loc 1 63 45 view .LVU148
+ 581 0030 67EEA67A 		vmul.f32	s15, s15, s13
+ 582              		.loc 1 63 19 view .LVU149
+ 583 0034 37EE277A 		vadd.f32	s14, s14, s15
+ 584              	.LVL50:
+  62:Math/matrix.c ****                 s += A[(uint16_t)i * m + j] * B[(uint16_t)j * p + k];
+ 585              		.loc 1 62 41 is_stmt 1 discriminator 3 view .LVU150
+ 586 0038 0133     		adds	r3, r3, #1
+ 587              	.LVL51:
+  62:Math/matrix.c ****                 s += A[(uint16_t)i * m + j] * B[(uint16_t)j * p + k];
+ 588              		.loc 1 62 41 is_stmt 0 discriminator 3 view .LVU151
+ 589 003a DBB2     		uxtb	r3, r3
+ 590              	.LVL52:
+ 591              	.L41:
+  62:Math/matrix.c ****                 s += A[(uint16_t)i * m + j] * B[(uint16_t)j * p + k];
+ 592              		.loc 1 62 35 is_stmt 1 discriminator 1 view .LVU152
+ 593 003c 8B42     		cmp	r3, r1
+ 594 003e EBD3     		bcc	.L40
+ 595              	.LBE17:
+  64:Math/matrix.c ****             C[(uint16_t)i * p + k] = s;
+ 596              		.loc 1 64 13 view .LVU153
+ 597              		.loc 1 64 31 is_stmt 0 view .LVU154
+ 598 0040 0EFB0C03 		mla	r3, lr, ip, r0
+ 599              	.LVL53:
+ 600              		.loc 1 64 14 view .LVU155
+ 601 0044 06EB8303 		add	r3, r6, r3, lsl #2
+ 602              		.loc 1 64 36 view .LVU156
+ 603 0048 83ED007A 		vstr.32	s14, [r3]
+ 604              	.LBE16:
+  60:Math/matrix.c ****         for (uint8_t k = 0; k < p; k++) {
+ 605              		.loc 1 60 37 is_stmt 1 discriminator 2 view .LVU157
+ 606 004c 0130     		adds	r0, r0, #1
+ 607              	.LVL54:
+  60:Math/matrix.c ****         for (uint8_t k = 0; k < p; k++) {
+ 608              		.loc 1 60 37 is_stmt 0 discriminator 2 view .LVU158
+ 609 004e C0B2     		uxtb	r0, r0
+ 610              	.LVL55:
+ 611              	.L42:
+  60:Math/matrix.c ****         for (uint8_t k = 0; k < p; k++) {
+ 612              		.loc 1 60 31 is_stmt 1 discriminator 1 view .LVU159
+ARM GAS  /tmp/ccghoRKV.s 			page 13
+
+
+ 613 0050 6045     		cmp	r0, ip
+ 614 0052 03D2     		bcs	.L46
+ 615              	.LBB19:
+ 616              	.LBB18:
+  62:Math/matrix.c ****                 s += A[(uint16_t)i * m + j] * B[(uint16_t)j * p + k];
+ 617              		.loc 1 62 26 is_stmt 0 view .LVU160
+ 618 0054 0023     		movs	r3, #0
+ 619              	.LBE18:
+  61:Math/matrix.c ****             for (uint8_t j = 0; j < m; j++)
+ 620              		.loc 1 61 19 view .LVU161
+ 621 0056 9FED067A 		vldr.32	s14, .L48
+ 622 005a EFE7     		b	.L41
+ 623              	.L46:
+ 624              	.LBE19:
+ 625              	.LBE15:
+  59:Math/matrix.c ****         for (uint8_t k = 0; k < p; k++) {
+ 626              		.loc 1 59 33 is_stmt 1 discriminator 2 view .LVU162
+ 627 005c 0EF1010E 		add	lr, lr, #1
+ 628              	.LVL56:
+  59:Math/matrix.c ****         for (uint8_t k = 0; k < p; k++) {
+ 629              		.loc 1 59 33 is_stmt 0 discriminator 2 view .LVU163
+ 630 0060 5FFA8EFE 		uxtb	lr, lr
+ 631              	.LVL57:
+ 632              	.L39:
+  59:Math/matrix.c ****         for (uint8_t k = 0; k < p; k++) {
+ 633              		.loc 1 59 27 is_stmt 1 discriminator 1 view .LVU164
+ 634 0064 BE45     		cmp	lr, r7
+ 635 0066 01D2     		bcs	.L47
+ 636              	.LBB20:
+  60:Math/matrix.c ****             float s = 0.0f;
+ 637              		.loc 1 60 22 is_stmt 0 view .LVU165
+ 638 0068 0020     		movs	r0, #0
+ 639 006a F1E7     		b	.L42
+ 640              	.L47:
+ 641              	.LBE20:
+ 642              	.LBE14:
+  65:Math/matrix.c ****         }
+  66:Math/matrix.c ****     }
+  67:Math/matrix.c **** }
+ 643              		.loc 1 67 1 view .LVU166
+ 644 006c F0BD     		pop	{r4, r5, r6, r7, pc}
+ 645              	.LVL58:
+ 646              	.L49:
+ 647              		.loc 1 67 1 view .LVU167
+ 648 006e 00BF     		.align	2
+ 649              	.L48:
+ 650 0070 00000000 		.word	0
+ 651              		.cfi_endproc
+ 652              	.LFE8:
+ 654              		.section	.text.mat_mul_aT,"ax",%progbits
+ 655              		.align	1
+ 656              		.global	mat_mul_aT
+ 657              		.syntax unified
+ 658              		.thumb
+ 659              		.thumb_func
+ 661              	mat_mul_aT:
+ 662              	.LVL59:
+ARM GAS  /tmp/ccghoRKV.s 			page 14
+
+
+ 663              	.LFB9:
+  68:Math/matrix.c **** 
+  69:Math/matrix.c **** void mat_mul_aT(const float *A, const float *B, float *C, uint8_t m, uint8_t n, uint8_t p)
+  70:Math/matrix.c **** {
+ 664              		.loc 1 70 1 is_stmt 1 view -0
+ 665              		.cfi_startproc
+ 666              		@ args = 8, pretend = 0, frame = 0
+ 667              		@ frame_needed = 0, uses_anonymous_args = 0
+ 668              		.loc 1 70 1 is_stmt 0 view .LVU169
+ 669 0000 F0B5     		push	{r4, r5, r6, r7, lr}
+ 670              	.LCFI10:
+ 671              		.cfi_def_cfa_offset 20
+ 672              		.cfi_offset 4, -20
+ 673              		.cfi_offset 5, -16
+ 674              		.cfi_offset 6, -12
+ 675              		.cfi_offset 7, -8
+ 676              		.cfi_offset 14, -4
+ 677 0002 0446     		mov	r4, r0
+ 678 0004 0D46     		mov	r5, r1
+ 679 0006 1646     		mov	r6, r2
+ 680 0008 9E46     		mov	lr, r3
+ 681 000a 9DF81470 		ldrb	r7, [sp, #20]	@ zero_extendqisi2
+ 682 000e 9DF81800 		ldrb	r0, [sp, #24]	@ zero_extendqisi2
+ 683              	.LVL60:
+  71:Math/matrix.c ****     for (uint8_t i = 0; i < n; i++) {
+ 684              		.loc 1 71 5 is_stmt 1 view .LVU170
+ 685              	.LBB21:
+ 686              		.loc 1 71 10 view .LVU171
+ 687              		.loc 1 71 18 is_stmt 0 view .LVU172
+ 688 0012 4FF0000C 		mov	ip, #0
+ 689              		.loc 1 71 5 view .LVU173
+ 690 0016 25E0     		b	.L51
+ 691              	.LVL61:
+ 692              	.L52:
+ 693              	.LBB22:
+ 694              	.LBB23:
+ 695              	.LBB24:
+  72:Math/matrix.c ****         for (uint8_t k = 0; k < p; k++) {
+  73:Math/matrix.c ****             float s = 0.0f;
+  74:Math/matrix.c ****             for (uint8_t j = 0; j < m; j++)
+  75:Math/matrix.c ****                 s += A[(uint16_t)j * n + i] * B[(uint16_t)j * p + k];
+ 696              		.loc 1 75 17 is_stmt 1 view .LVU174
+ 697              		.loc 1 75 40 is_stmt 0 view .LVU175
+ 698 0018 03FB07C2 		mla	r2, r3, r7, ip
+ 699              		.loc 1 75 23 view .LVU176
+ 700 001c 04EB8202 		add	r2, r4, r2, lsl #2
+ 701 0020 D2ED007A 		vldr.32	s15, [r2]
+ 702              		.loc 1 75 65 view .LVU177
+ 703 0024 03FB0012 		mla	r2, r3, r0, r1
+ 704              		.loc 1 75 48 view .LVU178
+ 705 0028 05EB8202 		add	r2, r5, r2, lsl #2
+ 706 002c D2ED006A 		vldr.32	s13, [r2]
+ 707              		.loc 1 75 45 view .LVU179
+ 708 0030 67EEA67A 		vmul.f32	s15, s15, s13
+ 709              		.loc 1 75 19 view .LVU180
+ 710 0034 37EE277A 		vadd.f32	s14, s14, s15
+ 711              	.LVL62:
+ARM GAS  /tmp/ccghoRKV.s 			page 15
+
+
+  74:Math/matrix.c ****                 s += A[(uint16_t)j * n + i] * B[(uint16_t)j * p + k];
+ 712              		.loc 1 74 41 is_stmt 1 discriminator 3 view .LVU181
+ 713 0038 0133     		adds	r3, r3, #1
+ 714              	.LVL63:
+  74:Math/matrix.c ****                 s += A[(uint16_t)j * n + i] * B[(uint16_t)j * p + k];
+ 715              		.loc 1 74 41 is_stmt 0 discriminator 3 view .LVU182
+ 716 003a DBB2     		uxtb	r3, r3
+ 717              	.LVL64:
+ 718              	.L53:
+  74:Math/matrix.c ****                 s += A[(uint16_t)j * n + i] * B[(uint16_t)j * p + k];
+ 719              		.loc 1 74 35 is_stmt 1 discriminator 1 view .LVU183
+ 720 003c 7345     		cmp	r3, lr
+ 721 003e EBD3     		bcc	.L52
+ 722              	.LBE24:
+  76:Math/matrix.c ****             C[(uint16_t)i * p + k] = s;
+ 723              		.loc 1 76 13 view .LVU184
+ 724              		.loc 1 76 31 is_stmt 0 view .LVU185
+ 725 0040 0CFB0013 		mla	r3, ip, r0, r1
+ 726              	.LVL65:
+ 727              		.loc 1 76 14 view .LVU186
+ 728 0044 06EB8303 		add	r3, r6, r3, lsl #2
+ 729              		.loc 1 76 36 view .LVU187
+ 730 0048 83ED007A 		vstr.32	s14, [r3]
+ 731              	.LBE23:
+  72:Math/matrix.c ****         for (uint8_t k = 0; k < p; k++) {
+ 732              		.loc 1 72 37 is_stmt 1 discriminator 2 view .LVU188
+ 733 004c 0131     		adds	r1, r1, #1
+ 734              	.LVL66:
+  72:Math/matrix.c ****         for (uint8_t k = 0; k < p; k++) {
+ 735              		.loc 1 72 37 is_stmt 0 discriminator 2 view .LVU189
+ 736 004e C9B2     		uxtb	r1, r1
+ 737              	.LVL67:
+ 738              	.L54:
+  72:Math/matrix.c ****         for (uint8_t k = 0; k < p; k++) {
+ 739              		.loc 1 72 31 is_stmt 1 discriminator 1 view .LVU190
+ 740 0050 8142     		cmp	r1, r0
+ 741 0052 03D2     		bcs	.L58
+ 742              	.LBB26:
+ 743              	.LBB25:
+  74:Math/matrix.c ****                 s += A[(uint16_t)j * n + i] * B[(uint16_t)j * p + k];
+ 744              		.loc 1 74 26 is_stmt 0 view .LVU191
+ 745 0054 0023     		movs	r3, #0
+ 746              	.LBE25:
+  73:Math/matrix.c ****             for (uint8_t j = 0; j < m; j++)
+ 747              		.loc 1 73 19 view .LVU192
+ 748 0056 9FED067A 		vldr.32	s14, .L60
+ 749 005a EFE7     		b	.L53
+ 750              	.L58:
+ 751              	.LBE26:
+ 752              	.LBE22:
+  71:Math/matrix.c ****         for (uint8_t k = 0; k < p; k++) {
+ 753              		.loc 1 71 33 is_stmt 1 discriminator 2 view .LVU193
+ 754 005c 0CF1010C 		add	ip, ip, #1
+ 755              	.LVL68:
+  71:Math/matrix.c ****         for (uint8_t k = 0; k < p; k++) {
+ 756              		.loc 1 71 33 is_stmt 0 discriminator 2 view .LVU194
+ 757 0060 5FFA8CFC 		uxtb	ip, ip
+ARM GAS  /tmp/ccghoRKV.s 			page 16
+
+
+ 758              	.LVL69:
+ 759              	.L51:
+  71:Math/matrix.c ****         for (uint8_t k = 0; k < p; k++) {
+ 760              		.loc 1 71 27 is_stmt 1 discriminator 1 view .LVU195
+ 761 0064 BC45     		cmp	ip, r7
+ 762 0066 01D2     		bcs	.L59
+ 763              	.LBB27:
+  72:Math/matrix.c ****             float s = 0.0f;
+ 764              		.loc 1 72 22 is_stmt 0 view .LVU196
+ 765 0068 0021     		movs	r1, #0
+ 766 006a F1E7     		b	.L54
+ 767              	.L59:
+ 768              	.LBE27:
+ 769              	.LBE21:
+  77:Math/matrix.c ****         }
+  78:Math/matrix.c ****     }
+  79:Math/matrix.c **** }
+ 770              		.loc 1 79 1 view .LVU197
+ 771 006c F0BD     		pop	{r4, r5, r6, r7, pc}
+ 772              	.LVL70:
+ 773              	.L61:
+ 774              		.loc 1 79 1 view .LVU198
+ 775 006e 00BF     		.align	2
+ 776              	.L60:
+ 777 0070 00000000 		.word	0
+ 778              		.cfi_endproc
+ 779              	.LFE9:
+ 781              		.section	.text.mat_mul_bT,"ax",%progbits
+ 782              		.align	1
+ 783              		.global	mat_mul_bT
+ 784              		.syntax unified
+ 785              		.thumb
+ 786              		.thumb_func
+ 788              	mat_mul_bT:
+ 789              	.LVL71:
+ 790              	.LFB10:
+  80:Math/matrix.c **** 
+  81:Math/matrix.c **** void mat_mul_bT(const float *A, const float *B, float *C, uint8_t n, uint8_t m, uint8_t p)
+  82:Math/matrix.c **** {
+ 791              		.loc 1 82 1 is_stmt 1 view -0
+ 792              		.cfi_startproc
+ 793              		@ args = 8, pretend = 0, frame = 0
+ 794              		@ frame_needed = 0, uses_anonymous_args = 0
+ 795              		.loc 1 82 1 is_stmt 0 view .LVU200
+ 796 0000 F0B5     		push	{r4, r5, r6, r7, lr}
+ 797              	.LCFI11:
+ 798              		.cfi_def_cfa_offset 20
+ 799              		.cfi_offset 4, -20
+ 800              		.cfi_offset 5, -16
+ 801              		.cfi_offset 6, -12
+ 802              		.cfi_offset 7, -8
+ 803              		.cfi_offset 14, -4
+ 804 0002 0446     		mov	r4, r0
+ 805 0004 8E46     		mov	lr, r1
+ 806 0006 1646     		mov	r6, r2
+ 807 0008 1F46     		mov	r7, r3
+ 808 000a 9DF81410 		ldrb	r1, [sp, #20]	@ zero_extendqisi2
+ARM GAS  /tmp/ccghoRKV.s 			page 17
+
+
+ 809              	.LVL72:
+ 810              		.loc 1 82 1 view .LVU201
+ 811 000e 9DF81850 		ldrb	r5, [sp, #24]	@ zero_extendqisi2
+  83:Math/matrix.c ****     for (uint8_t i = 0; i < n; i++) {
+ 812              		.loc 1 83 5 is_stmt 1 view .LVU202
+ 813              	.LBB28:
+ 814              		.loc 1 83 10 view .LVU203
+ 815              	.LVL73:
+ 816              		.loc 1 83 18 is_stmt 0 view .LVU204
+ 817 0012 4FF0000C 		mov	ip, #0
+ 818              		.loc 1 83 5 view .LVU205
+ 819 0016 25E0     		b	.L63
+ 820              	.LVL74:
+ 821              	.L64:
+ 822              	.LBB29:
+ 823              	.LBB30:
+ 824              	.LBB31:
+  84:Math/matrix.c ****         for (uint8_t k = 0; k < p; k++) {
+  85:Math/matrix.c ****             float s = 0.0f;
+  86:Math/matrix.c ****             for (uint8_t j = 0; j < m; j++)
+  87:Math/matrix.c ****                 s += A[(uint16_t)i * m + j] * B[(uint16_t)k * m + j];
+ 825              		.loc 1 87 17 is_stmt 1 view .LVU206
+ 826              		.loc 1 87 40 is_stmt 0 view .LVU207
+ 827 0018 01FB0C32 		mla	r2, r1, ip, r3
+ 828              		.loc 1 87 23 view .LVU208
+ 829 001c 04EB8202 		add	r2, r4, r2, lsl #2
+ 830 0020 D2ED007A 		vldr.32	s15, [r2]
+ 831              		.loc 1 87 65 view .LVU209
+ 832 0024 00FB0132 		mla	r2, r0, r1, r3
+ 833              		.loc 1 87 48 view .LVU210
+ 834 0028 0EEB8202 		add	r2, lr, r2, lsl #2
+ 835 002c D2ED006A 		vldr.32	s13, [r2]
+ 836              		.loc 1 87 45 view .LVU211
+ 837 0030 67EEA67A 		vmul.f32	s15, s15, s13
+ 838              		.loc 1 87 19 view .LVU212
+ 839 0034 37EE277A 		vadd.f32	s14, s14, s15
+ 840              	.LVL75:
+  86:Math/matrix.c ****                 s += A[(uint16_t)i * m + j] * B[(uint16_t)k * m + j];
+ 841              		.loc 1 86 41 is_stmt 1 discriminator 3 view .LVU213
+ 842 0038 0133     		adds	r3, r3, #1
+ 843              	.LVL76:
+  86:Math/matrix.c ****                 s += A[(uint16_t)i * m + j] * B[(uint16_t)k * m + j];
+ 844              		.loc 1 86 41 is_stmt 0 discriminator 3 view .LVU214
+ 845 003a DBB2     		uxtb	r3, r3
+ 846              	.LVL77:
+ 847              	.L65:
+  86:Math/matrix.c ****                 s += A[(uint16_t)i * m + j] * B[(uint16_t)k * m + j];
+ 848              		.loc 1 86 35 is_stmt 1 discriminator 1 view .LVU215
+ 849 003c 8B42     		cmp	r3, r1
+ 850 003e EBD3     		bcc	.L64
+ 851              	.LBE31:
+  88:Math/matrix.c ****             C[(uint16_t)i * p + k] = s;
+ 852              		.loc 1 88 13 view .LVU216
+ 853              		.loc 1 88 31 is_stmt 0 view .LVU217
+ 854 0040 0CFB0503 		mla	r3, ip, r5, r0
+ 855              	.LVL78:
+ 856              		.loc 1 88 14 view .LVU218
+ARM GAS  /tmp/ccghoRKV.s 			page 18
+
+
+ 857 0044 06EB8303 		add	r3, r6, r3, lsl #2
+ 858              		.loc 1 88 36 view .LVU219
+ 859 0048 83ED007A 		vstr.32	s14, [r3]
+ 860              	.LBE30:
+  84:Math/matrix.c ****         for (uint8_t k = 0; k < p; k++) {
+ 861              		.loc 1 84 37 is_stmt 1 discriminator 2 view .LVU220
+ 862 004c 0130     		adds	r0, r0, #1
+ 863              	.LVL79:
+  84:Math/matrix.c ****         for (uint8_t k = 0; k < p; k++) {
+ 864              		.loc 1 84 37 is_stmt 0 discriminator 2 view .LVU221
+ 865 004e C0B2     		uxtb	r0, r0
+ 866              	.LVL80:
+ 867              	.L66:
+  84:Math/matrix.c ****         for (uint8_t k = 0; k < p; k++) {
+ 868              		.loc 1 84 31 is_stmt 1 discriminator 1 view .LVU222
+ 869 0050 A842     		cmp	r0, r5
+ 870 0052 03D2     		bcs	.L70
+ 871              	.LBB33:
+ 872              	.LBB32:
+  86:Math/matrix.c ****                 s += A[(uint16_t)i * m + j] * B[(uint16_t)k * m + j];
+ 873              		.loc 1 86 26 is_stmt 0 view .LVU223
+ 874 0054 0023     		movs	r3, #0
+ 875              	.LBE32:
+  85:Math/matrix.c ****             for (uint8_t j = 0; j < m; j++)
+ 876              		.loc 1 85 19 view .LVU224
+ 877 0056 9FED067A 		vldr.32	s14, .L72
+ 878 005a EFE7     		b	.L65
+ 879              	.L70:
+ 880              	.LBE33:
+ 881              	.LBE29:
+  83:Math/matrix.c ****         for (uint8_t k = 0; k < p; k++) {
+ 882              		.loc 1 83 33 is_stmt 1 discriminator 2 view .LVU225
+ 883 005c 0CF1010C 		add	ip, ip, #1
+ 884              	.LVL81:
+  83:Math/matrix.c ****         for (uint8_t k = 0; k < p; k++) {
+ 885              		.loc 1 83 33 is_stmt 0 discriminator 2 view .LVU226
+ 886 0060 5FFA8CFC 		uxtb	ip, ip
+ 887              	.LVL82:
+ 888              	.L63:
+  83:Math/matrix.c ****         for (uint8_t k = 0; k < p; k++) {
+ 889              		.loc 1 83 27 is_stmt 1 discriminator 1 view .LVU227
+ 890 0064 BC45     		cmp	ip, r7
+ 891 0066 01D2     		bcs	.L71
+ 892              	.LBB34:
+  84:Math/matrix.c ****             float s = 0.0f;
+ 893              		.loc 1 84 22 is_stmt 0 view .LVU228
+ 894 0068 0020     		movs	r0, #0
+ 895 006a F1E7     		b	.L66
+ 896              	.L71:
+ 897              	.LBE34:
+ 898              	.LBE28:
+  89:Math/matrix.c ****         }
+  90:Math/matrix.c ****     }
+  91:Math/matrix.c **** }
+ 899              		.loc 1 91 1 view .LVU229
+ 900 006c F0BD     		pop	{r4, r5, r6, r7, pc}
+ 901              	.LVL83:
+ARM GAS  /tmp/ccghoRKV.s 			page 19
+
+
+ 902              	.L73:
+ 903              		.loc 1 91 1 view .LVU230
+ 904 006e 00BF     		.align	2
+ 905              	.L72:
+ 906 0070 00000000 		.word	0
+ 907              		.cfi_endproc
+ 908              	.LFE10:
+ 910              		.section	.text.mat_chol,"ax",%progbits
+ 911              		.align	1
+ 912              		.global	mat_chol
+ 913              		.syntax unified
+ 914              		.thumb
+ 915              		.thumb_func
+ 917              	mat_chol:
+ 918              	.LVL84:
+ 919              	.LFB11:
+  92:Math/matrix.c **** 
+  93:Math/matrix.c **** int mat_chol(const float *A, float *L, uint8_t n)
+  94:Math/matrix.c **** {
+ 920              		.loc 1 94 1 is_stmt 1 view -0
+ 921              		.cfi_startproc
+ 922              		@ args = 0, pretend = 0, frame = 0
+ 923              		@ frame_needed = 0, uses_anonymous_args = 0
+ 924              		.loc 1 94 1 is_stmt 0 view .LVU232
+ 925 0000 2DE9F047 		push	{r4, r5, r6, r7, r8, r9, r10, lr}
+ 926              	.LCFI12:
+ 927              		.cfi_def_cfa_offset 32
+ 928              		.cfi_offset 4, -32
+ 929              		.cfi_offset 5, -28
+ 930              		.cfi_offset 6, -24
+ 931              		.cfi_offset 7, -20
+ 932              		.cfi_offset 8, -16
+ 933              		.cfi_offset 9, -12
+ 934              		.cfi_offset 10, -8
+ 935              		.cfi_offset 14, -4
+ 936 0004 8046     		mov	r8, r0
+ 937 0006 0C46     		mov	r4, r1
+ 938 0008 1746     		mov	r7, r2
+  95:Math/matrix.c ****     mat_zero(L, n, n);
+ 939              		.loc 1 95 5 is_stmt 1 view .LVU233
+ 940 000a 1146     		mov	r1, r2
+ 941              	.LVL85:
+ 942              		.loc 1 95 5 is_stmt 0 view .LVU234
+ 943 000c 2046     		mov	r0, r4
+ 944              	.LVL86:
+ 945              		.loc 1 95 5 view .LVU235
+ 946 000e FFF7FEFF 		bl	mat_zero
+ 947              	.LVL87:
+  96:Math/matrix.c ****     for (uint8_t j = 0; j < n; j++) {
+ 948              		.loc 1 96 5 is_stmt 1 view .LVU236
+ 949              	.LBB35:
+ 950              		.loc 1 96 10 view .LVU237
+ 951              		.loc 1 96 18 is_stmt 0 view .LVU238
+ 952 0012 0025     		movs	r5, #0
+ 953              		.loc 1 96 5 view .LVU239
+ 954 0014 49E0     		b	.L75
+ 955              	.LVL88:
+ARM GAS  /tmp/ccghoRKV.s 			page 20
+
+
+ 956              	.L77:
+ 957              	.LBB36:
+ 958              	.LBB37:
+ 959              	.LBB38:
+  97:Math/matrix.c ****         float s = A[(uint16_t)j * n + j];
+  98:Math/matrix.c ****         for (uint8_t k = 0; k < j; k++) {
+  99:Math/matrix.c ****             float lkj = L[(uint16_t)j * n + k];
+ 960              		.loc 1 99 13 is_stmt 1 view .LVU240
+ 961              		.loc 1 99 43 is_stmt 0 view .LVU241
+ 962 0016 9A19     		adds	r2, r3, r6
+ 963              		.loc 1 99 26 view .LVU242
+ 964 0018 04EB8202 		add	r2, r4, r2, lsl #2
+ 965              		.loc 1 99 19 view .LVU243
+ 966 001c D2ED007A 		vldr.32	s15, [r2]
+ 967              	.LVL89:
+ 100:Math/matrix.c ****             s -= lkj * lkj;
+ 968              		.loc 1 100 13 is_stmt 1 view .LVU244
+ 969              		.loc 1 100 22 is_stmt 0 view .LVU245
+ 970 0020 67EEA77A 		vmul.f32	s15, s15, s15
+ 971              	.LVL90:
+ 972              		.loc 1 100 15 view .LVU246
+ 973 0024 30EE670A 		vsub.f32	s0, s0, s15
+ 974              	.LVL91:
+ 975              		.loc 1 100 15 view .LVU247
+ 976              	.LBE38:
+  98:Math/matrix.c ****             float lkj = L[(uint16_t)j * n + k];
+ 977              		.loc 1 98 37 is_stmt 1 discriminator 3 view .LVU248
+ 978 0028 0133     		adds	r3, r3, #1
+ 979              	.LVL92:
+  98:Math/matrix.c ****             float lkj = L[(uint16_t)j * n + k];
+ 980              		.loc 1 98 37 is_stmt 0 discriminator 3 view .LVU249
+ 981 002a DBB2     		uxtb	r3, r3
+ 982              	.LVL93:
+ 983              	.L76:
+  98:Math/matrix.c ****             float lkj = L[(uint16_t)j * n + k];
+ 984              		.loc 1 98 31 is_stmt 1 discriminator 1 view .LVU250
+ 985 002c 9D42     		cmp	r5, r3
+ 986 002e F2D8     		bhi	.L77
+  98:Math/matrix.c ****             float lkj = L[(uint16_t)j * n + k];
+ 987              		.loc 1 98 31 is_stmt 0 discriminator 1 view .LVU251
+ 988              	.LBE37:
+ 101:Math/matrix.c ****         }
+ 102:Math/matrix.c ****         if (s <= 0.0f) return -1;
+ 989              		.loc 1 102 9 is_stmt 1 view .LVU252
+ 990              		.loc 1 102 12 is_stmt 0 view .LVU253
+ 991 0030 B5EEC00A 		vcmpe.f32	s0, #0
+ 992 0034 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 993 0038 47D9     		bls	.L84
+ 103:Math/matrix.c ****         L[(uint16_t)j * n + j] = sqrtf(s);
+ 994              		.loc 1 103 9 is_stmt 1 view .LVU254
+ 995              		.loc 1 103 10 is_stmt 0 view .LVU255
+ 996 003a 04EB010A 		add	r10, r4, r1
+ 997              		.loc 1 103 34 view .LVU256
+ 998 003e FFF7FEFF 		bl	sqrtf
+ 999              	.LVL94:
+ 1000              		.loc 1 103 32 discriminator 1 view .LVU257
+ 1001 0042 8AED000A 		vstr.32	s0, [r10]
+ARM GAS  /tmp/ccghoRKV.s 			page 21
+
+
+ 104:Math/matrix.c ****         float inv_ljj = 1.0f / L[(uint16_t)j * n + j];
+ 1002              		.loc 1 104 9 is_stmt 1 view .LVU258
+ 1003              		.loc 1 104 15 is_stmt 0 view .LVU259
+ 1004 0046 F7EE007A 		vmov.f32	s15, #1.0e+0
+ 1005 004a 87EE806A 		vdiv.f32	s12, s15, s0
+ 1006              	.LVL95:
+ 105:Math/matrix.c ****         for (uint8_t i = j + 1; i < n; i++) {
+ 1007              		.loc 1 105 9 is_stmt 1 view .LVU260
+ 1008              	.LBB39:
+ 1009              		.loc 1 105 14 view .LVU261
+ 1010              		.loc 1 105 22 is_stmt 0 view .LVU262
+ 1011 004e 05F1010E 		add	lr, r5, #1
+ 1012 0052 5FFA8EFE 		uxtb	lr, lr
+ 1013              	.LVL96:
+ 1014              		.loc 1 105 22 view .LVU263
+ 1015 0056 7046     		mov	r0, lr
+ 1016              		.loc 1 105 9 view .LVU264
+ 1017 0058 18E0     		b	.L79
+ 1018              	.LVL97:
+ 1019              	.L81:
+ 1020              	.LBB40:
+ 1021              	.LBB41:
+ 106:Math/matrix.c ****             float t = A[(uint16_t)i * n + j];
+ 107:Math/matrix.c ****             for (uint8_t k = 0; k < j; k++)
+ 108:Math/matrix.c ****                 t -= L[(uint16_t)i * n + k] * L[(uint16_t)j * n + k];
+ 1022              		.loc 1 108 17 is_stmt 1 view .LVU265
+ 1023              		.loc 1 108 40 is_stmt 0 view .LVU266
+ 1024 005a CA18     		adds	r2, r1, r3
+ 1025              		.loc 1 108 23 view .LVU267
+ 1026 005c 04EB8202 		add	r2, r4, r2, lsl #2
+ 1027 0060 D2ED007A 		vldr.32	s15, [r2]
+ 1028              		.loc 1 108 65 view .LVU268
+ 1029 0064 F218     		adds	r2, r6, r3
+ 1030              		.loc 1 108 48 view .LVU269
+ 1031 0066 04EB8202 		add	r2, r4, r2, lsl #2
+ 1032 006a D2ED006A 		vldr.32	s13, [r2]
+ 1033              		.loc 1 108 45 view .LVU270
+ 1034 006e 67EEA67A 		vmul.f32	s15, s15, s13
+ 1035              		.loc 1 108 19 view .LVU271
+ 1036 0072 37EE677A 		vsub.f32	s14, s14, s15
+ 1037              	.LVL98:
+ 107:Math/matrix.c ****                 t -= L[(uint16_t)i * n + k] * L[(uint16_t)j * n + k];
+ 1038              		.loc 1 107 41 is_stmt 1 discriminator 3 view .LVU272
+ 1039 0076 0133     		adds	r3, r3, #1
+ 1040              	.LVL99:
+ 107:Math/matrix.c ****                 t -= L[(uint16_t)i * n + k] * L[(uint16_t)j * n + k];
+ 1041              		.loc 1 107 41 is_stmt 0 discriminator 3 view .LVU273
+ 1042 0078 DBB2     		uxtb	r3, r3
+ 1043              	.LVL100:
+ 1044              	.L80:
+ 107:Math/matrix.c ****                 t -= L[(uint16_t)i * n + k] * L[(uint16_t)j * n + k];
+ 1045              		.loc 1 107 35 is_stmt 1 discriminator 1 view .LVU274
+ 1046 007a 9D42     		cmp	r5, r3
+ 1047 007c EDD8     		bhi	.L81
+ 107:Math/matrix.c ****                 t -= L[(uint16_t)i * n + k] * L[(uint16_t)j * n + k];
+ 1048              		.loc 1 107 35 is_stmt 0 discriminator 1 view .LVU275
+ 1049              	.LBE41:
+ARM GAS  /tmp/ccghoRKV.s 			page 22
+
+
+ 109:Math/matrix.c ****             L[(uint16_t)i * n + j] = t * inv_ljj;
+ 1050              		.loc 1 109 13 is_stmt 1 view .LVU276
+ 1051              		.loc 1 109 14 is_stmt 0 view .LVU277
+ 1052 007e A444     		add	ip, ip, r4
+ 1053              		.loc 1 109 40 view .LVU278
+ 1054 0080 27EE067A 		vmul.f32	s14, s14, s12
+ 1055              	.LVL101:
+ 1056              		.loc 1 109 36 view .LVU279
+ 1057 0084 8CED007A 		vstr.32	s14, [ip]
+ 1058              	.LBE40:
+ 105:Math/matrix.c ****             float t = A[(uint16_t)i * n + j];
+ 1059              		.loc 1 105 41 is_stmt 1 discriminator 2 view .LVU280
+ 1060 0088 0130     		adds	r0, r0, #1
+ 1061              	.LVL102:
+ 105:Math/matrix.c ****             float t = A[(uint16_t)i * n + j];
+ 1062              		.loc 1 105 41 is_stmt 0 discriminator 2 view .LVU281
+ 1063 008a C0B2     		uxtb	r0, r0
+ 1064              	.LVL103:
+ 1065              	.L79:
+ 105:Math/matrix.c ****             float t = A[(uint16_t)i * n + j];
+ 1066              		.loc 1 105 35 is_stmt 1 discriminator 1 view .LVU282
+ 1067 008c B842     		cmp	r0, r7
+ 1068 008e 0BD2     		bcs	.L86
+ 1069              	.LBB43:
+ 106:Math/matrix.c ****             for (uint8_t k = 0; k < j; k++)
+ 1070              		.loc 1 106 13 view .LVU283
+ 106:Math/matrix.c ****             for (uint8_t k = 0; k < j; k++)
+ 1071              		.loc 1 106 37 is_stmt 0 view .LVU284
+ 1072 0090 00FB07F1 		mul	r1, r0, r7
+ 106:Math/matrix.c ****             for (uint8_t k = 0; k < j; k++)
+ 1073              		.loc 1 106 41 view .LVU285
+ 1074 0094 09EB0103 		add	r3, r9, r1
+ 106:Math/matrix.c ****             for (uint8_t k = 0; k < j; k++)
+ 1075              		.loc 1 106 24 view .LVU286
+ 1076 0098 4FEA830C 		lsl	ip, r3, #2
+ 1077 009c 08EB8303 		add	r3, r8, r3, lsl #2
+ 106:Math/matrix.c ****             for (uint8_t k = 0; k < j; k++)
+ 1078              		.loc 1 106 19 view .LVU287
+ 1079 00a0 93ED007A 		vldr.32	s14, [r3]
+ 1080              	.LVL104:
+ 107:Math/matrix.c ****                 t -= L[(uint16_t)i * n + k] * L[(uint16_t)j * n + k];
+ 1081              		.loc 1 107 13 is_stmt 1 view .LVU288
+ 1082              	.LBB42:
+ 107:Math/matrix.c ****                 t -= L[(uint16_t)i * n + k] * L[(uint16_t)j * n + k];
+ 1083              		.loc 1 107 18 view .LVU289
+ 107:Math/matrix.c ****                 t -= L[(uint16_t)i * n + k] * L[(uint16_t)j * n + k];
+ 1084              		.loc 1 107 26 is_stmt 0 view .LVU290
+ 1085 00a4 0023     		movs	r3, #0
+ 107:Math/matrix.c ****                 t -= L[(uint16_t)i * n + k] * L[(uint16_t)j * n + k];
+ 1086              		.loc 1 107 13 view .LVU291
+ 1087 00a6 E8E7     		b	.L80
+ 1088              	.LVL105:
+ 1089              	.L86:
+ 107:Math/matrix.c ****                 t -= L[(uint16_t)i * n + k] * L[(uint16_t)j * n + k];
+ 1090              		.loc 1 107 13 view .LVU292
+ 1091              	.LBE42:
+ 1092              	.LBE43:
+ARM GAS  /tmp/ccghoRKV.s 			page 23
+
+
+ 1093              	.LBE39:
+ 1094              	.LBE36:
+  96:Math/matrix.c ****         float s = A[(uint16_t)j * n + j];
+ 1095              		.loc 1 96 33 discriminator 2 view .LVU293
+ 1096 00a8 7546     		mov	r5, lr
+ 1097              	.LVL106:
+ 1098              	.L75:
+  96:Math/matrix.c ****         float s = A[(uint16_t)j * n + j];
+ 1099              		.loc 1 96 27 is_stmt 1 discriminator 1 view .LVU294
+ 1100 00aa BD42     		cmp	r5, r7
+ 1101 00ac 0AD2     		bcs	.L87
+ 1102              	.LBB45:
+  97:Math/matrix.c ****         for (uint8_t k = 0; k < j; k++) {
+ 1103              		.loc 1 97 9 view .LVU295
+  97:Math/matrix.c ****         for (uint8_t k = 0; k < j; k++) {
+ 1104              		.loc 1 97 21 is_stmt 0 view .LVU296
+ 1105 00ae A946     		mov	r9, r5
+  97:Math/matrix.c ****         for (uint8_t k = 0; k < j; k++) {
+ 1106              		.loc 1 97 33 view .LVU297
+ 1107 00b0 07FB05F6 		mul	r6, r7, r5
+  97:Math/matrix.c ****         for (uint8_t k = 0; k < j; k++) {
+ 1108              		.loc 1 97 37 view .LVU298
+ 1109 00b4 AB19     		adds	r3, r5, r6
+  97:Math/matrix.c ****         for (uint8_t k = 0; k < j; k++) {
+ 1110              		.loc 1 97 20 view .LVU299
+ 1111 00b6 9900     		lsls	r1, r3, #2
+ 1112 00b8 08EB8303 		add	r3, r8, r3, lsl #2
+  97:Math/matrix.c ****         for (uint8_t k = 0; k < j; k++) {
+ 1113              		.loc 1 97 15 view .LVU300
+ 1114 00bc 93ED000A 		vldr.32	s0, [r3]
+ 1115              	.LVL107:
+  98:Math/matrix.c ****             float lkj = L[(uint16_t)j * n + k];
+ 1116              		.loc 1 98 9 is_stmt 1 view .LVU301
+ 1117              	.LBB44:
+  98:Math/matrix.c ****             float lkj = L[(uint16_t)j * n + k];
+ 1118              		.loc 1 98 14 view .LVU302
+  98:Math/matrix.c ****             float lkj = L[(uint16_t)j * n + k];
+ 1119              		.loc 1 98 22 is_stmt 0 view .LVU303
+ 1120 00c0 0023     		movs	r3, #0
+  98:Math/matrix.c ****             float lkj = L[(uint16_t)j * n + k];
+ 1121              		.loc 1 98 9 view .LVU304
+ 1122 00c2 B3E7     		b	.L76
+ 1123              	.LVL108:
+ 1124              	.L87:
+  98:Math/matrix.c ****             float lkj = L[(uint16_t)j * n + k];
+ 1125              		.loc 1 98 9 view .LVU305
+ 1126              	.LBE44:
+ 1127              	.LBE45:
+ 1128              	.LBE35:
+ 110:Math/matrix.c ****         }
+ 111:Math/matrix.c ****     }
+ 112:Math/matrix.c ****     return 0;
+ 1129              		.loc 1 112 12 view .LVU306
+ 1130 00c4 0020     		movs	r0, #0
+ 1131              	.L74:
+ 113:Math/matrix.c **** }
+ 1132              		.loc 1 113 1 view .LVU307
+ARM GAS  /tmp/ccghoRKV.s 			page 24
+
+
+ 1133 00c6 BDE8F087 		pop	{r4, r5, r6, r7, r8, r9, r10, pc}
+ 1134              	.LVL109:
+ 1135              	.L84:
+ 1136              	.LBB47:
+ 1137              	.LBB46:
+ 102:Math/matrix.c ****         L[(uint16_t)j * n + j] = sqrtf(s);
+ 1138              		.loc 1 102 31 discriminator 1 view .LVU308
+ 1139 00ca 4FF0FF30 		mov	r0, #-1
+ 1140 00ce FAE7     		b	.L74
+ 1141              	.LBE46:
+ 1142              	.LBE47:
+ 1143              		.cfi_endproc
+ 1144              	.LFE11:
+ 1146              		.section	.text.mat_inv,"ax",%progbits
+ 1147              		.align	1
+ 1148              		.global	mat_inv
+ 1149              		.syntax unified
+ 1150              		.thumb
+ 1151              		.thumb_func
+ 1153              	mat_inv:
+ 1154              	.LVL110:
+ 1155              	.LFB12:
+ 114:Math/matrix.c **** 
+ 115:Math/matrix.c **** int mat_inv(const float *A, float *Ainv, uint8_t n)
+ 116:Math/matrix.c **** {
+ 1156              		.loc 1 116 1 is_stmt 1 view -0
+ 1157              		.cfi_startproc
+ 1158              		@ args = 0, pretend = 0, frame = 3528
+ 1159              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1160              		.loc 1 116 1 is_stmt 0 view .LVU310
+ 1161 0000 2DE9F04F 		push	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
+ 1162              	.LCFI13:
+ 1163              		.cfi_def_cfa_offset 36
+ 1164              		.cfi_offset 4, -36
+ 1165              		.cfi_offset 5, -32
+ 1166              		.cfi_offset 6, -28
+ 1167              		.cfi_offset 7, -24
+ 1168              		.cfi_offset 8, -20
+ 1169              		.cfi_offset 9, -16
+ 1170              		.cfi_offset 10, -12
+ 1171              		.cfi_offset 11, -8
+ 1172              		.cfi_offset 14, -4
+ 1173 0004 ADF6CC5D 		subw	sp, sp, #3532
+ 1174              	.LCFI14:
+ 1175              		.cfi_def_cfa_offset 3568
+ 1176 0008 8846     		mov	r8, r1
+ 117:Math/matrix.c ****     float aug[MAT_MAX_DIM * 2 * MAT_MAX_DIM];
+ 1177              		.loc 1 117 5 is_stmt 1 view .LVU311
+ 118:Math/matrix.c ****     uint8_t n2 = (uint8_t)(n * 2u);
+ 1178              		.loc 1 118 5 view .LVU312
+ 1179              		.loc 1 118 13 is_stmt 0 view .LVU313
+ 1180 000a 4FEA420E 		lsl	lr, r2, #1
+ 1181 000e 5FFA8EFE 		uxtb	lr, lr
+ 1182              	.LVL111:
+ 119:Math/matrix.c **** 
+ 120:Math/matrix.c ****     for (uint8_t i = 0; i < n; i++) {
+ 1183              		.loc 1 120 5 is_stmt 1 view .LVU314
+ARM GAS  /tmp/ccghoRKV.s 			page 25
+
+
+ 1184              	.LBB48:
+ 1185              		.loc 1 120 10 view .LVU315
+ 1186              		.loc 1 120 18 is_stmt 0 view .LVU316
+ 1187 0012 0025     		movs	r5, #0
+ 1188              		.loc 1 120 5 view .LVU317
+ 1189 0014 1DE0     		b	.L89
+ 1190              	.LVL112:
+ 1191              	.L120:
+ 1192              	.LBB49:
+ 121:Math/matrix.c ****         for (uint8_t j = 0; j < n; j++) {
+ 122:Math/matrix.c ****             aug[(uint16_t)i * n2 + j]     = A[(uint16_t)i * n + j];
+ 123:Math/matrix.c ****             aug[(uint16_t)i * n2 + n + j] = (i == j) ? 1.0f : 0.0f;
+ 1193              		.loc 1 123 61 discriminator 1 view .LVU318
+ 1194 0016 4FF07E57 		mov	r7, #1065353216
+ 1195              	.L90:
+ 1196              		.loc 1 123 34 discriminator 4 view .LVU319
+ 1197 001a 1444     		add	r4, r4, r2
+ 1198              		.loc 1 123 38 discriminator 4 view .LVU320
+ 1199 001c 3444     		add	r4, r4, r6
+ 1200              		.loc 1 123 43 discriminator 4 view .LVU321
+ 1201 001e 0DEB8401 		add	r1, sp, r4, lsl #2
+ 1202 0022 0F60     		str	r7, [r1]	@ float
+ 121:Math/matrix.c ****         for (uint8_t j = 0; j < n; j++) {
+ 1203              		.loc 1 121 37 is_stmt 1 discriminator 2 view .LVU322
+ 1204 0024 0133     		adds	r3, r3, #1
+ 1205              	.LVL113:
+ 121:Math/matrix.c ****         for (uint8_t j = 0; j < n; j++) {
+ 1206              		.loc 1 121 37 is_stmt 0 discriminator 2 view .LVU323
+ 1207 0026 DBB2     		uxtb	r3, r3
+ 1208              	.LVL114:
+ 1209              	.L92:
+ 121:Math/matrix.c ****         for (uint8_t j = 0; j < n; j++) {
+ 1210              		.loc 1 121 31 is_stmt 1 discriminator 1 view .LVU324
+ 1211 0028 9342     		cmp	r3, r2
+ 1212 002a 10D2     		bcs	.L119
+ 122:Math/matrix.c ****             aug[(uint16_t)i * n2 + n + j] = (i == j) ? 1.0f : 0.0f;
+ 1213              		.loc 1 122 13 view .LVU325
+ 122:Math/matrix.c ****             aug[(uint16_t)i * n2 + n + j] = (i == j) ? 1.0f : 0.0f;
+ 1214              		.loc 1 122 63 is_stmt 0 view .LVU326
+ 1215 002c 1E46     		mov	r6, r3
+ 1216 002e 02FB0531 		mla	r1, r2, r5, r3
+ 122:Math/matrix.c ****             aug[(uint16_t)i * n2 + n + j] = (i == j) ? 1.0f : 0.0f;
+ 1217              		.loc 1 122 29 view .LVU327
+ 1218 0032 05FB0EF4 		mul	r4, r5, lr
+ 122:Math/matrix.c ****             aug[(uint16_t)i * n2 + n + j] = (i == j) ? 1.0f : 0.0f;
+ 1219              		.loc 1 122 34 view .LVU328
+ 1220 0036 03EB040C 		add	ip, r3, r4
+ 122:Math/matrix.c ****             aug[(uint16_t)i * n2 + n + j] = (i == j) ? 1.0f : 0.0f;
+ 1221              		.loc 1 122 46 view .LVU329
+ 1222 003a 00EB8101 		add	r1, r0, r1, lsl #2
+ 1223 003e 0F68     		ldr	r7, [r1]	@ float
+ 122:Math/matrix.c ****             aug[(uint16_t)i * n2 + n + j] = (i == j) ? 1.0f : 0.0f;
+ 1224              		.loc 1 122 43 view .LVU330
+ 1225 0040 0DEB8C01 		add	r1, sp, ip, lsl #2
+ 1226 0044 0F60     		str	r7, [r1]	@ float
+ 1227              		.loc 1 123 13 is_stmt 1 view .LVU331
+ 1228              		.loc 1 123 61 is_stmt 0 view .LVU332
+ARM GAS  /tmp/ccghoRKV.s 			page 26
+
+
+ 1229 0046 9D42     		cmp	r5, r3
+ 1230 0048 E5D0     		beq	.L120
+ 1231              		.loc 1 123 61 discriminator 2 view .LVU333
+ 1232 004a 0027     		movs	r7, #0
+ 1233 004c E5E7     		b	.L90
+ 1234              	.L119:
+ 1235              		.loc 1 123 61 discriminator 2 view .LVU334
+ 1236              	.LBE49:
+ 120:Math/matrix.c ****         for (uint8_t j = 0; j < n; j++) {
+ 1237              		.loc 1 120 33 is_stmt 1 discriminator 2 view .LVU335
+ 1238 004e 0135     		adds	r5, r5, #1
+ 1239              	.LVL115:
+ 120:Math/matrix.c ****         for (uint8_t j = 0; j < n; j++) {
+ 1240              		.loc 1 120 33 is_stmt 0 discriminator 2 view .LVU336
+ 1241 0050 EDB2     		uxtb	r5, r5
+ 1242              	.LVL116:
+ 1243              	.L89:
+ 120:Math/matrix.c ****         for (uint8_t j = 0; j < n; j++) {
+ 1244              		.loc 1 120 27 is_stmt 1 discriminator 1 view .LVU337
+ 1245 0052 9542     		cmp	r5, r2
+ 1246 0054 01D2     		bcs	.L121
+ 1247              	.LBB50:
+ 121:Math/matrix.c ****         for (uint8_t j = 0; j < n; j++) {
+ 1248              		.loc 1 121 22 is_stmt 0 view .LVU338
+ 1249 0056 0023     		movs	r3, #0
+ 1250 0058 E6E7     		b	.L92
+ 1251              	.L121:
+ 1252              	.LBE50:
+ 1253              	.LBE48:
+ 1254              	.LBB51:
+ 124:Math/matrix.c ****         }
+ 125:Math/matrix.c ****     }
+ 126:Math/matrix.c **** 
+ 127:Math/matrix.c ****     for (uint8_t col = 0; col < n; col++) {
+ 1255              		.loc 1 127 18 view .LVU339
+ 1256 005a 0026     		movs	r6, #0
+ 1257 005c 72E0     		b	.L93
+ 1258              	.LVL117:
+ 1259              	.L95:
+ 1260              	.LBB52:
+ 1261              	.LBB53:
+ 128:Math/matrix.c ****         uint8_t pivot = col;
+ 129:Math/matrix.c ****         float max_v = fabsf(aug[(uint16_t)col * n2 + col]);
+ 130:Math/matrix.c ****         for (uint8_t row = (uint8_t)(col + 1u); row < n; row++) {
+ 1262              		.loc 1 130 61 is_stmt 1 discriminator 2 view .LVU340
+ 1263 005e 0133     		adds	r3, r3, #1
+ 1264              	.LVL118:
+ 1265              		.loc 1 130 61 is_stmt 0 discriminator 2 view .LVU341
+ 1266 0060 DBB2     		uxtb	r3, r3
+ 1267              	.LVL119:
+ 1268              	.L94:
+ 1269              		.loc 1 130 53 is_stmt 1 discriminator 1 view .LVU342
+ 1270 0062 9342     		cmp	r3, r2
+ 1271 0064 10D2     		bcs	.L122
+ 1272              	.LBB54:
+ 131:Math/matrix.c ****             float v = fabsf(aug[(uint16_t)row * n2 + col]);
+ 1273              		.loc 1 131 13 view .LVU343
+ARM GAS  /tmp/ccghoRKV.s 			page 27
+
+
+ 1274              		.loc 1 131 52 is_stmt 0 view .LVU344
+ 1275 0066 03FB0E70 		mla	r0, r3, lr, r7
+ 1276              		.loc 1 131 32 view .LVU345
+ 1277 006a 0DEB8001 		add	r1, sp, r0, lsl #2
+ 1278 006e D1ED007A 		vldr.32	s15, [r1]
+ 1279              		.loc 1 131 19 view .LVU346
+ 1280 0072 F0EEE77A 		vabs.f32	s15, s15
+ 1281              	.LVL120:
+ 132:Math/matrix.c ****             if (v > max_v) { max_v = v; pivot = row; }
+ 1282              		.loc 1 132 13 is_stmt 1 view .LVU347
+ 1283              		.loc 1 132 16 is_stmt 0 view .LVU348
+ 1284 0076 B4EEE77A 		vcmpe.f32	s14, s15
+ 1285 007a F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 1286 007e EED5     		bpl	.L95
+ 1287              		.loc 1 132 36 discriminator 1 view .LVU349
+ 1288 0080 B0EE677A 		vmov.f32	s14, s15
+ 1289              	.LVL121:
+ 1290              		.loc 1 132 47 discriminator 1 view .LVU350
+ 1291 0084 1D46     		mov	r5, r3
+ 1292              	.LVL122:
+ 1293              		.loc 1 132 47 discriminator 1 view .LVU351
+ 1294 0086 EAE7     		b	.L95
+ 1295              	.LVL123:
+ 1296              	.L122:
+ 1297              		.loc 1 132 47 discriminator 1 view .LVU352
+ 1298              	.LBE54:
+ 1299              	.LBE53:
+ 133:Math/matrix.c ****         }
+ 134:Math/matrix.c ****         if (max_v < 1e-10f) return -1;
+ 1300              		.loc 1 134 9 is_stmt 1 view .LVU353
+ 1301              		.loc 1 134 12 is_stmt 0 view .LVU354
+ 1302 0088 DFED487A 		vldr.32	s15, .L128
+ 1303 008c B4EEE77A 		vcmpe.f32	s14, s15
+ 1304 0090 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 1305 0094 00F18680 		bmi	.L115
+ 135:Math/matrix.c **** 
+ 136:Math/matrix.c ****         if (pivot != col) {
+ 1306              		.loc 1 136 9 is_stmt 1 view .LVU355
+ 1307              		.loc 1 136 12 is_stmt 0 view .LVU356
+ 1308 0098 AE42     		cmp	r6, r5
+ 1309 009a 1DD1     		bne	.L123
+ 1310              	.LVL124:
+ 1311              	.L99:
+ 137:Math/matrix.c ****             for (uint8_t j = 0; j < n2; j++) {
+ 138:Math/matrix.c ****                 float tmp = aug[(uint16_t)col * n2 + j];
+ 139:Math/matrix.c ****                 aug[(uint16_t)col   * n2 + j] = aug[(uint16_t)pivot * n2 + j];
+ 140:Math/matrix.c ****                 aug[(uint16_t)pivot * n2 + j] = tmp;
+ 141:Math/matrix.c ****             }
+ 142:Math/matrix.c ****         }
+ 143:Math/matrix.c **** 
+ 144:Math/matrix.c ****         float inv_p = 1.0f / aug[(uint16_t)col * n2 + col];
+ 1312              		.loc 1 144 9 is_stmt 1 view .LVU357
+ 1313              		.loc 1 144 33 is_stmt 0 view .LVU358
+ 1314 009c 0DEB8C03 		add	r3, sp, ip, lsl #2
+ 1315 00a0 D3ED007A 		vldr.32	s15, [r3]
+ 1316              		.loc 1 144 15 view .LVU359
+ 1317 00a4 F7EE006A 		vmov.f32	s13, #1.0e+0
+ARM GAS  /tmp/ccghoRKV.s 			page 28
+
+
+ 1318 00a8 86EEA77A 		vdiv.f32	s14, s13, s15
+ 1319              	.LVL125:
+ 145:Math/matrix.c ****         for (uint8_t j = 0; j < n2; j++) aug[(uint16_t)col * n2 + j] *= inv_p;
+ 1320              		.loc 1 145 9 is_stmt 1 view .LVU360
+ 1321              	.LBB55:
+ 1322              		.loc 1 145 14 view .LVU361
+ 1323              		.loc 1 145 22 is_stmt 0 view .LVU362
+ 1324 00ac 0023     		movs	r3, #0
+ 1325              		.loc 1 145 9 view .LVU363
+ 1326 00ae 20E0     		b	.L101
+ 1327              	.LVL126:
+ 1328              	.L100:
+ 1329              		.loc 1 145 9 view .LVU364
+ 1330              	.LBE55:
+ 1331              	.LBB56:
+ 1332              	.LBB57:
+ 138:Math/matrix.c ****                 aug[(uint16_t)col   * n2 + j] = aug[(uint16_t)pivot * n2 + j];
+ 1333              		.loc 1 138 17 is_stmt 1 view .LVU365
+ 138:Math/matrix.c ****                 aug[(uint16_t)col   * n2 + j] = aug[(uint16_t)pivot * n2 + j];
+ 1334              		.loc 1 138 52 is_stmt 0 view .LVU366
+ 1335 00b0 E018     		adds	r0, r4, r3
+ 138:Math/matrix.c ****                 aug[(uint16_t)col   * n2 + j] = aug[(uint16_t)pivot * n2 + j];
+ 1336              		.loc 1 138 23 view .LVU367
+ 1337 00b2 0DEB8000 		add	r0, sp, r0, lsl #2
+ 1338 00b6 D0F800A0 		ldr	r10, [r0]	@ float
+ 1339              	.LVL127:
+ 139:Math/matrix.c ****                 aug[(uint16_t)pivot * n2 + j] = tmp;
+ 1340              		.loc 1 139 17 is_stmt 1 view .LVU368
+ 139:Math/matrix.c ****                 aug[(uint16_t)pivot * n2 + j] = tmp;
+ 1341              		.loc 1 139 74 is_stmt 0 view .LVU369
+ 1342 00ba 05FB0E3B 		mla	fp, r5, lr, r3
+ 139:Math/matrix.c ****                 aug[(uint16_t)pivot * n2 + j] = tmp;
+ 1343              		.loc 1 139 52 view .LVU370
+ 1344 00be 0DEB8B01 		add	r1, sp, fp, lsl #2
+ 1345 00c2 D1ED007A 		vldr.32	s15, [r1]
+ 139:Math/matrix.c ****                 aug[(uint16_t)pivot * n2 + j] = tmp;
+ 1346              		.loc 1 139 47 view .LVU371
+ 1347 00c6 C0ED007A 		vstr.32	s15, [r0]
+ 140:Math/matrix.c ****             }
+ 1348              		.loc 1 140 17 is_stmt 1 view .LVU372
+ 140:Math/matrix.c ****             }
+ 1349              		.loc 1 140 47 is_stmt 0 view .LVU373
+ 1350 00ca C1F800A0 		str	r10, [r1]	@ float
+ 1351              	.LBE57:
+ 137:Math/matrix.c ****                 float tmp = aug[(uint16_t)col * n2 + j];
+ 1352              		.loc 1 137 42 is_stmt 1 discriminator 3 view .LVU374
+ 1353 00ce 0133     		adds	r3, r3, #1
+ 1354              	.LVL128:
+ 137:Math/matrix.c ****                 float tmp = aug[(uint16_t)col * n2 + j];
+ 1355              		.loc 1 137 42 is_stmt 0 discriminator 3 view .LVU375
+ 1356 00d0 DBB2     		uxtb	r3, r3
+ 1357              	.LVL129:
+ 1358              	.L98:
+ 137:Math/matrix.c ****                 float tmp = aug[(uint16_t)col * n2 + j];
+ 1359              		.loc 1 137 35 is_stmt 1 discriminator 1 view .LVU376
+ 1360 00d2 7345     		cmp	r3, lr
+ 1361 00d4 ECD3     		bcc	.L100
+ARM GAS  /tmp/ccghoRKV.s 			page 29
+
+
+ 1362 00d6 E1E7     		b	.L99
+ 1363              	.LVL130:
+ 1364              	.L123:
+ 137:Math/matrix.c ****                 float tmp = aug[(uint16_t)col * n2 + j];
+ 1365              		.loc 1 137 26 is_stmt 0 view .LVU377
+ 1366 00d8 0023     		movs	r3, #0
+ 1367              	.LVL131:
+ 137:Math/matrix.c ****                 float tmp = aug[(uint16_t)col * n2 + j];
+ 1368              		.loc 1 137 26 view .LVU378
+ 1369 00da FAE7     		b	.L98
+ 1370              	.LVL132:
+ 1371              	.L102:
+ 137:Math/matrix.c ****                 float tmp = aug[(uint16_t)col * n2 + j];
+ 1372              		.loc 1 137 26 view .LVU379
+ 1373              	.LBE56:
+ 1374              	.LBB58:
+ 1375              		.loc 1 145 42 is_stmt 1 discriminator 3 view .LVU380
+ 1376              		.loc 1 145 45 is_stmt 0 discriminator 3 view .LVU381
+ 1377 00dc 1819     		adds	r0, r3, r4
+ 1378 00de 0DEB8001 		add	r1, sp, r0, lsl #2
+ 1379 00e2 D1ED007A 		vldr.32	s15, [r1]
+ 1380              		.loc 1 145 70 discriminator 3 view .LVU382
+ 1381 00e6 67EE877A 		vmul.f32	s15, s15, s14
+ 1382 00ea C1ED007A 		vstr.32	s15, [r1]
+ 1383              		.loc 1 145 38 is_stmt 1 discriminator 3 view .LVU383
+ 1384 00ee 0133     		adds	r3, r3, #1
+ 1385              	.LVL133:
+ 1386              		.loc 1 145 38 is_stmt 0 discriminator 3 view .LVU384
+ 1387 00f0 DBB2     		uxtb	r3, r3
+ 1388              	.LVL134:
+ 1389              	.L101:
+ 1390              		.loc 1 145 31 is_stmt 1 discriminator 1 view .LVU385
+ 1391 00f2 7345     		cmp	r3, lr
+ 1392 00f4 F2D3     		bcc	.L102
+ 1393              	.LBE58:
+ 1394              	.LBB59:
+ 146:Math/matrix.c **** 
+ 147:Math/matrix.c ****         for (uint8_t row = 0; row < n; row++) {
+ 1395              		.loc 1 147 22 is_stmt 0 view .LVU386
+ 1396 00f6 0021     		movs	r1, #0
+ 1397 00f8 01E0     		b	.L103
+ 1398              	.LVL135:
+ 1399              	.L104:
+ 1400              		.loc 1 147 43 is_stmt 1 discriminator 2 view .LVU387
+ 1401 00fa 0131     		adds	r1, r1, #1
+ 1402              	.LVL136:
+ 1403              		.loc 1 147 43 is_stmt 0 discriminator 2 view .LVU388
+ 1404 00fc C9B2     		uxtb	r1, r1
+ 1405              	.LVL137:
+ 1406              	.L103:
+ 1407              		.loc 1 147 35 is_stmt 1 discriminator 1 view .LVU389
+ 1408 00fe 9142     		cmp	r1, r2
+ 1409 0100 1FD2     		bcs	.L124
+ 1410              	.LBB60:
+ 148:Math/matrix.c ****             if (row == col) continue;
+ 1411              		.loc 1 148 13 view .LVU390
+ 1412              		.loc 1 148 16 is_stmt 0 view .LVU391
+ARM GAS  /tmp/ccghoRKV.s 			page 30
+
+
+ 1413 0102 8E42     		cmp	r6, r1
+ 1414 0104 F9D0     		beq	.L104
+ 149:Math/matrix.c ****             float f = aug[(uint16_t)row * n2 + col];
+ 1415              		.loc 1 149 13 is_stmt 1 view .LVU392
+ 1416              		.loc 1 149 41 is_stmt 0 view .LVU393
+ 1417 0106 01FB0EF5 		mul	r5, r1, lr
+ 1418              		.loc 1 149 46 view .LVU394
+ 1419 010a 7819     		adds	r0, r7, r5
+ 1420              		.loc 1 149 19 view .LVU395
+ 1421 010c 0DEB8003 		add	r3, sp, r0, lsl #2
+ 1422 0110 D3ED006A 		vldr.32	s13, [r3]
+ 1423              	.LVL138:
+ 150:Math/matrix.c ****             for (uint8_t j = 0; j < n2; j++)
+ 1424              		.loc 1 150 13 is_stmt 1 view .LVU396
+ 1425              	.LBB61:
+ 1426              		.loc 1 150 18 view .LVU397
+ 1427              		.loc 1 150 26 is_stmt 0 view .LVU398
+ 1428 0114 0023     		movs	r3, #0
+ 1429              	.LVL139:
+ 1430              	.L105:
+ 1431              		.loc 1 150 35 is_stmt 1 discriminator 1 view .LVU399
+ 1432 0116 7345     		cmp	r3, lr
+ 1433 0118 EFD2     		bcs	.L104
+ 151:Math/matrix.c ****                 aug[(uint16_t)row * n2 + j] -= f * aug[(uint16_t)col * n2 + j];
+ 1434              		.loc 1 151 17 view .LVU400
+ 1435              		.loc 1 151 20 is_stmt 0 view .LVU401
+ 1436 011a E818     		adds	r0, r5, r3
+ 1437 011c 0DEB8000 		add	r0, sp, r0, lsl #2
+ 1438 0120 D0ED007A 		vldr.32	s15, [r0]
+ 1439              		.loc 1 151 75 view .LVU402
+ 1440 0124 04EB030A 		add	r10, r4, r3
+ 1441              		.loc 1 151 55 view .LVU403
+ 1442 0128 0DEB8A0C 		add	ip, sp, r10, lsl #2
+ 1443 012c 9CED007A 		vldr.32	s14, [ip]
+ 1444              		.loc 1 151 50 view .LVU404
+ 1445 0130 27EE267A 		vmul.f32	s14, s14, s13
+ 1446              		.loc 1 151 45 view .LVU405
+ 1447 0134 77EEC77A 		vsub.f32	s15, s15, s14
+ 1448 0138 C0ED007A 		vstr.32	s15, [r0]
+ 150:Math/matrix.c ****             for (uint8_t j = 0; j < n2; j++)
+ 1449              		.loc 1 150 42 is_stmt 1 discriminator 3 view .LVU406
+ 1450 013c 0133     		adds	r3, r3, #1
+ 1451              	.LVL140:
+ 150:Math/matrix.c ****             for (uint8_t j = 0; j < n2; j++)
+ 1452              		.loc 1 150 42 is_stmt 0 discriminator 3 view .LVU407
+ 1453 013e DBB2     		uxtb	r3, r3
+ 1454              	.LVL141:
+ 150:Math/matrix.c ****             for (uint8_t j = 0; j < n2; j++)
+ 1455              		.loc 1 150 42 discriminator 3 view .LVU408
+ 1456 0140 E9E7     		b	.L105
+ 1457              	.LVL142:
+ 1458              	.L124:
+ 150:Math/matrix.c ****             for (uint8_t j = 0; j < n2; j++)
+ 1459              		.loc 1 150 42 discriminator 3 view .LVU409
+ 1460              	.LBE61:
+ 1461              	.LBE60:
+ 1462              	.LBE59:
+ARM GAS  /tmp/ccghoRKV.s 			page 31
+
+
+ 1463              	.LBE52:
+ 127:Math/matrix.c ****         uint8_t pivot = col;
+ 1464              		.loc 1 127 39 discriminator 2 view .LVU410
+ 1465 0142 4E46     		mov	r6, r9
+ 1466              	.LVL143:
+ 1467              	.L93:
+ 127:Math/matrix.c ****         uint8_t pivot = col;
+ 1468              		.loc 1 127 31 is_stmt 1 discriminator 1 view .LVU411
+ 1469 0144 9642     		cmp	r6, r2
+ 1470 0146 11D2     		bcs	.L125
+ 1471              	.LBB64:
+ 128:Math/matrix.c ****         float max_v = fabsf(aug[(uint16_t)col * n2 + col]);
+ 1472              		.loc 1 128 9 view .LVU412
+ 1473              	.LVL144:
+ 129:Math/matrix.c ****         for (uint8_t row = (uint8_t)(col + 1u); row < n; row++) {
+ 1474              		.loc 1 129 9 view .LVU413
+ 129:Math/matrix.c ****         for (uint8_t row = (uint8_t)(col + 1u); row < n; row++) {
+ 1475              		.loc 1 129 33 is_stmt 0 view .LVU414
+ 1476 0148 3746     		mov	r7, r6
+ 129:Math/matrix.c ****         for (uint8_t row = (uint8_t)(col + 1u); row < n; row++) {
+ 1477              		.loc 1 129 47 view .LVU415
+ 1478 014a 0EFB06F4 		mul	r4, lr, r6
+ 129:Math/matrix.c ****         for (uint8_t row = (uint8_t)(col + 1u); row < n; row++) {
+ 1479              		.loc 1 129 52 view .LVU416
+ 1480 014e 06EB040C 		add	ip, r6, r4
+ 129:Math/matrix.c ****         for (uint8_t row = (uint8_t)(col + 1u); row < n; row++) {
+ 1481              		.loc 1 129 32 view .LVU417
+ 1482 0152 0DEB8C03 		add	r3, sp, ip, lsl #2
+ 1483 0156 93ED007A 		vldr.32	s14, [r3]
+ 129:Math/matrix.c ****         for (uint8_t row = (uint8_t)(col + 1u); row < n; row++) {
+ 1484              		.loc 1 129 15 view .LVU418
+ 1485 015a B0EEC77A 		vabs.f32	s14, s14
+ 1486              	.LVL145:
+ 130:Math/matrix.c ****             float v = fabsf(aug[(uint16_t)row * n2 + col]);
+ 1487              		.loc 1 130 9 is_stmt 1 view .LVU419
+ 1488              	.LBB62:
+ 130:Math/matrix.c ****             float v = fabsf(aug[(uint16_t)row * n2 + col]);
+ 1489              		.loc 1 130 14 view .LVU420
+ 130:Math/matrix.c ****             float v = fabsf(aug[(uint16_t)row * n2 + col]);
+ 1490              		.loc 1 130 22 is_stmt 0 view .LVU421
+ 1491 015e 06F10109 		add	r9, r6, #1
+ 1492 0162 5FFA89F9 		uxtb	r9, r9
+ 1493              	.LVL146:
+ 130:Math/matrix.c ****             float v = fabsf(aug[(uint16_t)row * n2 + col]);
+ 1494              		.loc 1 130 22 view .LVU422
+ 1495 0166 4B46     		mov	r3, r9
+ 1496              	.LBE62:
+ 128:Math/matrix.c ****         float max_v = fabsf(aug[(uint16_t)col * n2 + col]);
+ 1497              		.loc 1 128 17 view .LVU423
+ 1498 0168 3546     		mov	r5, r6
+ 1499              	.LBB63:
+ 130:Math/matrix.c ****             float v = fabsf(aug[(uint16_t)row * n2 + col]);
+ 1500              		.loc 1 130 9 view .LVU424
+ 1501 016a 7AE7     		b	.L94
+ 1502              	.LVL147:
+ 1503              	.L125:
+ 130:Math/matrix.c ****             float v = fabsf(aug[(uint16_t)row * n2 + col]);
+ARM GAS  /tmp/ccghoRKV.s 			page 32
+
+
+ 1504              		.loc 1 130 9 view .LVU425
+ 1505              	.LBE63:
+ 1506              	.LBE64:
+ 1507              	.LBE51:
+ 1508              	.LBB66:
+ 152:Math/matrix.c ****         }
+ 153:Math/matrix.c ****     }
+ 154:Math/matrix.c **** 
+ 155:Math/matrix.c ****     for (uint8_t i = 0; i < n; i++)
+ 1509              		.loc 1 155 18 view .LVU426
+ 1510 016c 0025     		movs	r5, #0
+ 1511 016e 01E0     		b	.L109
+ 1512              	.LVL148:
+ 1513              	.L127:
+ 1514              		.loc 1 155 33 is_stmt 1 discriminator 2 view .LVU427
+ 1515 0170 0135     		adds	r5, r5, #1
+ 1516              	.LVL149:
+ 1517              		.loc 1 155 33 is_stmt 0 discriminator 2 view .LVU428
+ 1518 0172 EDB2     		uxtb	r5, r5
+ 1519              	.LVL150:
+ 1520              	.L109:
+ 1521              		.loc 1 155 27 is_stmt 1 discriminator 1 view .LVU429
+ 1522 0174 9542     		cmp	r5, r2
+ 1523 0176 10D2     		bcs	.L126
+ 1524              	.LBB67:
+ 156:Math/matrix.c ****         for (uint8_t j = 0; j < n; j++)
+ 1525              		.loc 1 156 22 is_stmt 0 view .LVU430
+ 1526 0178 0023     		movs	r3, #0
+ 1527              	.L111:
+ 1528              	.LVL151:
+ 1529              		.loc 1 156 31 is_stmt 1 discriminator 1 view .LVU431
+ 1530 017a 9342     		cmp	r3, r2
+ 1531 017c F8D2     		bcs	.L127
+ 157:Math/matrix.c ****             Ainv[(uint16_t)i * n + j] = aug[(uint16_t)i * n2 + n + j];
+ 1532              		.loc 1 157 13 view .LVU432
+ 1533              		.loc 1 157 62 is_stmt 0 view .LVU433
+ 1534 017e 05FB0E24 		mla	r4, r5, lr, r2
+ 1535              		.loc 1 157 66 view .LVU434
+ 1536 0182 1C44     		add	r4, r4, r3
+ 1537              		.loc 1 157 34 view .LVU435
+ 1538 0184 02FB0531 		mla	r1, r2, r5, r3
+ 1539              		.loc 1 157 17 view .LVU436
+ 1540 0188 08EB8101 		add	r1, r8, r1, lsl #2
+ 1541              		.loc 1 157 44 view .LVU437
+ 1542 018c 0DEB8400 		add	r0, sp, r4, lsl #2
+ 1543 0190 0068     		ldr	r0, [r0]	@ float
+ 1544              		.loc 1 157 39 view .LVU438
+ 1545 0192 0860     		str	r0, [r1]	@ float
+ 156:Math/matrix.c ****         for (uint8_t j = 0; j < n; j++)
+ 1546              		.loc 1 156 37 is_stmt 1 discriminator 3 view .LVU439
+ 1547 0194 0133     		adds	r3, r3, #1
+ 1548              	.LVL152:
+ 156:Math/matrix.c ****         for (uint8_t j = 0; j < n; j++)
+ 1549              		.loc 1 156 37 is_stmt 0 discriminator 3 view .LVU440
+ 1550 0196 DBB2     		uxtb	r3, r3
+ 1551              	.LVL153:
+ 156:Math/matrix.c ****         for (uint8_t j = 0; j < n; j++)
+ARM GAS  /tmp/ccghoRKV.s 			page 33
+
+
+ 1552              		.loc 1 156 37 discriminator 3 view .LVU441
+ 1553 0198 EFE7     		b	.L111
+ 1554              	.LVL154:
+ 1555              	.L126:
+ 156:Math/matrix.c ****         for (uint8_t j = 0; j < n; j++)
+ 1556              		.loc 1 156 37 discriminator 3 view .LVU442
+ 1557              	.LBE67:
+ 1558              	.LBE66:
+ 158:Math/matrix.c **** 
+ 159:Math/matrix.c ****     return 0;
+ 1559              		.loc 1 159 12 view .LVU443
+ 1560 019a 0020     		movs	r0, #0
+ 1561              	.LVL155:
+ 1562              	.L88:
+ 160:Math/matrix.c **** }
+ 1563              		.loc 1 160 1 view .LVU444
+ 1564 019c 0DF6CC5D 		addw	sp, sp, #3532
+ 1565              	.LCFI15:
+ 1566              		.cfi_remember_state
+ 1567              		.cfi_def_cfa_offset 36
+ 1568              		@ sp needed
+ 1569 01a0 BDE8F08F 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 1570              	.LVL156:
+ 1571              	.L115:
+ 1572              	.LCFI16:
+ 1573              		.cfi_restore_state
+ 1574              	.LBB68:
+ 1575              	.LBB65:
+ 134:Math/matrix.c **** 
+ 1576              		.loc 1 134 36 discriminator 1 view .LVU445
+ 1577 01a4 4FF0FF30 		mov	r0, #-1
+ 1578 01a8 F8E7     		b	.L88
+ 1579              	.L129:
+ 1580 01aa 00BF     		.align	2
+ 1581              	.L128:
+ 1582 01ac FFE6DB2E 		.word	786163455
+ 1583              	.LBE65:
+ 1584              	.LBE68:
+ 1585              		.cfi_endproc
+ 1586              	.LFE12:
+ 1588              		.text
+ 1589              	.Letext0:
+ 1590              		.file 2 "/usr/arm-none-eabi/include/machine/_default_types.h"
+ 1591              		.file 3 "/usr/arm-none-eabi/include/sys/_stdint.h"
+ 1592              		.file 4 "/usr/arm-none-eabi/include/math.h"
+ 1593              		.file 5 "/usr/arm-none-eabi/include/string.h"
+ 1594              		.file 6 "<built-in>"
+ARM GAS  /tmp/ccghoRKV.s 			page 34
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 matrix.c
+     /tmp/ccghoRKV.s:21     .text.mat_add:00000000 $t
+     /tmp/ccghoRKV.s:27     .text.mat_add:00000000 mat_add
+     /tmp/ccghoRKV.s:84     .text.mat_sub:00000000 $t
+     /tmp/ccghoRKV.s:90     .text.mat_sub:00000000 mat_sub
+     /tmp/ccghoRKV.s:147    .text.mat_scale:00000000 $t
+     /tmp/ccghoRKV.s:153    .text.mat_scale:00000000 mat_scale
+     /tmp/ccghoRKV.s:213    .text.mat_copy:00000000 $t
+     /tmp/ccghoRKV.s:219    .text.mat_copy:00000000 mat_copy
+     /tmp/ccghoRKV.s:252    .text.mat_zero:00000000 $t
+     /tmp/ccghoRKV.s:258    .text.mat_zero:00000000 mat_zero
+     /tmp/ccghoRKV.s:288    .text.mat_identity:00000000 $t
+     /tmp/ccghoRKV.s:294    .text.mat_identity:00000000 mat_identity
+     /tmp/ccghoRKV.s:350    .text.mat_trans:00000000 $t
+     /tmp/ccghoRKV.s:356    .text.mat_trans:00000000 mat_trans
+     /tmp/ccghoRKV.s:431    .text.mat_sym:00000000 $t
+     /tmp/ccghoRKV.s:437    .text.mat_sym:00000000 mat_sym
+     /tmp/ccghoRKV.s:526    .text.mat_mul:00000000 $t
+     /tmp/ccghoRKV.s:532    .text.mat_mul:00000000 mat_mul
+     /tmp/ccghoRKV.s:650    .text.mat_mul:00000070 $d
+     /tmp/ccghoRKV.s:655    .text.mat_mul_aT:00000000 $t
+     /tmp/ccghoRKV.s:661    .text.mat_mul_aT:00000000 mat_mul_aT
+     /tmp/ccghoRKV.s:777    .text.mat_mul_aT:00000070 $d
+     /tmp/ccghoRKV.s:782    .text.mat_mul_bT:00000000 $t
+     /tmp/ccghoRKV.s:788    .text.mat_mul_bT:00000000 mat_mul_bT
+     /tmp/ccghoRKV.s:906    .text.mat_mul_bT:00000070 $d
+     /tmp/ccghoRKV.s:911    .text.mat_chol:00000000 $t
+     /tmp/ccghoRKV.s:917    .text.mat_chol:00000000 mat_chol
+     /tmp/ccghoRKV.s:1147   .text.mat_inv:00000000 $t
+     /tmp/ccghoRKV.s:1153   .text.mat_inv:00000000 mat_inv
+     /tmp/ccghoRKV.s:1582   .text.mat_inv:000001ac $d
+
+UNDEFINED SYMBOLS
+memcpy
+memset
+sqrtf

@@ -1,0 +1,11 @@
+# Local experimental estimates; +/-0.25 added PID units per axis
+set fd_b_roll = 254
+set fd_b_pitch = 219
+set fd_b_yaw = 72
+set fd_motor_tau_ms = 40
+set fd_motor_tau_yaw_ms = 5
+set fd_mode = 2
+set fd_blend = 5
+set fd_limit = 5
+set fd_aux_channel = 4
+save

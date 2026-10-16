@@ -1,0 +1,114 @@
+--- a/Core/Src/main.c
++++ b/Core/Src/main.c
+@@ -72,6 +72,16 @@
+ #define COMM_TIMEOUT_MS     300U
+ #define MOTOR_SAT_MS        2000U
+ 
++/* RC-link-loss failsafe: hold level rates, then descend on the barometer */
++#define FS_HOLD_MS          500U        /* keep the hover throttle first */
++#define FS_DISARM_MS        60000U      /* give up and disarm */
++#define FS_VZ_FAST          (-0.7f)     /* m/s */
++#define FS_VZ_SLOW          (-0.3f)     /* m/s below FS_SLOW_ALT_M */
++#define FS_SLOW_ALT_M       1.0f
++#define FS_KV               0.06f       /* throttle per m/s of descent-rate error */
++#define FS_TOUCH_ALT_M      0.25f
++#define FS_TOUCH_MS         1000U
++
+ /* CW270 sensor alignment indices */
+ #define GYRO_ROLL_IDX  1
+ #define GYRO_PITCH_IDX 0
+@@ -102,6 +112,12 @@
+ typedef enum { STATE_DISARMED = 0, STATE_ARMED } arm_state_t;
+ static arm_state_t g_arm;
+ 
++static float       g_thr_hover = 0.5f;  /* low-passed stick throttle while linked */
++static float       g_alt_f;             /* filtered baro height, m */
++static float       g_vz_f;              /* baro climb rate, m/s */
++static uint32_t    g_fs_start_ms;       /* tick the failsafe began, 0 = inactive */
++static uint32_t    g_touch_ms;          /* tick the airframe first looked grounded */
++
+ /* -------------------------------------------------------------------------- */
+ /*  Forward declarations                                                       */
+ /* -------------------------------------------------------------------------- */
+@@ -143,14 +159,30 @@
+     uint16_t yaw_us  = CRSF_GetChannelUs(CRSF_CH_YAW);
+     uint16_t aux_us  = CRSF_GetChannelUs(CRSF_CH_AUX1);
+ 
+-    bool link_up = CRSF_IsLinkUp((uint32_t)HAL_GetTick());
++    uint32_t now_ms = (uint32_t)HAL_GetTick();
++    bool link_up = CRSF_IsLinkUp(now_ms);
+     if (!link_up) fault_report_comm_rx(&g_fault, 0);
+-    else          fault_report_comm_rx(&g_fault, (uint32_t)HAL_GetTick());
++    else          fault_report_comm_rx(&g_fault, now_ms);
++
++    /* Failsafe runs only while armed; it never arms the drone by itself */
++    bool failsafe = (g_arm == STATE_ARMED) && (!link_up || fst >= FAULT_EMERGENCY_LAND);
++    if (!failsafe) {
++        g_fs_start_ms = 0;
++        g_touch_ms    = 0;
++    } else if (g_fs_start_ms == 0) {
++        g_fs_start_ms = now_ms ? now_ms : 1u;
++    }
++    uint32_t fs_ms = failsafe ? now_ms - g_fs_start_ms : 0;
+ 
+     /* Arming FSM */
+-    if (!link_up || fst >= FAULT_COMM_LOST) {
+-        g_arm = STATE_DISARMED;
++    if (failsafe) {
++        bool touched = g_alt_f < FS_TOUCH_ALT_M && g_vz_f > -0.5f && g_vz_f < 0.5f;
++        if (!touched)              g_touch_ms = 0;
++        else if (g_touch_ms == 0)  g_touch_ms = now_ms ? now_ms : 1u;
++        if (fs_ms > FS_DISARM_MS || (g_touch_ms && now_ms - g_touch_ms > FS_TOUCH_MS))
++            g_arm = STATE_DISARMED;
+     } else if (g_arm == STATE_DISARMED
++               && link_up && fst < FAULT_COMM_LOST
+                && aux_us > ARM_AUX_US
+                && thro_us < ARM_THRO_MAX_US) {
+         g_arm = STATE_ARMED;
+@@ -162,7 +194,7 @@
+ 
+     led_set(1, g_arm == STATE_ARMED);
+ 
+-    if (g_arm == STATE_DISARMED || fst >= FAULT_EMERGENCY_LAND) {
++    if (g_arm == STATE_DISARMED) {
+         motor_disarm();
+         return;
+     }
+@@ -172,6 +204,8 @@
+     omega_ref[0] = ((float)roll_us  - 1500.0f) / 500.0f * MAX_ROLL_RATE_RPS;
+     omega_ref[1] = ((float)pitch_us - 1500.0f) / 500.0f * MAX_PITCH_RATE_RPS;
+     omega_ref[2] = ((float)yaw_us   - 1500.0f) / 500.0f * MAX_YAW_RATE_RPS;
++    /* no pilot: keep the attitude (rate 0).  Leveling needs an attitude estimate the UKF cannot give yet */
++    if (failsafe) omega_ref[0] = omega_ref[1] = omega_ref[2] = 0.0f;
+ 
+     /* MRAC adaptive control signal */
+     float u_mrac[3];
+@@ -204,6 +238,16 @@
+     if (throttle < 0.0f) throttle = 0.0f;
+     if (throttle > 1.0f) throttle = 1.0f;
+     throttle = MOTOR_IDLE + throttle * (1.0f - MOTOR_IDLE);
++    if (!failsafe) {
++        g_thr_hover += 0.002f * (throttle - g_thr_hover);
++    } else if (fs_ms > FS_HOLD_MS) {
++        float vz_ref = (g_alt_f > FS_SLOW_ALT_M) ? FS_VZ_FAST : FS_VZ_SLOW;
++        throttle = g_thr_hover + FS_KV * (vz_ref - g_vz_f);
++        if (throttle < MOTOR_IDLE) throttle = MOTOR_IDLE;
++        if (throttle > 0.9f)       throttle = 0.9f;
++    } else {
++        throttle = g_thr_hover;
++    }
+ 
+     /* INDI: compute motor commands */
+     float u_motor[4];
+@@ -225,7 +269,10 @@
+ 
+ static void task_50hz_baro(void)
+ {
+-    baro_read(&g_baro);
++    if (!baro_read(&g_baro)) return;
++    float alt_prev = g_alt_f;
++    g_alt_f += 0.15f * (g_baro.altitude_m - g_alt_f);
++    g_vz_f  += 0.08f * ((g_alt_f - alt_prev) / 0.02f - g_vz_f);
+ }
+ 
+ static void task_10hz_gps(void)

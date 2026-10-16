@@ -1,0 +1,6 @@
+# First flight check: stock PID, research OFF, Blackbox recording disabled.
+set fd_mode = 0
+set fd_blend = 0
+set fd_ukf = 0
+set blackbox_device = NONE
+save

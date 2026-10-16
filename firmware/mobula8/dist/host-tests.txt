@@ -1,0 +1,2 @@
+PASS: UBSan core tests; -O2 -ffast-math core tests; actual adapter output guards/AUX/saturation/UKF armed exclusion/budget latch; 4 Python unittest cases.
+No physical motor or flight tests performed.

@@ -1,0 +1,42 @@
+{
+  "samples": 409,
+  "rmse_deg": [
+    0.5860230224872447,
+    0.5882924609069049
+  ],
+  "max_abs_deg": [
+    1.1000000000000014,
+    2.1999999999999993
+  ],
+  "bf_min_deg": [
+    -22.400000000000002,
+    -21.0
+  ],
+  "bf_max_deg": [
+    19.200000000000003,
+    16.1
+  ],
+  "first_5s_mean_error_deg": [
+    -0.25172413793103454,
+    -1.0499999999999998
+  ],
+  "last_5s_mean_error_deg": [
+    -0.6644067796610172,
+    -0.26271186440677985
+  ],
+  "max_cycle_us": 312,
+  "status": "BENCH_TEST_COMPLETED_NOT_FLIGHT_VALIDATED",
+  "readback_exact": true,
+  "unexpected_settings_changes": {},
+  "fd_mode": 0,
+  "fd_blend": 0,
+  "fd_ukf": 1,
+  "ukf_scope": "disarmed bench only; not flight control",
+  "maximum_adapter_us": 102,
+  "previous_maximum_adapter_us": 853,
+  "attitude_reference": "Betaflight comparison, not external ground truth",
+  "stationary_max_difference_deg": [
+    0.1,
+    0.1
+  ]
+}

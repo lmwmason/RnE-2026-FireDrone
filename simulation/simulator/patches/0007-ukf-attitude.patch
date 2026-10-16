@@ -1,0 +1,101 @@
+--- a/Estimation/ukf.c
++++ b/Estimation/ukf.c
+@@ -4,9 +4,12 @@
+ #include <math.h>
+ #include <string.h>
+ 
+-#define GRAVITY_MPS2 9.80665f
+ #define REG_EPS      1e-6f
+ 
++#define UKF_QUIET_RATE_RPS  0.35f
++#define UKF_QUIET_ACC_G     0.12f
++#define UKF_R_ACCEL_QUIET   3.0f
++
+ static void sigma_to_quat(const float *sp, quat_t *q)
+ {
+     q->w = sp[IDX_Q0];
+@@ -44,9 +47,10 @@
+     h[1] = sp[IDX_WY];
+     h[2] = sp[IDX_WZ];
+ 
+-    h[3] = R[2] * GRAVITY_MPS2 + sp[IDX_BAX];
+-    h[4] = R[5] * GRAVITY_MPS2 + sp[IDX_BAY];
+-    h[5] = R[8] * GRAVITY_MPS2 + sp[IDX_BAZ];
++    /* accelerometer in g: world "up" expressed in the body frame = third ROW of R (body -> world) */
++    h[3] = R[6] + sp[IDX_BAX];
++    h[4] = R[7] + sp[IDX_BAY];
++    h[5] = R[8] + sp[IDX_BAZ];
+ }
+ 
+ static void compute_sigma_points(ukf_t *ukf)
+@@ -131,7 +135,7 @@
+     for (uint8_t i = 7; i < 10; i++)  ukf->Q[(uint16_t)i * STATE_DIM + i] = q_ba;
+ 
+     float r_gyro  = 1e-4f;
+-    float r_accel = 1e-2f;
++    float r_accel = 1e2f;
+     for (uint8_t i = 0; i < 3; i++)   ukf->R[(uint16_t)i * MEAS_DIM + i] = r_gyro;
+     for (uint8_t i = 3; i < 6; i++)   ukf->R[(uint16_t)i * MEAS_DIM + i] = r_accel;
+ }
+@@ -186,6 +190,14 @@
+     float S[MEAS_DIM * MEAS_DIM];
+     mat_copy(ukf->R, S, MEAS_DIM, MEAS_DIM);
+ 
++    /* The accelerometer of a multirotor reads thrust, so it only says "level" when the airframe is
++     * quiet and carrying 1 g.  Trust it then (this is what removes gyro bias), ignore it otherwise. */
++    float g_norm = sqrtf(gyro[0] * gyro[0] + gyro[1] * gyro[1] + gyro[2] * gyro[2]);
++    float a_norm = sqrtf(accel[0] * accel[0] + accel[1] * accel[1] + accel[2] * accel[2]);
++    if (g_norm < UKF_QUIET_RATE_RPS && fabsf(a_norm - 1.0f) < UKF_QUIET_ACC_G)
++        for (uint8_t i = 3; i < 6; i++)
++            S[(uint16_t)i * MEAS_DIM + i] += UKF_R_ACCEL_QUIET - ukf->R[(uint16_t)i * MEAS_DIM + i];
++
+     float Pxy[STATE_DIM * MEAS_DIM];
+     mat_zero(Pxy, STATE_DIM, MEAS_DIM);
+ 
+@@ -217,12 +229,41 @@
+     float S_inv[MEAS_DIM * MEAS_DIM];
+     if (mat_inv(S, S_inv, MEAS_DIM) != 0) return;
+ 
++    /* A manoeuvre makes the accelerometer disagree with the model (it reads thrust, not gravity).
++     * Reject only the accel block; the gyro block must still update the rate states, otherwise the
++     * attitude integrates stale rates for as long as the manoeuvre lasts. */
+     if (chi2_gate > 0.0f) {
+-        float S_inv_v[MEAS_DIM];
+-        mat_mul(S_inv, v, S_inv_v, MEAS_DIM, MEAS_DIM, 1);
+-        float mahal_sq = 0.0f;
+-        for (uint8_t j = 0; j < MEAS_DIM; j++) mahal_sq += v[j] * S_inv_v[j];
+-        if (mahal_sq > chi2_gate) return;
++        float Sa[9], Sa_inv[9], va[3] = { v[3], v[4], v[5] };
++        for (uint8_t r = 0; r < 3; r++)
++            for (uint8_t c = 0; c < 3; c++) Sa[r * 3 + c] = S[(uint16_t)(r + 3) * MEAS_DIM + (c + 3)];
++        float mahal_sq = 1e30f;
++        if (mat_inv(Sa, Sa_inv, 3) == 0) {
++            float t[3];
++            mat_mul(Sa_inv, va, t, 3, 3, 1);
++            mahal_sq = va[0] * t[0] + va[1] * t[1] + va[2] * t[2];
++        }
++        if (mahal_sq > chi2_gate) {
++            float Sg[9], Sg_inv[9];
++            for (uint8_t r = 0; r < 3; r++)
++                for (uint8_t c = 0; c < 3; c++) Sg[r * 3 + c] = S[(uint16_t)r * MEAS_DIM + c];
++            if (mat_inv(Sg, Sg_inv, 3) != 0) return;
++            float Kg[STATE_DIM * 3], Pg[STATE_DIM * 3];
++            for (uint8_t r = 0; r < STATE_DIM; r++)
++                for (uint8_t c = 0; c < 3; c++) Pg[r * 3 + c] = Pxy[(uint16_t)r * MEAS_DIM + c];
++            mat_mul(Pg, Sg_inv, Kg, STATE_DIM, 3, 3);
++            float vg[3] = { v[0], v[1], v[2] }, Kvg[STATE_DIM];
++            mat_mul(Kg, vg, Kvg, STATE_DIM, 3, 1);
++            for (uint8_t j = 0; j < STATE_DIM; j++) ukf->x[j] += Kvg[j];
++            quat_t qg = { ukf->x[IDX_Q0], ukf->x[IDX_Q1], ukf->x[IDX_Q2], ukf->x[IDX_Q3] };
++            quat_norm(&qg);
++            ukf->x[IDX_Q0] = qg.w; ukf->x[IDX_Q1] = qg.x; ukf->x[IDX_Q2] = qg.y; ukf->x[IDX_Q3] = qg.z;
++            float KS[STATE_DIM * 3], KSKt[STATE_DIM * STATE_DIM];
++            mat_mul(Kg, Sg, KS, STATE_DIM, 3, 3);
++            mat_mul_bT(KS, Kg, KSKt, STATE_DIM, 3, STATE_DIM);
++            mat_sub(ukf->P, KSKt, ukf->P, STATE_DIM, STATE_DIM);
++            mat_sym(ukf->P, STATE_DIM);
++            return;
++        }
+     }
+ 
+     float K[STATE_DIM * MEAS_DIM];

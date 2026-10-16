@@ -1,0 +1,25 @@
+dma
+dma ADC 1 1
+# ADC 1: DMA2 Stream 4 Channel 0
+dma pin B00 0
+# pin B00: DMA1 Stream 7 Channel 5
+dma pin B01 0
+# pin B01: DMA1 Stream 2 Channel 5
+dma pin C09 0
+# pin C09: DMA2 Stream 7 Channel 7
+dma pin C08 0
+# pin C08: DMA2 Stream 2 Channel 0
+dma pin B06 0
+# pin B06: DMA1 Stream 0 Channel 2
+dma pin A09 0
+# pin A09: DMA2 Stream 6 Channel 0
+dma pin A10 0
+# pin A10: DMA2 Stream 6 Channel 0
+dma pin A02 0
+# pin A02: DMA1 Stream 0 Channel 6
+dma pin B10 0
+# pin B10: DMA1 Stream 1 Channel 3
+dma pin B11 0
+# pin B11: DMA1 Stream 7 Channel 3
+
+# 

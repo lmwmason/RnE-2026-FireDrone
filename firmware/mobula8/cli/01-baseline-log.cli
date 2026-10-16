@@ -1,0 +1,11 @@
+# After restoring and verifying the correct aircraft settings.
+# fd_mode 1 with unknown effectiveness only logs inputs; candidate valid=0.
+set fd_mode = 1
+set fd_blend = 0
+set fd_ukf = 0
+set fd_axis = 0
+set blackbox_device = SPIFLASH
+set blackbox_mode = NORMAL
+set blackbox_sample_rate = 1/2
+set debug_mode = FIREDRONE
+save

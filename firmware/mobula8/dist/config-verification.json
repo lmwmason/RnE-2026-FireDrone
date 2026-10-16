@@ -1,0 +1,21 @@
+{
+  "status": "PASS",
+  "captured_commands": 1321,
+  "compared_state_entries": 1308,
+  "set_commands": 917,
+  "pid_profiles": 4,
+  "rate_profiles": 4,
+  "active_pid_profile": "2",
+  "active_rate_profile": "0",
+  "mismatches": {},
+  "cli_errors": [],
+  "extra_candidate_entries": 151,
+  "embedded_bytes": 33316,
+  "embedded_address": "0x080F0000",
+  "hex_config_sector_untouched": true,
+  "scope": "FC CLI settings; immutable MCU UID excluded; ESC internal EEPROM, RX firmware/binding, fonts, flash logs not cloned",
+  "method": "Actual candidate ARM CLI emulation including validateAndFixConfig, with hardware/runtime initializers stubbed; all captured values compared by profile and key. Not flight validation.",
+  "hex_sha256": "d133853efcddba5bf45d3bf79ebbd73c8a6f198dba50305d159ec7497500cdf0",
+  "elf_sha256": "15dc9239b17204ff6ac08d641e14b40008a3bc62fede17509673b48385e14eba",
+  "stock_sha256": "4e3dbc82f292d569108e4c14b76066c4129818f07ea24bb6abe86db73f0eb3f1"
+}

@@ -1,0 +1,11 @@
+--- a/Core/Src/main.c
++++ b/Core/Src/main.c
+@@ -253,7 +253,7 @@
+ 
+     imu_calibrate_gyro(g_gyro_bias, 500);
+ 
+-    ukf_init(&g_ukf, 1e-3f, 2.0f, 0.0f);
++    ukf_init(&g_ukf, 0.5f, 2.0f, 0.0f);
+     indi_init(&g_indi, ARM_M, K_THRUST, K_DRAG, IXX, IYY, IZZ, INDI_CUTOFF_HZ, DT_CTRL);
+     cam_init(&g_cam, K_THRUST, K_DRAG, ARM_M);
+     adrc_init(&g_adrc,

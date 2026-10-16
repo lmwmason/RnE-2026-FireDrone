@@ -1,0 +1,9 @@
+betaflight/
+legacy/
+tools/
+logs/
+build/
+backups/
+__pycache__/
+*.pyc
+.venv/

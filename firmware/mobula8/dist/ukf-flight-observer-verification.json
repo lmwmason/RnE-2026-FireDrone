@@ -1,0 +1,20 @@
+{
+  "status": "FLASHED_GROUND_CHECKED_ARMED_FLIGHT_PENDING",
+  "readback_exact": true,
+  "unexpected_settings_changes": {},
+  "flash_used_bytes": 0,
+  "flash_total_bytes": 8388608,
+  "ukf_mode": 2,
+  "fd_mode": 0,
+  "fd_blend": 0,
+  "maximum_adapter_us": 106,
+  "max_cycle_us": 311,
+  "valid_samples": 117,
+  "total_samples": 117,
+  "max_abs_attitude_difference_deg": [
+    0.1,
+    0.1
+  ],
+  "pid_output_source": "stock Betaflight only",
+  "armed_hardware_tested": false
+}

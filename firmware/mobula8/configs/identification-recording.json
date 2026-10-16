@@ -1,0 +1,31 @@
+{
+  "version": 3,
+  "motor_channels": "logical motor indices 0..3; same indices as cached DShot telemetry; mapping requires response consistency check",
+  "fields": {
+    "fdErpm[0..3]": "100 electrical RPM per LSB; mechanical RPM = value*200/motor_poles",
+    "fdErpmAge[0..3]": "100 microseconds since last valid telemetry decode; 65535 unknown or saturated; decode time is not ESC capture time",
+    "fdTelemetryMask": "bits0..3: telemetry has been seen and last decode age <=10ms",
+    "fdGyro[0..2]": "filtered gyro, 0.01 deg/s per LSB",
+    "fdPidSum[0..2]": "actual final rate PID Sum, 0.01 PID units per LSB",
+    "fdCorrection[0..2]": "actual additional correction, 0.001 PID units per LSB",
+    "fdCandidate[0..2]": "unblended absolute candidate, 0.1 PID units per LSB, saturated at signed16 range",
+    "fdAttitude[0..3]": "0.01 degrees; propagated UKF roll,pitch then BF roll,pitch; UKF -32768 if invalid",
+    "fdUkfAge": "microseconds since last completed UKF correction, 65535 invalid/saturated; gyro propagation continues between corrections",
+    "fdUkfAccelRejected": "bit0 last completed update rejected accel; bit1 dynamic accel/high-rate 150ms hold active"
+  },
+  "preserved": [
+    "debug UKF applied difference/peak timing/rejection reason",
+    "motor commands",
+    "RC commands and setpoints",
+    "battery voltage",
+    "existing 1/2 logging rate",
+    "roll trim -7, pitch trim 0"
+  ],
+  "analysis": "Raw fields are additional independent fields in each I/P frame. New logs do not depend on changing the debug mode. No automatic tuning or parameter application.",
+  "user_observation": "User reports moving one axis at a time in prior flights; failed identification must not be attributed to simultaneous stick inputs without evidence.",
+  "debug_bits_added": {
+    "10": "rate computation valid",
+    "11": "nonzero extra correction",
+    "12": "candidate correction exceeds limit"
+  }
+}

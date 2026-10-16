@@ -1,0 +1,10 @@
+# Requires flight-observer firmware. No experimental control output.
+# Initialize on the ground before ARM. Faults latch UKF off until reboot.
+set fd_mode = 0
+set fd_blend = 0
+set fd_ukf = 2
+set debug_mode = FIREDRONE_UKF_FLIGHT
+set blackbox_device = SPIFLASH
+set blackbox_mode = NORMAL
+set blackbox_sample_rate = 1/2
+save

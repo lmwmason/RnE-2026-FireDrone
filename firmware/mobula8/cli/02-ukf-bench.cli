@@ -1,0 +1,9 @@
+# DISARMED / PROPELLERS REMOVED. UKF never controls motors in this build.
+set fd_mode = 0
+set fd_blend = 0
+set fd_ukf = 1
+set blackbox_device = SPIFLASH
+set blackbox_mode = ALWAYS
+set blackbox_sample_rate = 1/4
+set debug_mode = FIREDRONE_UKF
+save

@@ -1,0 +1,16 @@
+{
+  "status": "INTEGRATED_CODE_FLASHED_UKF_CONTROL_ON_EXTRA_OUTPUTS_OFF",
+  "readback_exact": true,
+  "unexpected_setting_changes": {},
+  "ukf_mode": 3,
+  "rate_controller_mode": 0,
+  "blend": 0,
+  "effectiveness": "unidentified, zero",
+  "maximum_adapter_us": 96,
+  "valid_samples": 94,
+  "samples": 94,
+  "flash_used_bytes": 0,
+  "additional_controller_flight_validated": false,
+  "host_tests": "PASS: bounds, 9 synthetic plants, learning freeze, cache/config reset, shadow coexistence with UKF",
+  "identification_status": "insufficient fit quality in existing flights"
+}

@@ -1,0 +1,7 @@
+version
+# Betaflight / STM32F405 (S405) 4.4.2 Jun 30 2024 / 00:59:29 (23d066d08) MSP API: 1.45
+
+# config: YES
+# board: manufacturer_id: FPVM, board_name: BETAFLIGHTF4
+
+# 

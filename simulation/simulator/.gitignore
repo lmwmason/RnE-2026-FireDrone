@@ -1,0 +1,22 @@
+# Build artifacts
+build/
+firedrone_sim*
+*.o
+*.d
+
+# Generated outputs
+out/
+*.csv
+*.mp4
+*.gif
+__pycache__/
+
+# IDE
+.idea/
+
+# MCU benchmark image
+timing/*.elf
+timing/*.bin
+
+.venv/
+firedrone_x8_sim

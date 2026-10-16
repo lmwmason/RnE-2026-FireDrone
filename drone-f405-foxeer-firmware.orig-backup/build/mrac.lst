@@ -1,0 +1,578 @@
+ARM GAS  /tmp/ccGMr9QS.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 1
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"mrac.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.file 1 "Control/mrac.c"
+  20              		.section	.text.mrac_axis_init,"ax",%progbits
+  21              		.align	1
+  22              		.global	mrac_axis_init
+  23              		.syntax unified
+  24              		.thumb
+  25              		.thumb_func
+  27              	mrac_axis_init:
+  28              	.LVL0:
+  29              	.LFB0:
+   1:Control/mrac.c **** #include "mrac.h"
+   2:Control/mrac.c **** #include <string.h>
+   3:Control/mrac.c **** 
+   4:Control/mrac.c **** void mrac_axis_init(mrac_axis_t *ax, float am, float bm,
+   5:Control/mrac.c ****                     float gamma1, float gamma2,
+   6:Control/mrac.c ****                     float theta1_init, float theta2_init,
+   7:Control/mrac.c ****                     float theta1_min, float theta2_min,
+   8:Control/mrac.c ****                     float dt)
+   9:Control/mrac.c **** {
+  30              		.loc 1 9 1 view -0
+  31              		.cfi_startproc
+  32              		@ args = 0, pretend = 0, frame = 0
+  33              		@ frame_needed = 0, uses_anonymous_args = 0
+  34              		.loc 1 9 1 is_stmt 0 view .LVU1
+  35 0000 2DE9F84F 		push	{r3, r4, r5, r6, r7, r8, r9, r10, fp, lr}
+  36              	.LCFI0:
+  37              		.cfi_def_cfa_offset 40
+  38              		.cfi_offset 3, -40
+  39              		.cfi_offset 4, -36
+  40              		.cfi_offset 5, -32
+  41              		.cfi_offset 6, -28
+  42              		.cfi_offset 7, -24
+  43              		.cfi_offset 8, -20
+  44              		.cfi_offset 9, -16
+  45              		.cfi_offset 10, -12
+  46              		.cfi_offset 11, -8
+  47              		.cfi_offset 14, -4
+  48 0004 2DED028B 		vpush.64	{d8}
+  49              	.LCFI1:
+ARM GAS  /tmp/ccGMr9QS.s 			page 2
+
+
+  50              		.cfi_def_cfa_offset 48
+  51              		.cfi_offset 80, -48
+  52              		.cfi_offset 81, -44
+  53 0008 0446     		mov	r4, r0
+  54 000a F0EE408A 		vmov.f32	s17, s0
+  55 000e B0EE608A 		vmov.f32	s16, s1
+  56 0012 11EE10BA 		vmov	fp, s2
+  57 0016 11EE90AA 		vmov	r10, s3
+  58 001a 12EE109A 		vmov	r9, s4
+  59 001e 12EE908A 		vmov	r8, s5
+  60 0022 13EE107A 		vmov	r7, s6
+  61 0026 13EE906A 		vmov	r6, s7
+  62 002a 14EE105A 		vmov	r5, s8
+  10:Control/mrac.c ****     memset(ax, 0, sizeof(mrac_axis_t));
+  63              		.loc 1 10 5 is_stmt 1 view .LVU2
+  64 002e 2822     		movs	r2, #40
+  65 0030 0021     		movs	r1, #0
+  66 0032 FFF7FEFF 		bl	memset
+  67              	.LVL1:
+  11:Control/mrac.c ****     ax->am          = am;
+  68              		.loc 1 11 5 view .LVU3
+  69              		.loc 1 11 21 is_stmt 0 view .LVU4
+  70 0036 C4ED008A 		vstr.32	s17, [r4]
+  12:Control/mrac.c ****     ax->bm          = bm;
+  71              		.loc 1 12 5 is_stmt 1 view .LVU5
+  72              		.loc 1 12 21 is_stmt 0 view .LVU6
+  73 003a 84ED018A 		vstr.32	s16, [r4, #4]
+  13:Control/mrac.c ****     ax->gamma1      = gamma1;
+  74              		.loc 1 13 5 is_stmt 1 view .LVU7
+  75              		.loc 1 13 21 is_stmt 0 view .LVU8
+  76 003e C4F814B0 		str	fp, [r4, #20]	@ float
+  14:Control/mrac.c ****     ax->gamma2      = gamma2;
+  77              		.loc 1 14 5 is_stmt 1 view .LVU9
+  78              		.loc 1 14 21 is_stmt 0 view .LVU10
+  79 0042 C4F818A0 		str	r10, [r4, #24]	@ float
+  15:Control/mrac.c ****     ax->theta1_hat  = theta1_init;
+  80              		.loc 1 15 5 is_stmt 1 view .LVU11
+  81              		.loc 1 15 21 is_stmt 0 view .LVU12
+  82 0046 C4F80C90 		str	r9, [r4, #12]	@ float
+  16:Control/mrac.c ****     ax->theta2_hat  = theta2_init;
+  83              		.loc 1 16 5 is_stmt 1 view .LVU13
+  84              		.loc 1 16 21 is_stmt 0 view .LVU14
+  85 004a C4F81080 		str	r8, [r4, #16]	@ float
+  17:Control/mrac.c ****     ax->theta1_min  = theta1_min;
+  86              		.loc 1 17 5 is_stmt 1 view .LVU15
+  87              		.loc 1 17 21 is_stmt 0 view .LVU16
+  88 004e E761     		str	r7, [r4, #28]	@ float
+  18:Control/mrac.c ****     ax->theta2_min  = theta2_min;
+  89              		.loc 1 18 5 is_stmt 1 view .LVU17
+  90              		.loc 1 18 21 is_stmt 0 view .LVU18
+  91 0050 2662     		str	r6, [r4, #32]	@ float
+  19:Control/mrac.c ****     ax->dt          = dt;
+  92              		.loc 1 19 5 is_stmt 1 view .LVU19
+  93              		.loc 1 19 21 is_stmt 0 view .LVU20
+  94 0052 6562     		str	r5, [r4, #36]	@ float
+  20:Control/mrac.c ****     ax->omega_m     = 0.0f;
+  95              		.loc 1 20 5 is_stmt 1 view .LVU21
+ARM GAS  /tmp/ccGMr9QS.s 			page 3
+
+
+  21:Control/mrac.c **** }
+  96              		.loc 1 21 1 is_stmt 0 view .LVU22
+  97 0054 BDEC028B 		vldm	sp!, {d8}
+  98              	.LCFI2:
+  99              		.cfi_restore 80
+ 100              		.cfi_restore 81
+ 101              		.cfi_def_cfa_offset 40
+ 102              	.LVL2:
+ 103              		.loc 1 21 1 view .LVU23
+ 104 0058 BDE8F88F 		pop	{r3, r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 105              		.loc 1 21 1 view .LVU24
+ 106              		.cfi_endproc
+ 107              	.LFE0:
+ 109              		.section	.text.mrac_axis_update,"ax",%progbits
+ 110              		.align	1
+ 111              		.global	mrac_axis_update
+ 112              		.syntax unified
+ 113              		.thumb
+ 114              		.thumb_func
+ 116              	mrac_axis_update:
+ 117              	.LVL3:
+ 118              	.LFB1:
+  22:Control/mrac.c **** 
+  23:Control/mrac.c **** float mrac_axis_update(mrac_axis_t *ax, float omega_meas, float r)
+  24:Control/mrac.c **** {
+ 119              		.loc 1 24 1 is_stmt 1 view -0
+ 120              		.cfi_startproc
+ 121              		@ args = 0, pretend = 0, frame = 0
+ 122              		@ frame_needed = 0, uses_anonymous_args = 0
+ 123              		@ link register save eliminated.
+  25:Control/mrac.c ****     ax->omega_m += ax->dt * (-ax->am * ax->omega_m + ax->bm * r);
+ 124              		.loc 1 25 5 view .LVU26
+ 125              		.loc 1 25 7 is_stmt 0 view .LVU27
+ 126 0000 90ED027A 		vldr.32	s14, [r0, #8]
+ 127              		.loc 1 25 22 view .LVU28
+ 128 0004 D0ED097A 		vldr.32	s15, [r0, #36]
+ 129              		.loc 1 25 33 view .LVU29
+ 130 0008 D0ED006A 		vldr.32	s13, [r0]
+ 131              		.loc 1 25 38 view .LVU30
+ 132 000c 66EEC76A 		vnmul.f32	s13, s13, s14
+ 133              		.loc 1 25 56 view .LVU31
+ 134 0010 90ED016A 		vldr.32	s12, [r0, #4]
+ 135              		.loc 1 25 61 view .LVU32
+ 136 0014 26EE206A 		vmul.f32	s12, s12, s1
+ 137              		.loc 1 25 52 view .LVU33
+ 138 0018 76EE866A 		vadd.f32	s13, s13, s12
+ 139              		.loc 1 25 27 view .LVU34
+ 140 001c 67EEA66A 		vmul.f32	s13, s15, s13
+ 141              		.loc 1 25 17 view .LVU35
+ 142 0020 37EE267A 		vadd.f32	s14, s14, s13
+ 143 0024 80ED027A 		vstr.32	s14, [r0, #8]
+  26:Control/mrac.c **** 
+  27:Control/mrac.c ****     float e = omega_meas - ax->omega_m;
+ 144              		.loc 1 27 5 is_stmt 1 view .LVU36
+ 145              		.loc 1 27 11 is_stmt 0 view .LVU37
+ 146 0028 30EE477A 		vsub.f32	s14, s0, s14
+ 147              	.LVL4:
+ARM GAS  /tmp/ccGMr9QS.s 			page 4
+
+
+  28:Control/mrac.c **** 
+  29:Control/mrac.c ****     ax->theta1_hat -= ax->dt * ax->gamma1 * e * r;
+ 148              		.loc 1 29 5 is_stmt 1 view .LVU38
+ 149              		.loc 1 29 7 is_stmt 0 view .LVU39
+ 150 002c 90ED036A 		vldr.32	s12, [r0, #12]
+ 151              		.loc 1 29 34 view .LVU40
+ 152 0030 D0ED056A 		vldr.32	s13, [r0, #20]
+ 153              		.loc 1 29 30 view .LVU41
+ 154 0034 67EEA66A 		vmul.f32	s13, s15, s13
+ 155              		.loc 1 29 43 view .LVU42
+ 156 0038 66EE876A 		vmul.f32	s13, s13, s14
+ 157              		.loc 1 29 47 view .LVU43
+ 158 003c 66EEA06A 		vmul.f32	s13, s13, s1
+ 159              		.loc 1 29 20 view .LVU44
+ 160 0040 36EE666A 		vsub.f32	s12, s12, s13
+ 161 0044 80ED036A 		vstr.32	s12, [r0, #12]
+  30:Control/mrac.c ****     ax->theta2_hat -= ax->dt * ax->gamma2 * e * omega_meas;
+ 162              		.loc 1 30 5 is_stmt 1 view .LVU45
+ 163              		.loc 1 30 7 is_stmt 0 view .LVU46
+ 164 0048 D0ED046A 		vldr.32	s13, [r0, #16]
+ 165              		.loc 1 30 34 view .LVU47
+ 166 004c D0ED065A 		vldr.32	s11, [r0, #24]
+ 167              		.loc 1 30 30 view .LVU48
+ 168 0050 67EEA57A 		vmul.f32	s15, s15, s11
+ 169              		.loc 1 30 43 view .LVU49
+ 170 0054 67EE877A 		vmul.f32	s15, s15, s14
+ 171              		.loc 1 30 47 view .LVU50
+ 172 0058 67EE807A 		vmul.f32	s15, s15, s0
+ 173              		.loc 1 30 20 view .LVU51
+ 174 005c 76EEE77A 		vsub.f32	s15, s13, s15
+ 175 0060 C0ED047A 		vstr.32	s15, [r0, #16]
+  31:Control/mrac.c **** 
+  32:Control/mrac.c ****     if (ax->theta1_hat < ax->theta1_min) ax->theta1_hat = ax->theta1_min;
+ 176              		.loc 1 32 5 is_stmt 1 view .LVU52
+ 177              		.loc 1 32 28 is_stmt 0 view .LVU53
+ 178 0064 90ED077A 		vldr.32	s14, [r0, #28]
+ 179              	.LVL5:
+ 180              		.loc 1 32 8 view .LVU54
+ 181 0068 B4EEC76A 		vcmpe.f32	s12, s14
+ 182 006c F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 183 0070 01D5     		bpl	.L4
+ 184              		.loc 1 32 42 is_stmt 1 discriminator 1 view .LVU55
+ 185              		.loc 1 32 57 is_stmt 0 discriminator 1 view .LVU56
+ 186 0072 80ED037A 		vstr.32	s14, [r0, #12]
+ 187              	.L4:
+  33:Control/mrac.c ****     if (ax->theta2_hat < ax->theta2_min) ax->theta2_hat = ax->theta2_min;
+ 188              		.loc 1 33 5 is_stmt 1 view .LVU57
+ 189              		.loc 1 33 28 is_stmt 0 view .LVU58
+ 190 0076 90ED087A 		vldr.32	s14, [r0, #32]
+ 191              		.loc 1 33 8 view .LVU59
+ 192 007a F4EEC77A 		vcmpe.f32	s15, s14
+ 193 007e F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 194 0082 01D5     		bpl	.L6
+ 195              		.loc 1 33 42 is_stmt 1 discriminator 1 view .LVU60
+ 196              		.loc 1 33 57 is_stmt 0 discriminator 1 view .LVU61
+ 197 0084 80ED047A 		vstr.32	s14, [r0, #16]
+ 198              	.L6:
+ARM GAS  /tmp/ccGMr9QS.s 			page 5
+
+
+  34:Control/mrac.c **** 
+  35:Control/mrac.c ****     return ax->theta1_hat * r + ax->theta2_hat * omega_meas;
+ 199              		.loc 1 35 5 is_stmt 1 view .LVU62
+ 200              		.loc 1 35 14 is_stmt 0 view .LVU63
+ 201 0088 90ED037A 		vldr.32	s14, [r0, #12]
+ 202              		.loc 1 35 27 view .LVU64
+ 203 008c 27EE207A 		vmul.f32	s14, s14, s1
+ 204              		.loc 1 35 35 view .LVU65
+ 205 0090 D0ED047A 		vldr.32	s15, [r0, #16]
+ 206              		.loc 1 35 48 view .LVU66
+ 207 0094 27EE800A 		vmul.f32	s0, s15, s0
+ 208              	.LVL6:
+  36:Control/mrac.c **** }
+ 209              		.loc 1 36 1 view .LVU67
+ 210 0098 37EE000A 		vadd.f32	s0, s14, s0
+ 211 009c 7047     		bx	lr
+ 212              		.cfi_endproc
+ 213              	.LFE1:
+ 215              		.section	.text.mrac_init,"ax",%progbits
+ 216              		.align	1
+ 217              		.global	mrac_init
+ 218              		.syntax unified
+ 219              		.thumb
+ 220              		.thumb_func
+ 222              	mrac_init:
+ 223              	.LVL7:
+ 224              	.LFB2:
+  37:Control/mrac.c **** 
+  38:Control/mrac.c **** void mrac_init(mrac_t *mrac, float am, float bm,
+  39:Control/mrac.c ****                float gamma1, float gamma2,
+  40:Control/mrac.c ****                float theta1_init, float theta2_init,
+  41:Control/mrac.c ****                float dt)
+  42:Control/mrac.c **** {
+ 225              		.loc 1 42 1 is_stmt 1 view -0
+ 226              		.cfi_startproc
+ 227              		@ args = 0, pretend = 0, frame = 0
+ 228              		@ frame_needed = 0, uses_anonymous_args = 0
+ 229              		.loc 1 42 1 is_stmt 0 view .LVU69
+ 230 0000 38B5     		push	{r3, r4, r5, lr}
+ 231              	.LCFI3:
+ 232              		.cfi_def_cfa_offset 16
+ 233              		.cfi_offset 3, -16
+ 234              		.cfi_offset 4, -12
+ 235              		.cfi_offset 5, -8
+ 236              		.cfi_offset 14, -4
+ 237 0002 2DED088B 		vpush.64	{d8, d9, d10, d11}
+ 238              	.LCFI4:
+ 239              		.cfi_def_cfa_offset 48
+ 240              		.cfi_offset 80, -48
+ 241              		.cfi_offset 81, -44
+ 242              		.cfi_offset 82, -40
+ 243              		.cfi_offset 83, -36
+ 244              		.cfi_offset 84, -32
+ 245              		.cfi_offset 85, -28
+ 246              		.cfi_offset 86, -24
+ 247              		.cfi_offset 87, -20
+ 248 0006 0546     		mov	r5, r0
+ARM GAS  /tmp/ccGMr9QS.s 			page 6
+
+
+ 249 0008 B0EE40BA 		vmov.f32	s22, s0
+ 250 000c F0EE60AA 		vmov.f32	s21, s1
+ 251 0010 B0EE41AA 		vmov.f32	s20, s2
+ 252 0014 F0EE619A 		vmov.f32	s19, s3
+ 253 0018 B0EE429A 		vmov.f32	s18, s4
+ 254 001c F0EE628A 		vmov.f32	s17, s5
+ 255 0020 B0EE438A 		vmov.f32	s16, s6
+  43:Control/mrac.c ****     for (uint8_t i = 0; i < 3; i++) {
+ 256              		.loc 1 43 5 is_stmt 1 view .LVU70
+ 257              	.LBB2:
+ 258              		.loc 1 43 10 view .LVU71
+ 259              	.LVL8:
+ 260              		.loc 1 43 18 is_stmt 0 view .LVU72
+ 261 0024 0024     		movs	r4, #0
+ 262              		.loc 1 43 5 view .LVU73
+ 263 0026 19E0     		b	.L11
+ 264              	.LVL9:
+ 265              	.L12:
+  44:Control/mrac.c ****         mrac_axis_init(&mrac->axis[i], am, bm,
+ 266              		.loc 1 44 9 is_stmt 1 view .LVU74
+ 267 0028 04EB8400 		add	r0, r4, r4, lsl #2
+ 268 002c B0EE484A 		vmov.f32	s8, s16
+ 269 0030 DFED0D3A 		vldr.32	s7, .L14
+ 270 0034 9FED0D3A 		vldr.32	s6, .L14+4
+ 271 0038 F0EE682A 		vmov.f32	s5, s17
+ 272 003c B0EE492A 		vmov.f32	s4, s18
+ 273 0040 F0EE691A 		vmov.f32	s3, s19
+ 274 0044 B0EE4A1A 		vmov.f32	s2, s20
+ 275 0048 F0EE6A0A 		vmov.f32	s1, s21
+ 276 004c B0EE4B0A 		vmov.f32	s0, s22
+ 277 0050 05EBC000 		add	r0, r5, r0, lsl #3
+ 278 0054 FFF7FEFF 		bl	mrac_axis_init
+ 279              	.LVL10:
+  43:Control/mrac.c ****     for (uint8_t i = 0; i < 3; i++) {
+ 280              		.loc 1 43 33 discriminator 3 view .LVU75
+ 281 0058 0134     		adds	r4, r4, #1
+ 282              	.LVL11:
+  43:Control/mrac.c ****     for (uint8_t i = 0; i < 3; i++) {
+ 283              		.loc 1 43 33 is_stmt 0 discriminator 3 view .LVU76
+ 284 005a E4B2     		uxtb	r4, r4
+ 285              	.LVL12:
+ 286              	.L11:
+  43:Control/mrac.c ****     for (uint8_t i = 0; i < 3; i++) {
+ 287              		.loc 1 43 27 is_stmt 1 discriminator 1 view .LVU77
+ 288 005c 022C     		cmp	r4, #2
+ 289 005e E3D9     		bls	.L12
+ 290              	.LBE2:
+  45:Control/mrac.c ****                        gamma1, gamma2,
+  46:Control/mrac.c ****                        theta1_init, theta2_init,
+  47:Control/mrac.c ****                        0.01f, 0.0f, dt);
+  48:Control/mrac.c ****     }
+  49:Control/mrac.c **** }
+ 291              		.loc 1 49 1 is_stmt 0 view .LVU78
+ 292 0060 BDEC088B 		vldm	sp!, {d8-d11}
+ 293              	.LCFI5:
+ 294              		.cfi_restore 86
+ 295              		.cfi_restore 87
+ARM GAS  /tmp/ccGMr9QS.s 			page 7
+
+
+ 296              		.cfi_restore 84
+ 297              		.cfi_restore 85
+ 298              		.cfi_restore 82
+ 299              		.cfi_restore 83
+ 300              		.cfi_restore 80
+ 301              		.cfi_restore 81
+ 302              		.cfi_def_cfa_offset 16
+ 303              	.LVL13:
+ 304              		.loc 1 49 1 view .LVU79
+ 305 0064 38BD     		pop	{r3, r4, r5, pc}
+ 306              	.LVL14:
+ 307              	.L15:
+ 308              		.loc 1 49 1 view .LVU80
+ 309 0066 00BF     		.align	2
+ 310              	.L14:
+ 311 0068 00000000 		.word	0
+ 312 006c 0AD7233C 		.word	1008981770
+ 313              		.cfi_endproc
+ 314              	.LFE2:
+ 316              		.section	.text.mrac_update,"ax",%progbits
+ 317              		.align	1
+ 318              		.global	mrac_update
+ 319              		.syntax unified
+ 320              		.thumb
+ 321              		.thumb_func
+ 323              	mrac_update:
+ 324              	.LVL15:
+ 325              	.LFB3:
+  50:Control/mrac.c **** 
+  51:Control/mrac.c **** void mrac_update(mrac_t *mrac, const float omega_meas[3], const float r[3],
+  52:Control/mrac.c ****                  float u_out[3])
+  53:Control/mrac.c **** {
+ 326              		.loc 1 53 1 is_stmt 1 view -0
+ 327              		.cfi_startproc
+ 328              		@ args = 0, pretend = 0, frame = 0
+ 329              		@ frame_needed = 0, uses_anonymous_args = 0
+ 330              		.loc 1 53 1 is_stmt 0 view .LVU82
+ 331 0000 2DE9F843 		push	{r3, r4, r5, r6, r7, r8, r9, lr}
+ 332              	.LCFI6:
+ 333              		.cfi_def_cfa_offset 32
+ 334              		.cfi_offset 3, -32
+ 335              		.cfi_offset 4, -28
+ 336              		.cfi_offset 5, -24
+ 337              		.cfi_offset 6, -20
+ 338              		.cfi_offset 7, -16
+ 339              		.cfi_offset 8, -12
+ 340              		.cfi_offset 9, -8
+ 341              		.cfi_offset 14, -4
+ 342 0004 8046     		mov	r8, r0
+ 343 0006 0F46     		mov	r7, r1
+ 344 0008 1646     		mov	r6, r2
+ 345 000a 1D46     		mov	r5, r3
+  54:Control/mrac.c ****     for (uint8_t i = 0; i < 3; i++)
+ 346              		.loc 1 54 5 is_stmt 1 view .LVU83
+ 347              	.LBB3:
+ 348              		.loc 1 54 10 view .LVU84
+ 349              	.LVL16:
+ARM GAS  /tmp/ccGMr9QS.s 			page 8
+
+
+ 350              		.loc 1 54 18 is_stmt 0 view .LVU85
+ 351 000c 0024     		movs	r4, #0
+ 352              		.loc 1 54 5 view .LVU86
+ 353 000e 13E0     		b	.L17
+ 354              	.LVL17:
+ 355              	.L18:
+  55:Control/mrac.c ****         u_out[i] = mrac_axis_update(&mrac->axis[i], omega_meas[i], r[i]);
+ 356              		.loc 1 55 9 is_stmt 1 view .LVU87
+ 357              		.loc 1 55 63 is_stmt 0 view .LVU88
+ 358 0010 07EB8403 		add	r3, r7, r4, lsl #2
+ 359              		.loc 1 55 69 view .LVU89
+ 360 0014 06EB8402 		add	r2, r6, r4, lsl #2
+ 361              		.loc 1 55 14 view .LVU90
+ 362 0018 05EB8409 		add	r9, r5, r4, lsl #2
+ 363              		.loc 1 55 20 view .LVU91
+ 364 001c 04EB8400 		add	r0, r4, r4, lsl #2
+ 365 0020 D2ED000A 		vldr.32	s1, [r2]
+ 366 0024 93ED000A 		vldr.32	s0, [r3]
+ 367 0028 08EBC000 		add	r0, r8, r0, lsl #3
+ 368 002c FFF7FEFF 		bl	mrac_axis_update
+ 369              	.LVL18:
+ 370              		.loc 1 55 18 discriminator 1 view .LVU92
+ 371 0030 89ED000A 		vstr.32	s0, [r9]
+  54:Control/mrac.c ****     for (uint8_t i = 0; i < 3; i++)
+ 372              		.loc 1 54 33 is_stmt 1 discriminator 3 view .LVU93
+ 373 0034 0134     		adds	r4, r4, #1
+ 374              	.LVL19:
+  54:Control/mrac.c ****     for (uint8_t i = 0; i < 3; i++)
+ 375              		.loc 1 54 33 is_stmt 0 discriminator 3 view .LVU94
+ 376 0036 E4B2     		uxtb	r4, r4
+ 377              	.LVL20:
+ 378              	.L17:
+  54:Control/mrac.c ****     for (uint8_t i = 0; i < 3; i++)
+ 379              		.loc 1 54 27 is_stmt 1 discriminator 1 view .LVU95
+ 380 0038 022C     		cmp	r4, #2
+ 381 003a E9D9     		bls	.L18
+ 382              	.LBE3:
+  56:Control/mrac.c **** }
+ 383              		.loc 1 56 1 is_stmt 0 view .LVU96
+ 384 003c BDE8F883 		pop	{r3, r4, r5, r6, r7, r8, r9, pc}
+ 385              		.loc 1 56 1 view .LVU97
+ 386              		.cfi_endproc
+ 387              	.LFE3:
+ 389              		.section	.text.mrac_get_params,"ax",%progbits
+ 390              		.align	1
+ 391              		.global	mrac_get_params
+ 392              		.syntax unified
+ 393              		.thumb
+ 394              		.thumb_func
+ 396              	mrac_get_params:
+ 397              	.LVL21:
+ 398              	.LFB4:
+  57:Control/mrac.c **** 
+  58:Control/mrac.c **** void mrac_get_params(const mrac_t *mrac, float theta1[3], float theta2[3])
+  59:Control/mrac.c **** {
+ 399              		.loc 1 59 1 is_stmt 1 view -0
+ 400              		.cfi_startproc
+ARM GAS  /tmp/ccGMr9QS.s 			page 9
+
+
+ 401              		@ args = 0, pretend = 0, frame = 0
+ 402              		@ frame_needed = 0, uses_anonymous_args = 0
+  60:Control/mrac.c ****     for (uint8_t i = 0; i < 3; i++) {
+ 403              		.loc 1 60 5 view .LVU99
+ 404              	.LBB4:
+ 405              		.loc 1 60 10 view .LVU100
+ 406              		.loc 1 60 18 is_stmt 0 view .LVU101
+ 407 0000 0023     		movs	r3, #0
+ 408              	.LVL22:
+ 409              		.loc 1 60 27 is_stmt 1 discriminator 1 view .LVU102
+ 410 0002 022B     		cmp	r3, #2
+ 411 0004 19D8     		bhi	.L26
+ 412              	.LBE4:
+  59:Control/mrac.c ****     for (uint8_t i = 0; i < 3; i++) {
+ 413              		.loc 1 59 1 is_stmt 0 view .LVU103
+ 414 0006 00B5     		push	{lr}
+ 415              	.LCFI7:
+ 416              		.cfi_def_cfa_offset 4
+ 417              		.cfi_offset 14, -4
+ 418              	.L22:
+ 419              	.LBB5:
+  61:Control/mrac.c ****         theta1[i] = mrac->axis[i].theta1_hat;
+ 420              		.loc 1 61 9 is_stmt 1 view .LVU104
+ 421              		.loc 1 61 15 is_stmt 0 view .LVU105
+ 422 0008 01EB830E 		add	lr, r1, r3, lsl #2
+ 423              		.loc 1 61 34 view .LVU106
+ 424 000c 03EB830C 		add	ip, r3, r3, lsl #2
+ 425 0010 00EBCC0C 		add	ip, r0, ip, lsl #3
+ 426 0014 DCF80CC0 		ldr	ip, [ip, #12]	@ float
+ 427              		.loc 1 61 19 view .LVU107
+ 428 0018 CEF800C0 		str	ip, [lr]	@ float
+  62:Control/mrac.c ****         theta2[i] = mrac->axis[i].theta2_hat;
+ 429              		.loc 1 62 9 is_stmt 1 view .LVU108
+ 430              		.loc 1 62 15 is_stmt 0 view .LVU109
+ 431 001c 02EB830E 		add	lr, r2, r3, lsl #2
+ 432              		.loc 1 62 34 view .LVU110
+ 433 0020 03EB830C 		add	ip, r3, r3, lsl #2
+ 434 0024 00EBCC0C 		add	ip, r0, ip, lsl #3
+ 435 0028 DCF810C0 		ldr	ip, [ip, #16]	@ float
+ 436              		.loc 1 62 19 view .LVU111
+ 437 002c CEF800C0 		str	ip, [lr]	@ float
+  60:Control/mrac.c ****         theta1[i] = mrac->axis[i].theta1_hat;
+ 438              		.loc 1 60 33 is_stmt 1 discriminator 3 view .LVU112
+ 439 0030 0133     		adds	r3, r3, #1
+ 440              	.LVL23:
+  60:Control/mrac.c ****         theta1[i] = mrac->axis[i].theta1_hat;
+ 441              		.loc 1 60 33 is_stmt 0 discriminator 3 view .LVU113
+ 442 0032 DBB2     		uxtb	r3, r3
+ 443              	.LVL24:
+  60:Control/mrac.c ****         theta1[i] = mrac->axis[i].theta1_hat;
+ 444              		.loc 1 60 27 is_stmt 1 discriminator 1 view .LVU114
+ 445 0034 022B     		cmp	r3, #2
+ 446 0036 E7D9     		bls	.L22
+ 447              	.LBE5:
+  63:Control/mrac.c ****     }
+  64:Control/mrac.c **** }
+ 448              		.loc 1 64 1 is_stmt 0 view .LVU115
+ARM GAS  /tmp/ccGMr9QS.s 			page 10
+
+
+ 449 0038 00BD     		pop	{pc}
+ 450              	.L26:
+ 451              	.LCFI8:
+ 452              		.cfi_def_cfa_offset 0
+ 453              		.cfi_restore 14
+ 454              		.loc 1 64 1 view .LVU116
+ 455 003a 7047     		bx	lr
+ 456              		.cfi_endproc
+ 457              	.LFE4:
+ 459              		.text
+ 460              	.Letext0:
+ 461              		.file 2 "/usr/arm-none-eabi/include/machine/_default_types.h"
+ 462              		.file 3 "/usr/arm-none-eabi/include/sys/_stdint.h"
+ 463              		.file 4 "Control/mrac.h"
+ 464              		.file 5 "/usr/arm-none-eabi/include/string.h"
+ 465              		.file 6 "<built-in>"
+ARM GAS  /tmp/ccGMr9QS.s 			page 11
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 mrac.c
+     /tmp/ccGMr9QS.s:21     .text.mrac_axis_init:00000000 $t
+     /tmp/ccGMr9QS.s:27     .text.mrac_axis_init:00000000 mrac_axis_init
+     /tmp/ccGMr9QS.s:110    .text.mrac_axis_update:00000000 $t
+     /tmp/ccGMr9QS.s:116    .text.mrac_axis_update:00000000 mrac_axis_update
+     /tmp/ccGMr9QS.s:216    .text.mrac_init:00000000 $t
+     /tmp/ccGMr9QS.s:222    .text.mrac_init:00000000 mrac_init
+     /tmp/ccGMr9QS.s:311    .text.mrac_init:00000068 $d
+     /tmp/ccGMr9QS.s:317    .text.mrac_update:00000000 $t
+     /tmp/ccGMr9QS.s:323    .text.mrac_update:00000000 mrac_update
+     /tmp/ccGMr9QS.s:390    .text.mrac_get_params:00000000 $t
+     /tmp/ccGMr9QS.s:396    .text.mrac_get_params:00000000 mrac_get_params
+
+UNDEFINED SYMBOLS
+memset

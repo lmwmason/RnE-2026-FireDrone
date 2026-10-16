@@ -1,0 +1,16 @@
+# Baseline data collection only. No research controller or estimator execution.
+# Keep original flight modes, PID/rates, motor settings, and debug mode.
+set fd_mode = 0
+set fd_blend = 0
+set fd_ukf = 0
+set blackbox_device = SPIFLASH
+set blackbox_mode = NORMAL
+set blackbox_sample_rate = 1/2
+set blackbox_disable_pids = OFF
+set blackbox_disable_rc = OFF
+set blackbox_disable_setpoint = OFF
+set blackbox_disable_gyro = OFF
+set blackbox_disable_motors = OFF
+set blackbox_disable_bat = OFF
+set blackbox_disable_acc = OFF
+save

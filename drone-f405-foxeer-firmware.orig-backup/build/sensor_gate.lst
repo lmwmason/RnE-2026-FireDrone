@@ -1,0 +1,172 @@
+ARM GAS  /tmp/cc4VD5Op.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 1
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"sensor_gate.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.file 1 "Estimation/sensor_gate.c"
+  20              		.section	.text.sensor_gate_check,"ax",%progbits
+  21              		.align	1
+  22              		.global	sensor_gate_check
+  23              		.syntax unified
+  24              		.thumb
+  25              		.thumb_func
+  27              	sensor_gate_check:
+  28              	.LVL0:
+  29              	.LFB0:
+   1:Estimation/sensor_gate.c **** #include "sensor_gate.h"
+   2:Estimation/sensor_gate.c **** #include "../Math/matrix.h"
+   3:Estimation/sensor_gate.c **** 
+   4:Estimation/sensor_gate.c **** bool sensor_gate_check(const float *v, const float *S_inv, uint8_t n, float threshold)
+   5:Estimation/sensor_gate.c **** {
+  30              		.loc 1 5 1 view -0
+  31              		.cfi_startproc
+  32              		@ args = 0, pretend = 0, frame = 24
+  33              		@ frame_needed = 0, uses_anonymous_args = 0
+  34              		.loc 1 5 1 is_stmt 0 view .LVU1
+  35 0000 30B5     		push	{r4, r5, lr}
+  36              	.LCFI0:
+  37              		.cfi_def_cfa_offset 12
+  38              		.cfi_offset 4, -12
+  39              		.cfi_offset 5, -8
+  40              		.cfi_offset 14, -4
+  41 0002 2DED028B 		vpush.64	{d8}
+  42              	.LCFI1:
+  43              		.cfi_def_cfa_offset 20
+  44              		.cfi_offset 80, -20
+  45              		.cfi_offset 81, -16
+  46 0006 89B0     		sub	sp, sp, #36
+  47              	.LCFI2:
+  48              		.cfi_def_cfa_offset 56
+  49 0008 0546     		mov	r5, r0
+  50 000a 0846     		mov	r0, r1
+  51              	.LVL1:
+  52              		.loc 1 5 1 view .LVU2
+  53 000c 1446     		mov	r4, r2
+ARM GAS  /tmp/cc4VD5Op.s 			page 2
+
+
+  54 000e B0EE408A 		vmov.f32	s16, s0
+   6:Estimation/sensor_gate.c ****     float S_inv_v[6];
+  55              		.loc 1 6 5 is_stmt 1 view .LVU3
+   7:Estimation/sensor_gate.c ****     mat_mul(S_inv, v, S_inv_v, n, n, 1);
+  56              		.loc 1 7 5 view .LVU4
+  57 0012 0123     		movs	r3, #1
+  58 0014 0193     		str	r3, [sp, #4]
+  59 0016 0092     		str	r2, [sp]
+  60 0018 1346     		mov	r3, r2
+  61 001a 02AA     		add	r2, sp, #8
+  62              	.LVL2:
+  63              		.loc 1 7 5 is_stmt 0 view .LVU5
+  64 001c 2946     		mov	r1, r5
+  65              	.LVL3:
+  66              		.loc 1 7 5 view .LVU6
+  67 001e FFF7FEFF 		bl	mat_mul
+  68              	.LVL4:
+   8:Estimation/sensor_gate.c **** 
+   9:Estimation/sensor_gate.c ****     float mahal_sq = 0.0f;
+  69              		.loc 1 9 5 is_stmt 1 view .LVU7
+  10:Estimation/sensor_gate.c ****     for (uint8_t i = 0; i < n; i++) mahal_sq += v[i] * S_inv_v[i];
+  70              		.loc 1 10 5 view .LVU8
+  71              	.LBB2:
+  72              		.loc 1 10 10 view .LVU9
+  73              		.loc 1 10 18 is_stmt 0 view .LVU10
+  74 0022 4FF0000C 		mov	ip, #0
+  75              	.LBE2:
+   9:Estimation/sensor_gate.c ****     for (uint8_t i = 0; i < n; i++) mahal_sq += v[i] * S_inv_v[i];
+  76              		.loc 1 9 11 view .LVU11
+  77 0026 9FED107A 		vldr.32	s14, .L5
+  78              	.LBB3:
+  79              		.loc 1 10 5 view .LVU12
+  80 002a 10E0     		b	.L2
+  81              	.LVL5:
+  82              	.L3:
+  83              		.loc 1 10 37 is_stmt 1 discriminator 3 view .LVU13
+  84              		.loc 1 10 50 is_stmt 0 discriminator 3 view .LVU14
+  85 002c 05EB8C0E 		add	lr, r5, ip, lsl #2
+  86 0030 DEED007A 		vldr.32	s15, [lr]
+  87              		.loc 1 10 63 discriminator 3 view .LVU15
+  88 0034 08AB     		add	r3, sp, #32
+  89 0036 03EB8C0E 		add	lr, r3, ip, lsl #2
+  90 003a 5EED066A 		vldr.32	s13, [lr, #-24]
+  91              		.loc 1 10 54 discriminator 3 view .LVU16
+  92 003e 67EEA67A 		vmul.f32	s15, s15, s13
+  93              		.loc 1 10 46 discriminator 3 view .LVU17
+  94 0042 37EE277A 		vadd.f32	s14, s14, s15
+  95              	.LVL6:
+  96              		.loc 1 10 33 is_stmt 1 discriminator 3 view .LVU18
+  97 0046 0CF1010C 		add	ip, ip, #1
+  98              	.LVL7:
+  99              		.loc 1 10 33 is_stmt 0 discriminator 3 view .LVU19
+ 100 004a 5FFA8CFC 		uxtb	ip, ip
+ 101              	.LVL8:
+ 102              	.L2:
+ 103              		.loc 1 10 27 is_stmt 1 discriminator 1 view .LVU20
+ 104 004e A445     		cmp	ip, r4
+ARM GAS  /tmp/cc4VD5Op.s 			page 3
+
+
+ 105 0050 ECD3     		bcc	.L3
+ 106              	.LBE3:
+  11:Estimation/sensor_gate.c **** 
+  12:Estimation/sensor_gate.c ****     return mahal_sq <= threshold;
+ 107              		.loc 1 12 5 view .LVU21
+ 108              		.loc 1 12 21 is_stmt 0 view .LVU22
+ 109 0052 B4EEC87A 		vcmpe.f32	s14, s16
+ 110 0056 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+  13:Estimation/sensor_gate.c **** }
+ 111              		.loc 1 13 1 view .LVU23
+ 112 005a 94BF     		ite	ls
+ 113 005c 0120     		movls	r0, #1
+ 114 005e 0020     		movhi	r0, #0
+ 115 0060 09B0     		add	sp, sp, #36
+ 116              	.LCFI3:
+ 117              		.cfi_def_cfa_offset 20
+ 118              		@ sp needed
+ 119 0062 BDEC028B 		vldm	sp!, {d8}
+ 120              	.LCFI4:
+ 121              		.cfi_restore 80
+ 122              		.cfi_restore 81
+ 123              		.cfi_def_cfa_offset 12
+ 124              	.LVL9:
+ 125              		.loc 1 13 1 view .LVU24
+ 126 0066 30BD     		pop	{r4, r5, pc}
+ 127              	.LVL10:
+ 128              	.L6:
+ 129              		.loc 1 13 1 view .LVU25
+ 130              		.align	2
+ 131              	.L5:
+ 132 0068 00000000 		.word	0
+ 133              		.cfi_endproc
+ 134              	.LFE0:
+ 136              		.text
+ 137              	.Letext0:
+ 138              		.file 2 "/usr/arm-none-eabi/include/machine/_default_types.h"
+ 139              		.file 3 "/usr/arm-none-eabi/include/sys/_stdint.h"
+ 140              		.file 4 "Estimation/../Math/matrix.h"
+ARM GAS  /tmp/cc4VD5Op.s 			page 4
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 sensor_gate.c
+     /tmp/cc4VD5Op.s:21     .text.sensor_gate_check:00000000 $t
+     /tmp/cc4VD5Op.s:27     .text.sensor_gate_check:00000000 sensor_gate_check
+     /tmp/cc4VD5Op.s:132    .text.sensor_gate_check:00000068 $d
+
+UNDEFINED SYMBOLS
+mat_mul

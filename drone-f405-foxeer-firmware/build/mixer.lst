@@ -1,0 +1,199 @@
+ARM GAS  /tmp/cc4rRooi.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 1
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"mixer.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.file 1 "Core/Src/mixer.c"
+  20              		.section	.text.Clamp01,"ax",%progbits
+  21              		.align	1
+  22              		.syntax unified
+  23              		.thumb
+  24              		.thumb_func
+  26              	Clamp01:
+  27              	.LVL0:
+  28              	.LFB0:
+   1:Core/Src/mixer.c **** #include "mixer.h"
+   2:Core/Src/mixer.c **** 
+   3:Core/Src/mixer.c **** static float Clamp01(float v)
+   4:Core/Src/mixer.c **** {
+  29              		.loc 1 4 1 view -0
+  30              		.cfi_startproc
+  31              		@ args = 0, pretend = 0, frame = 0
+  32              		@ frame_needed = 0, uses_anonymous_args = 0
+  33              		@ link register save eliminated.
+   5:Core/Src/mixer.c ****     if (v < 0.0f) return 0.0f;
+  34              		.loc 1 5 5 view .LVU1
+  35              		.loc 1 5 8 is_stmt 0 view .LVU2
+  36 0000 B5EEC00A 		vcmpe.f32	s0, #0
+  37 0004 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+  38 0008 07D4     		bmi	.L3
+   6:Core/Src/mixer.c ****     if (v > 1.0f) return 1.0f;
+  39              		.loc 1 6 5 is_stmt 1 view .LVU3
+  40              		.loc 1 6 8 is_stmt 0 view .LVU4
+  41 000a F7EE007A 		vmov.f32	s15, #1.0e+0
+  42 000e B4EEE70A 		vcmpe.f32	s0, s15
+  43 0012 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+  44 0016 03DC     		bgt	.L4
+  45 0018 7047     		bx	lr
+  46              	.L3:
+   5:Core/Src/mixer.c ****     if (v < 0.0f) return 0.0f;
+  47              		.loc 1 5 26 discriminator 1 view .LVU5
+  48 001a 9FED030A 		vldr.32	s0, .L5
+  49              	.LVL1:
+   5:Core/Src/mixer.c ****     if (v < 0.0f) return 0.0f;
+  50              		.loc 1 5 26 discriminator 1 view .LVU6
+ARM GAS  /tmp/cc4rRooi.s 			page 2
+
+
+  51 001e 7047     		bx	lr
+  52              	.LVL2:
+  53              	.L4:
+  54              		.loc 1 6 26 discriminator 1 view .LVU7
+  55 0020 B7EE000A 		vmov.f32	s0, #1.0e+0
+  56              	.LVL3:
+   7:Core/Src/mixer.c ****     return v;
+   8:Core/Src/mixer.c **** }
+  57              		.loc 1 8 1 view .LVU8
+  58 0024 7047     		bx	lr
+  59              	.L6:
+  60 0026 00BF     		.align	2
+  61              	.L5:
+  62 0028 00000000 		.word	0
+  63              		.cfi_endproc
+  64              	.LFE0:
+  66              		.section	.text.Mixer_QuadX,"ax",%progbits
+  67              		.align	1
+  68              		.global	Mixer_QuadX
+  69              		.syntax unified
+  70              		.thumb
+  71              		.thumb_func
+  73              	Mixer_QuadX:
+  74              	.LVL4:
+  75              	.LFB1:
+   9:Core/Src/mixer.c **** 
+  10:Core/Src/mixer.c **** void Mixer_QuadX(float throttle, float roll, float pitch, float yaw, mixer_out_t *out)
+  11:Core/Src/mixer.c **** {
+  76              		.loc 1 11 1 is_stmt 1 view -0
+  77              		.cfi_startproc
+  78              		@ args = 0, pretend = 0, frame = 0
+  79              		@ frame_needed = 0, uses_anonymous_args = 0
+  80              		.loc 1 11 1 is_stmt 0 view .LVU10
+  81 0000 10B5     		push	{r4, lr}
+  82              	.LCFI0:
+  83              		.cfi_def_cfa_offset 8
+  84              		.cfi_offset 4, -8
+  85              		.cfi_offset 14, -4
+  86 0002 2DED068B 		vpush.64	{d8, d9, d10}
+  87              	.LCFI1:
+  88              		.cfi_def_cfa_offset 32
+  89              		.cfi_offset 80, -32
+  90              		.cfi_offset 81, -28
+  91              		.cfi_offset 82, -24
+  92              		.cfi_offset 83, -20
+  93              		.cfi_offset 84, -16
+  94              		.cfi_offset 85, -12
+  95 0006 B0EE408A 		vmov.f32	s16, s0
+  96 000a F0EE609A 		vmov.f32	s19, s1
+  97 000e B0EE419A 		vmov.f32	s18, s2
+  98 0012 F0EE618A 		vmov.f32	s17, s3
+  99 0016 0446     		mov	r4, r0
+  12:Core/Src/mixer.c ****     out->m1 = Clamp01(throttle - roll + pitch - yaw);
+ 100              		.loc 1 12 5 is_stmt 1 view .LVU11
+ 101              		.loc 1 12 32 is_stmt 0 view .LVU12
+ 102 0018 30EE60AA 		vsub.f32	s20, s0, s1
+ 103              		.loc 1 12 39 view .LVU13
+ARM GAS  /tmp/cc4rRooi.s 			page 3
+
+
+ 104 001c 3AEE010A 		vadd.f32	s0, s20, s2
+ 105              	.LVL5:
+ 106              		.loc 1 12 15 view .LVU14
+ 107 0020 30EE610A 		vsub.f32	s0, s0, s3
+ 108 0024 FFF7FEFF 		bl	Clamp01
+ 109              	.LVL6:
+ 110              		.loc 1 12 13 discriminator 1 view .LVU15
+ 111 0028 84ED000A 		vstr.32	s0, [r4]
+  13:Core/Src/mixer.c ****     out->m2 = Clamp01(throttle - roll - pitch + yaw);
+ 112              		.loc 1 13 5 is_stmt 1 view .LVU16
+ 113              		.loc 1 13 39 is_stmt 0 view .LVU17
+ 114 002c 3AEE490A 		vsub.f32	s0, s20, s18
+ 115              		.loc 1 13 15 view .LVU18
+ 116 0030 30EE280A 		vadd.f32	s0, s0, s17
+ 117 0034 FFF7FEFF 		bl	Clamp01
+ 118              	.LVL7:
+ 119              		.loc 1 13 13 discriminator 1 view .LVU19
+ 120 0038 84ED010A 		vstr.32	s0, [r4, #4]
+  14:Core/Src/mixer.c ****     out->m3 = Clamp01(throttle + roll + pitch + yaw);
+ 121              		.loc 1 14 5 is_stmt 1 view .LVU20
+ 122              		.loc 1 14 32 is_stmt 0 view .LVU21
+ 123 003c 38EE298A 		vadd.f32	s16, s16, s19
+ 124              	.LVL8:
+ 125              		.loc 1 14 39 view .LVU22
+ 126 0040 38EE090A 		vadd.f32	s0, s16, s18
+ 127              		.loc 1 14 15 view .LVU23
+ 128 0044 30EE280A 		vadd.f32	s0, s0, s17
+ 129 0048 FFF7FEFF 		bl	Clamp01
+ 130              	.LVL9:
+ 131              		.loc 1 14 13 discriminator 1 view .LVU24
+ 132 004c 84ED020A 		vstr.32	s0, [r4, #8]
+  15:Core/Src/mixer.c ****     out->m4 = Clamp01(throttle + roll - pitch - yaw);
+ 133              		.loc 1 15 5 is_stmt 1 view .LVU25
+ 134              		.loc 1 15 39 is_stmt 0 view .LVU26
+ 135 0050 38EE498A 		vsub.f32	s16, s16, s18
+ 136              		.loc 1 15 15 view .LVU27
+ 137 0054 38EE680A 		vsub.f32	s0, s16, s17
+ 138 0058 FFF7FEFF 		bl	Clamp01
+ 139              	.LVL10:
+ 140              		.loc 1 15 13 discriminator 1 view .LVU28
+ 141 005c 84ED030A 		vstr.32	s0, [r4, #12]
+  16:Core/Src/mixer.c **** }
+ 142              		.loc 1 16 1 view .LVU29
+ 143 0060 BDEC068B 		vldm	sp!, {d8-d10}
+ 144              	.LCFI2:
+ 145              		.cfi_restore 84
+ 146              		.cfi_restore 85
+ 147              		.cfi_restore 82
+ 148              		.cfi_restore 83
+ 149              		.cfi_restore 80
+ 150              		.cfi_restore 81
+ 151              		.cfi_def_cfa_offset 8
+ 152              	.LVL11:
+ 153              		.loc 1 16 1 view .LVU30
+ 154 0064 10BD     		pop	{r4, pc}
+ 155              		.loc 1 16 1 view .LVU31
+ 156              		.cfi_endproc
+ARM GAS  /tmp/cc4rRooi.s 			page 4
+
+
+ 157              	.LFE1:
+ 159              		.text
+ 160              	.Letext0:
+ 161              		.file 2 "Core/Inc/mixer.h"
+ARM GAS  /tmp/cc4rRooi.s 			page 5
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 mixer.c
+     /tmp/cc4rRooi.s:21     .text.Clamp01:00000000 $t
+     /tmp/cc4rRooi.s:26     .text.Clamp01:00000000 Clamp01
+     /tmp/cc4rRooi.s:62     .text.Clamp01:00000028 $d
+     /tmp/cc4rRooi.s:67     .text.Mixer_QuadX:00000000 $t
+     /tmp/cc4rRooi.s:73     .text.Mixer_QuadX:00000000 Mixer_QuadX
+
+NO UNDEFINED SYMBOLS

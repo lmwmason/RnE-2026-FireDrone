@@ -1,0 +1,22 @@
+{
+  "settings_match_except_requested_logging_off": true,
+  "mismatches": {},
+  "flashed": true,
+  "blackbox_device": "NONE",
+  "research_control": "OFF",
+  "ukf": "OFF",
+  "motors_tested": false,
+  "receiver_inputs_tested": false,
+  "flight_tested": false,
+  "active_pid_profile": "2",
+  "active_rate_profile": "0",
+  "after_cli_exit": {
+    "msp_responding_after_cli_exit": true,
+    "armed": false,
+    "cycle_us": 310,
+    "i2c_errors": 0,
+    "sensor_mask": 33,
+    "mode_flags": 16452,
+    "pid_profile": 2
+  }
+}

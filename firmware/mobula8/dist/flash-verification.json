@@ -1,0 +1,8 @@
+{
+  "flashed": true,
+  "full_flash_readback_matches": true,
+  "bytes_compared": 1048576,
+  "sha256": "5fc23852ae4292105d821404ac76f418b3bfefe1f677fe912f2a60152fe2a816",
+  "original_firmware_backup": "backups/preflash/stock-full-flash.bin",
+  "config_sector_preserved_during_flash": true
+}

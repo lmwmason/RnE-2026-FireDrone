@@ -1,0 +1,609 @@
+BY BINARY BOX
+
+USER MANUAL: ASSEMBLY & PRODUCT
+INSIGHTS
+
+8
+
+Base Assembly
+
+13
+
+Rotation Axis Assembly
+
+20
+
+Yaw Axis Arms Assembly
+
+25
+
+Pitch Axis Assembly
+
+32
+
+Roll Axis Assembly
+
+38
+
+Mounting Bases Assembly
+
+41
+
+Extras for Larger Versions
+
+44
+
+How to Calculate Your Gyroscope’s Required Size
+
+CONTENTS
+
+What’s New in Version V1.2
+
+TABLE OF
+
+3
+
+What’s New?
+
+v1.2
+
+What’s New?
+Advanced Rotation
+System Upgrade
+THE YAW AXIS ROTATION SYSTEM HAS BEEN COMPLETELY REDESIGNED,
+OFFERING 20X MORE SENSITIVITY COMPARED TO V1. WITH A MORE SECURE
+ANCHOR POINT, SMALLER DRONES CAN NOW GENERATE MOVEMENT WITH
+LESS FORCE ON THE Y-AXIS—THE MOST DEMANDING AXIS DUE TO THE
+MASS IT NEEDS TO ROTATE. THIS ENHANCED SENSITIVITY ALSO IMPROVES
+INERTIA MANAGEMENT, LEADING TO SMOOTHER AND MORE ACCURATE
+TESTING.
+1. 100% MODULAR DESIGN:
+UNLIKE V1, WHICH REQUIRED ARM ADAPTATIONS, V1.2 PROVIDES FULL MODULARITY WITH
+SEAMLESS INTEGRATION.
+2. 20% FEWER PARTS:
+THE NEW VERSION REDUCES THE NUMBER OF COMPONENTS WHILE MAINTAINING FULL
+FUNCTIONALITY.
+3. WEIGHT REDUCTION:
+ACHIEVED THROUGH FEWER PARTS AND A STRUCTURALLY OPTIMIZED DESIGN.
+4. EASY SIZE ADJUSTMENTS:
+EXPANDING THE SYSTEM IS NOW AS SIMPLE AS SWAPPING ADAPTERS TO MATCH THE
+REQUIRED SIZE.
+5. FULLY 3D PRINTABLE:
+WHILE CARBON FIBER RODS ARE RECOMMENDED TO REDUCE VIBRATIONS AND WEIGHT,
+THE ENTIRE SYSTEM CAN BE 3D PRINTED WITHOUT THEM.
+6. OPTIMIZED FOR PRINTING:
+V1.2 MAKES PRINTING FASTER
+ACCESSIBILITY FOR ALL USERS.
+
+AND
+
+EASIER,
+
+ENSURING
+
+SMOOTH
+
+ASSEMBLY
+
+AND
+
+V1 . 2
+ROLL AXIS
+
+PITCH AXIS
+
+YAW AXIS
+
+YAW ROTATION AXIS
+
+BASE
+
+Before You Begin Assembly
+VERIFY ALL PARTS
+
+Ensure each section’s parts are complete and ready.
+Use the Checklist file to double-check every section.
+
+V1 . 2
+Now
+you’re set—
+let’s build!
+
+Identify the package with this sticker on the outside.
+
+1.1
+
+Place the Central Base:
+Position the Central Base on a secure surface to begin assembly.
+
+1.2
+
+Using a soldering iron set to a temperature between 240°C and 260°C,
+carefully insert the 3 M3 x 5mm L x 5mm OD Threaded Inserts into the
+designated holes located at the center of the Central Base.
+
+1.3
+
+Insert the Standoffs:
+Apply gentle pressure as you slide the M3 x 12mm Standoffs into the four
+corner holes of the Central Base. Ensure they fit snugly to provide a
+secure connection for the upcoming assembly steps.
+
+1.4
+
+Attach the Snap-In Legs:
+Slide the 4 Snap-In Legs from top to bottom, as shown in the image, until
+they align perfectly with the bottom surface of the Central Base. Make
+sure all legs are flush and secure for proper stability.
+
+1.5
+
+Secure the Legs:
+Use the M3 x 10mm Screws ( x8) to fasten the legs to the Central Base.
+First, tighten each screw gently to align the components, then proceed to
+fully tighten all screws on each leg for a secure fit. Ensure everything is
+firmly attached.
+
+1.6
+
+Insert one M3 x 5mm L x 5mm OD Threaded Insert into the designated
+hole on CP-V1.2. Use a soldering iron preheated to 240-260°C to gently
+press it into place. Ensure it is fully seated and flush with the surface.
+
+1.7
+
+Position CP-V1.2 on the Central Base:
+Align CP-V1.2 on the Central Base, ensuring the holes on both parts are
+perfectly aligned. This will prepare it for secure attachment in the next
+step.
+
+1.8
+
+Secure CP-V1.2 to the Central Base:
+Insert 3 M3 x 10mm screws into the aligned holes to firmly attach CP-V1.2
+to the Central Base. Tighten them gently at first, and then fully secure
+them to ensure stability.
+
+Identify the package with this sticker on the outside.
+
+2 .1
+
+Position B-1P V1.2:
+Begin the rotation axis assembly by using B-1P V1.2 as the foundation.
+Ensure it is oriented correctly, as shown in the reference image, to align
+properly with the following components.
+
+2 .2
+
+Insert Threaded Inserts into B-1P v1.2:
+Use 4 units of M3 x 5mm L x 5mm OD Threaded Inserts. Carefully insert
+them into the 4 side holes of the central section of B-1P v1.2, using a
+soldering iron set to 240-260°C. Make sure the inserts are properly
+seated.
+
+2 .3
+
+Insert Threaded Inserts into B-1P V1.2:
+Insert 2 units of M3 x 4mm L x 5mm OD Threaded Inserts into the ends of
+B-1P V1.2. If you accidentally use the wrong insert length, be sure to
+remove any excess plastic from the interior of the holes in B-1P V1.2 to
+ensure a secure fit.
+
+2 .4
+
+Place CC-V1.2 onto B-1P v1.2:
+Position CC-V1.2 from bottom to top (as shown in the image) and ensure
+it fits securely and correctly into B-1P v1.2.
+
+CC-V1.2
+
+2 .5
+
+Secure CC-V1.2 to B-1P V1.2:
+Use 4 SCREW M3 x 10mm to fasten CC-V1.2 to B-1P V1.2. Ensure the screws
+align with the threaded inserts placed earlier for a secure fit. Tighten
+evenly to maintain alignment.
+
+2 .6
+
+Align and Attach Y-DBA:
+Position Y-DBA onto the previously assembled section (CC-V1.2 + B-1P
+V1.2). Make sure the two guides align with the designated holes. Apply
+gentle pressure until it fits securely in place.
+
+Y-DBA
+
+2 .7
+
+Attach Sticker + D-BED:
+Carefully apply the provided sticker from the “Stickers D” file onto D-BED.
+Once the sticker is in place, secure D-BED onto Y-DBA following the
+alignment shown in the image.
+
+STICKER
+
+D-BED
+
+2 .8
+
+Insert 51103 Bearing:
+Place the 51103 BEARING as shown in the image.
+
+Important Note: This type of bearing usually has two
+different hole diameters. In this case, ensure the 17mm
+diameter hole faces upward, with the 18mm diameter hole
+on the bottom.
+
+2 .9
+
+Place the 51108 Bearing on the BASE:
+Use the previously assembled BASE to position the 51108 BEARING. Apply
+gentle pressure to ensure it is fully seated.
+
+Important Note: Like the previous bearing, this one also has
+two different ineer diameters. Ensure the 42mm diameter
+side faces downward (you’ll find a guide indicating the
+correct orientation).
+
+2 .10
+
+Attach the Rotation Axis to the Base Using Y-LOCK:
+Once the 51108 BEARING is properly positioned on the BASE, use the YLOCK to secure the assembled rotation axis to the base, following the
+alignment shown in the image. Apply gentle pressure to ensure the
+bearings fit snugly into place.
+
+Y-LOCK:
+
+2 .11
+
+Secure Y-LOCK to the Base:
+Use an M3 x 12mm screw to fasten the Y-LOCK to the BASE, ensuring the
+rotation axis stays firmly connected. Tighten the screw carefully to
+maintain the stability of the entire assembly.
+
+2 .12
+
+Review Your Assembly:
+This is how your assembly should currently look. If it doesn’t match this
+setup, please go back and carefully review the previous steps to ensure
+everything is correctly positioned and secured.
+
+Identify the package with this sticker on the outside.
+
+3 .1
+
+Identify Components:
+Locate the parts B2S and B2S-R. Both pieces will be assembled using the
+same steps, so simply follow the instructions below and repeat the
+process for the second piece.
+
+3 .2
+
+Insert Threaded Inserts:
+Insert M3 x 4mm L x 5mm OD Threaded Inserts into the designated holes
+on both B2S and B2S-R. Ensure proper alignment and use the correct
+temperature ( between 240°C and 260°C) with your soldering iron to
+secure them in place.
+
+3 .3
+
+Attach Bearings
+Carefully insert two 608 Bearings into the designated slots on each arm
+(B2S and B2S-R). Ensure both bearings are properly seated to allow
+smooth and frictionless rotation. Repeat this process for both arms.
+
+3 .4
+
+Insert CON-Y 189mm
+Insert the CON-Y 189mm bar into both B2S and B2S-R arms until it reaches
+the stop point (fully seated). If you prefer, you can replace the CON-Y
+189mm with carbon fiber rods using the appropriate adapters. For more
+details on the adapters and customization options, refer to the CUSTOM
+section of this PDF.
+
+3 .5
+
+Secure the Bar (CON-Y 189mm)
+Use 2 SCREW M3 x 10mm (one for each arm) to firmly secure the CON-Y
+189mm bar or, if applicable, the adapters or carbon fiber rods in place.
+Ensure the screws are tightened properly to maintain stability and
+prevent any unwanted movement.
+
+3 .6
+
+Connect the Arms
+Align the assembled arms (B2S and B2S-R) with the rotation axis until it
+reaches the stop point (fully seated).
+
+3 .7
+
+Secure them in place using M3 x 10mm Screws through the previously
+installed threaded inserts. Ensure everything is properly aligned to allow
+smooth and precise movement.
+
+3 .8
+
+Verify Your Progress
+If you have followed the steps correctly, your assembly should look like
+this at this point. Compare it with the reference image to ensure all
+components are properly aligned and secured. If it doesn’t match, please
+revisit the previous steps and make any necessary adjustments.
+
+Identify the package with this sticker on the outside.
+
+4 .1
+
+Locate the parts labeled A1-LW and A2-LW.
+Each of these components comes in pairs, meaning you will have two A1LW and two A2-LW. These four pieces will serve as the primary structure
+for assembling the pitch axis. Ensure all parts are ready before
+proceeding.
+
+4 .2
+
+Insert Threaded Inserts:
+At the ends of each A1-LW and A2-LW piece, you will find two holes.
+Carefully insert M3 x 4mm L x 5mm OD Threaded Inserts into each of
+these holes. Each piece requires two inserts, totaling eight inserts for this
+step. Make sure they are properly seated to ensure a secure assembly.
+
+4 .4
+
+4 .3
+
+Insert Bearings
+Each A1-LW piece has two dedicated slots designed to hold 608 Bearings.
+Carefully insert two bearings per A1-LW piece, ensuring they are properly
+seated for smooth rotation. Refer to the image for proper alignment and
+positioning.
+
+Assemble the Octagon Frame
+Insert the CON-P 183mm bars (x4) into the designated slots on the A1-LW
+and A2-LW pieces, ensuring they fit snugly and reach the end stop of
+each piece. This will create a secure, closed octagonal frame as shown in
+the image.
+If you prefer, you may also use carbon fiber rods with their respective
+adapters for enhanced performance and reduced weight.
+
+4 .5
+
+Secure the Bars
+Use M3 x 10mm Screws to securely fasten the CON-P 183mm bars to the
+A1-LW and A2-LW pieces. Ensure each screw is tightly fitted into the
+threaded inserts to maintain the structural integrity of the octagonal
+frame, as shown in the image.
+
+4 .6
+
+Insert A2B2-S into B2S and B2S-R
+Insert A2B2-S Between the Bearings
+Go back to the B2S and B2S-R pieces from the YAW AXIS ARM SECTION.
+Now, carefully insert the A2B2-S piece between the 608 Bearings
+installed on each arm, as shown in the image. Ensure the part fits
+properly between the bearings to allow smooth and precise rotation
+between the Yaw and Pitch axes.
+
+Insert A2B2-S
+
+B2S and B2S-R
+
+4 .7
+
+Flex the Yaw Axis Arms for Alignment
+Apply slight flexion to the previously assembled Yaw Axis Arms
+structure. Carefully bend the arms just enough to allow the Pitch Axis
+octagon to align and position itself correctly in the anchoring points, as
+shown in the image. Make sure to repeat this process on both opposing
+sides (the arms of the Yaw Axis). This ensures a proper fit and smooth
+movement across the axes.
+
+4 .8
+
+Insert A2B2
+Insert the A2B2 piece into the designated hole. Apply gentle pressure
+until the piece sits flush with the outer surface of both A2-LW
+components. Ensure it is properly seated for a secure fit and smooth
+operation.
+
+A2-LW
+A2B2
+
+4 .9
+
+Insert the M5 x 55mm Screws
+Insert the two M5 x 55mm Screws as shown in the image. Ensure they are
+placed securely on both opposite ends to maintain alignment and
+stability
+
+4 .1 0
+
+Secure with M5 Insert Locknuts
+On the opposite side where the screw exits, attach the M5 Insert Locknuts
+and washer to secure the connection between the yaw axis and the pitch
+axis. Be cautious not to over-tighten, as doing so may hinder smooth
+rotation. Adjust just enough to ensure a firm but functional fit.
+
+4 .1 1
+
+Attach A2B2-CAP
+Place the A2B2-CAP over the locknut installed in the previous step. This
+step is purely aesthetic, providing a clean and polished finish to your
+assembly.
+
+4 .1 2
+
+Verify Your Assembly
+If you followed the previous steps correctly, your assembly should look
+like the one shown in the image. Take a moment to ensure everything is
+properly aligned and secured.
+
+Identify the package with this sticker on the outside.
+
+5.1
+
+Insert Threaded Inserts
+Identify the two R-BED-SV pieces. Insert M3 x 4mm L x 5mm OD Threaded
+Inserts into the designated holes on each piece. Ensure they are fully
+seated and flush with the surface of the part for a smooth assembly.
+
+5.2
+
+Assemble with CF Rod
+Using the CF ROD 6mm OD x 400mm, slide both R-BED-SV pieces onto the
+rod as shown in the image. Ensure both pieces are aligned and positioned
+at the center of the rod for balanced assembly.
+
+5.3
+
+Attach X1-SV to Both Ends
+Slide one X1-SV piece onto each end of the assembly, ensuring they are
+oriented as shown in the image.
+Important Note: If you are building a larger version of the gyroscope,
+make sure to use the appropriate XLG ADAPTERS (6mm, 8mm, 10mm,
+12mm, or 15mm) to fit the diameter of the carbon fiber rod you plan to
+use.
+
+5 .4
+
+Insert Threaded Inserts into X1
+Identify the two X1 pieces and carefully insert 2 x M3 x 4mm L x 5mm OD
+Threaded Inserts into each piece, following the orientation shown in the
+image. Ensure the inserts sit flush with the surface to allow for proper
+assembly.
+
+5.5
+
+Insert X1 into A1-LW Bearings
+Remember the A1-LW pieces from the pitch axis? It’s time to revisit them!
+Insert the two X1 components into the bearings installed on each A1-LW
+piece, as shown in the image. Ensure they fit snugly to maintain smooth
+rotation.
+
+5.6
+
+Insert M3 x 30mm Screws
+Gently insert the M3 x 30mm screws through the designated holes on X1,
+as shown in the image. These will serve as the primary fasteners,
+preparing for secure tightening in the next step.
+
+5.8
+
+5.7
+
+Secure with M3 Insert Locknut
+Place an M3 Insert Locknut + the washer on the opposite end of the screw
+inserted into X1. Tighten gently—be careful not to overtighten, as we want
+to maintain smooth movement.
+
+Insert the Bar into X1 Supports
+Take the bar assembly from steps 1, 2, and 3, and carefully slide it into
+the two X1 supports as shown in the image. Push it all the way in until it
+reaches the limit.
+
+5 . 10
+
+5.9
+
+Secure the Bar to X1 Supports
+To ensure a solid attachment from the previous step, use 2 x SCREW M3 x
+8mm to secure the bar to the X1 supports. And that’s it!
+
+Verify Your Assembly
+If you followed the previous steps correctly, your assembly should look
+like the one shown in the image. Take a moment to ensure everything is
+properly aligned and secured.
+
+Identify the package with this sticker on the outside.
+
+6 .1
+
+Select the Appropriate Mounting Base
+In Bag #6 (Mounting Bases), you will find three different bases designed
+to accommodate various types of drones or aerial vehicles. Choose the
+one that best fits your aircraft and place it at the center of the Roll Axis,
+as shown in the image.
+
+6 .2
+
+Secure the Mounting Base
+Use 4 x SCREW M3 x 8mm to firmly attach the selected base to the Roll
+Axis, following the positioning shown in the image. Ensure the base is
+tightly secured to provide stability during operation.
+
+BY BINARY BOX
+
+WHAT’S NEXT: HERE YOU’LL FIND EXTRA
+PARTS AND GUIDES TO UPGRADE YOUR
+GYROSCOPE TO LARGER VERSIONS. TIME TO
+EXPLORE FURTHER!
+
+Adapters for 6, 8, 10, and 12 mm tubes to integrate various
+carbon fiber tube diameters into the gyroscope arms. Use
+them to create custom extensions or select the material best
+suited to your project.
+
+Available in 6, 8, 10, 12, and 15 mm sizes, these adapters
+connect two carbon fiber rods in the roll axis. They’re ideal
+when standard tube lengths (typically up to 500 mm) aren’t
+sufficient to span the entire width. Positioned at the center,
+they serve as a joining point between both ends of the carbon
+fiber rods and also provide a secure mounting point for the
+drone bases.
+
+Available in 6, 8, 10, 12, and 15 mm, these adapters function in the roll axis, replacing the X1-SV to accommodate various diameters of carbon fiber tubes.
+They’re especially useful in larger versions than the standard, where increased rigidity is essential for stability and performance.
+
+DX SIZE
+
+YAW Axis CF
+Length
+
+PITCH Axis CF
+Length
+
+ROLL Axis CF Length
+
+500 mm
+
+189 mm
+
+183 mm
+
+2 x 201 mm
+
+650 mm
+
+296 mm
+
+289 mm
+
+2 x 276 mm
+
+750 mm
+
+368 mm
+
+360 mm
+
+2 x 326 mm
+
+850 mm
+
+439 mm
+
+430 mm
+
+2 x 376 mm
+
+935 mm
+
+500 mm
+
+490 mm
+
+2 x 418 mm
+
+DX AREA
+The highlighted area represents DX, which refers
+to the side-to-side measurements of your drone.
+
+

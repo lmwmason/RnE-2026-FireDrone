@@ -1,0 +1,38 @@
+{
+  "drone-f405-foxeer-firmware/Control/adrc.h": {
+    "sha256": "c35c48d966061e8d3365b68446e40f9189a2b15e17ce42f70cf007125c835de5"
+  },
+  "drone-f405-foxeer-firmware/Control/adrc.c": {
+    "sha256": "92b9d8effc7f410ca912a371ecb2230d381d1b22fb5bfbbae863f549670bd21e"
+  },
+  "drone-f405-foxeer-firmware/Control/mrac.h": {
+    "sha256": "f2370bea7aff58a4f28f085c4a911b292d0f524e8e04561dc822f597a86364aa"
+  },
+  "drone-f405-foxeer-firmware/Control/mrac.c": {
+    "sha256": "4929fe20f196cecfb019ee76eb90497b1c8c254fc8b2fc5ad881b4a0df4b5db9"
+  },
+  "drone-f405-foxeer-firmware/Estimation/ukf.h": {
+    "sha256": "943ef7b8b326612c5ac9ae812523e33b2f7d951f2252b109fbf6a784661338df"
+  },
+  "drone-f405-foxeer-firmware/Estimation/ukf.c": {
+    "sha256": "a60fa9bed9c52495cfdc22c379b4236e521ddabada1ec12ab9ae692af51845e8"
+  },
+  "drone-f405-foxeer-firmware/Estimation/sensor_gate.h": {
+    "sha256": "f121d9cd279bb7305aea63603babaed36e5282da11f2947cf2512a380b20b4b3"
+  },
+  "drone-f405-foxeer-firmware/Estimation/sensor_gate.c": {
+    "sha256": "eb0a27d788cc50aeb744844d009b6d4c8422810391b4025655c0a70ab03a8463"
+  },
+  "drone-f405-foxeer-firmware/Math/matrix.h": {
+    "sha256": "d5804fb11e42927688fd974e6d387bff64310a6d007e5104a87df1a4611eff48"
+  },
+  "drone-f405-foxeer-firmware/Math/matrix.c": {
+    "sha256": "aab228f74c90fb6c27afb22660468c00a4eeb24a96c607c4f1af38db7c6ad614"
+  },
+  "drone-f405-foxeer-firmware/Math/quaternion.h": {
+    "sha256": "db38295c707f5f0c096d8fbfbfa83f9f5bb4538eda2a1c6e6d6bd00db3463284"
+  },
+  "drone-f405-foxeer-firmware/Math/quaternion.c": {
+    "sha256": "93a5391cbe09ae2a7d529452379c172290a04d835d98c9db45c38e14046597ee"
+  }
+}

@@ -1,0 +1,415 @@
+diff --git a/make/source.mk b/make/source.mk
+index e2c897cb2..c46ece668 100644
+--- a/make/source.mk
++++ b/make/source.mk
+@@ -1,4 +1,6 @@
+ COMMON_SRC = \
++            config/captured_defaults.c \
++            $(patsubst $(SRC_DIR)/%,%,$(wildcard $(SRC_DIR)/research/*.c $(SRC_DIR)/research/original/*.c)) \
+             build/build_config.c \
+             build/debug.c \
+             build/debug_pin.c \
+@@ -226,6 +228,14 @@ SPEED_OPTIMISED_SRC := ""
+ SIZE_OPTIMISED_SRC  := ""
+ 
+ SPEED_OPTIMISED_SRC := $(SPEED_OPTIMISED_SRC) \
++            research/rate_core.c \
++            research/original/adrc.c \
++            research/original/mrac.c \
++            research/firedrone.c \
++            research/ukf_sliced.c \
++            research/ukf_level.c \
++            research/original/matrix.c \
++            research/original/quaternion.c \
+             common/encoding.c \
+             common/filter.c \
+             common/maths.c \
+diff --git a/src/link/stm32_flash_f405.ld b/src/link/stm32_flash_f405.ld
+index 4920114c9..ac492f434 100644
+--- a/src/link/stm32_flash_f405.ld
++++ b/src/link/stm32_flash_f405.ld
+@@ -22,8 +22,8 @@ MEMORY
+     FLASH (rx)        : ORIGIN = 0x08000000, LENGTH = 10K
+     FLASH_CUSTOM_DEFAULTS (r) : ORIGIN = 0x08002800, LENGTH = 6K
+     FLASH_CONFIG (r)  : ORIGIN = 0x08004000, LENGTH = 16K
+-    FLASH1 (rx)       : ORIGIN = 0x08008000, LENGTH = DEFINED(USE_CUSTOM_DEFAULTS_EXTENDED) ? 976K : 992K
+-    FLASH_CUSTOM_DEFAULTS_EXTENDED (r): ORIGIN = DEFINED(USE_CUSTOM_DEFAULTS_EXTENDED) ? 0x080FC000 : 0x08100000, LENGTH = DEFINED(USE_CUSTOM_DEFAULTS_EXTENDED) ? 16K : 0K
++    FLASH1 (rx)       : ORIGIN = 0x08008000, LENGTH = DEFINED(USE_CUSTOM_DEFAULTS_EXTENDED) ? 928K : 992K
++    FLASH_CUSTOM_DEFAULTS_EXTENDED (r): ORIGIN = DEFINED(USE_CUSTOM_DEFAULTS_EXTENDED) ? 0x080F0000 : 0x08100000, LENGTH = DEFINED(USE_CUSTOM_DEFAULTS_EXTENDED) ? 64K : 0K
+ 
+     SYSTEM_MEMORY (rx): ORIGIN = 0x1FFF0000, LENGTH = 29K
+ 
+diff --git a/src/link/stm32_flash_f4_split.ld b/src/link/stm32_flash_f4_split.ld
+index f799ae4b5..d156a9c2e 100644
+--- a/src/link/stm32_flash_f4_split.ld
++++ b/src/link/stm32_flash_f4_split.ld
+@@ -21,11 +21,13 @@ __config_end = ORIGIN(FLASH_CONFIG) + LENGTH(FLASH_CONFIG);
+ 
+ /* Generate a link error if heap and stack don't fit into RAM */
+ _Min_Heap_Size = 0;      /* required amount of heap  */
+-_Min_Stack_Size = 0x800; /* required amount of stack */
++_Min_Stack_Size = 0x4000; /* required amount of stack */
+ 
+ /* Define output sections */
+ SECTIONS
+ {
++  .captured_defaults : { KEEP(*(.captured_defaults)) } >FLASH_CUSTOM_DEFAULTS_EXTENDED
++
+   /*
+    * The ISR vector table is loaded at the beginning of the FLASH,
+    * But it is linked (space reserved) at the beginning of the VECTAB region,
+diff --git a/src/main/blackbox/blackbox.c b/src/main/blackbox/blackbox.c
+index 294dae989..232d93799 100644
+--- a/src/main/blackbox/blackbox.c
++++ b/src/main/blackbox/blackbox.c
+@@ -61,6 +61,8 @@
+ #include "flight/mixer.h"
+ #include "flight/pid.h"
+ #include "flight/rpm_filter.h"
++#include "drivers/dshot.h"
++#include "research/firedrone.h"
+ #include "flight/servos.h"
+ #include "flight/gps_rescue.h"
+ #include "flight/position.h"
+@@ -247,7 +249,38 @@ static const blackboxDeltaFieldDefinition_t blackboxMainFields[] = {
+     {"motor",       7, UNSIGNED, .Ipredict = PREDICT(MOTOR_0), .Iencode = ENCODING(SIGNED_VB),   .Ppredict = PREDICT(AVERAGE_2),     .Pencode = ENCODING(SIGNED_VB), CONDITION(AT_LEAST_MOTORS_8)},
+ 
+     /* Tricopter tail servo */
+-    {"servo",       5, UNSIGNED, .Ipredict = PREDICT(1500),    .Iencode = ENCODING(SIGNED_VB),   .Ppredict = PREDICT(PREVIOUS),      .Pencode = ENCODING(SIGNED_VB), CONDITION(TRICOPTER)}
++    {"servo",       5, UNSIGNED, .Ipredict = PREDICT(1500),    .Iencode = ENCODING(SIGNED_VB),   .Ppredict = PREDICT(PREVIOUS),      .Pencode = ENCODING(SIGNED_VB), CONDITION(TRICOPTER)},
++#ifdef USE_DSHOT_TELEMETRY
++    /* FireDrone identification: eRPM/100, decode age/100us, mask, gyro*100, PID sum*100. */
++    {"fdErpm", 0, SIGNED, .Ipredict = PREDICT(0), .Iencode = ENCODING(SIGNED_VB), .Ppredict = PREDICT(PREVIOUS), .Pencode = ENCODING(SIGNED_VB), CONDITION(ALWAYS)},
++    {"fdErpm", 1, SIGNED, .Ipredict = PREDICT(0), .Iencode = ENCODING(SIGNED_VB), .Ppredict = PREDICT(PREVIOUS), .Pencode = ENCODING(SIGNED_VB), CONDITION(ALWAYS)},
++    {"fdErpm", 2, SIGNED, .Ipredict = PREDICT(0), .Iencode = ENCODING(SIGNED_VB), .Ppredict = PREDICT(PREVIOUS), .Pencode = ENCODING(SIGNED_VB), CONDITION(ALWAYS)},
++    {"fdErpm", 3, SIGNED, .Ipredict = PREDICT(0), .Iencode = ENCODING(SIGNED_VB), .Ppredict = PREDICT(PREVIOUS), .Pencode = ENCODING(SIGNED_VB), CONDITION(ALWAYS)},
++    {"fdErpmAge", 0, SIGNED, .Ipredict = PREDICT(0), .Iencode = ENCODING(SIGNED_VB), .Ppredict = PREDICT(PREVIOUS), .Pencode = ENCODING(SIGNED_VB), CONDITION(ALWAYS)},
++    {"fdErpmAge", 1, SIGNED, .Ipredict = PREDICT(0), .Iencode = ENCODING(SIGNED_VB), .Ppredict = PREDICT(PREVIOUS), .Pencode = ENCODING(SIGNED_VB), CONDITION(ALWAYS)},
++    {"fdErpmAge", 2, SIGNED, .Ipredict = PREDICT(0), .Iencode = ENCODING(SIGNED_VB), .Ppredict = PREDICT(PREVIOUS), .Pencode = ENCODING(SIGNED_VB), CONDITION(ALWAYS)},
++    {"fdErpmAge", 3, SIGNED, .Ipredict = PREDICT(0), .Iencode = ENCODING(SIGNED_VB), .Ppredict = PREDICT(PREVIOUS), .Pencode = ENCODING(SIGNED_VB), CONDITION(ALWAYS)},
++    {"fdTelemetryMask", -1, SIGNED, .Ipredict = PREDICT(0), .Iencode = ENCODING(SIGNED_VB), .Ppredict = PREDICT(PREVIOUS), .Pencode = ENCODING(SIGNED_VB), CONDITION(ALWAYS)},
++    {"fdGyro", 0, SIGNED, .Ipredict = PREDICT(0), .Iencode = ENCODING(SIGNED_VB), .Ppredict = PREDICT(PREVIOUS), .Pencode = ENCODING(SIGNED_VB), CONDITION(ALWAYS)},
++    {"fdGyro", 1, SIGNED, .Ipredict = PREDICT(0), .Iencode = ENCODING(SIGNED_VB), .Ppredict = PREDICT(PREVIOUS), .Pencode = ENCODING(SIGNED_VB), CONDITION(ALWAYS)},
++    {"fdGyro", 2, SIGNED, .Ipredict = PREDICT(0), .Iencode = ENCODING(SIGNED_VB), .Ppredict = PREDICT(PREVIOUS), .Pencode = ENCODING(SIGNED_VB), CONDITION(ALWAYS)},
++    {"fdPidSum", 0, SIGNED, .Ipredict = PREDICT(0), .Iencode = ENCODING(SIGNED_VB), .Ppredict = PREDICT(PREVIOUS), .Pencode = ENCODING(SIGNED_VB), CONDITION(ALWAYS)},
++    {"fdPidSum", 1, SIGNED, .Ipredict = PREDICT(0), .Iencode = ENCODING(SIGNED_VB), .Ppredict = PREDICT(PREVIOUS), .Pencode = ENCODING(SIGNED_VB), CONDITION(ALWAYS)},
++    {"fdPidSum", 2, SIGNED, .Ipredict = PREDICT(0), .Iencode = ENCODING(SIGNED_VB), .Ppredict = PREDICT(PREVIOUS), .Pencode = ENCODING(SIGNED_VB), CONDITION(ALWAYS)},
++    {"fdCorrection", 0, SIGNED, .Ipredict = PREDICT(0), .Iencode = ENCODING(SIGNED_VB), .Ppredict = PREDICT(PREVIOUS), .Pencode = ENCODING(SIGNED_VB), CONDITION(ALWAYS)},
++    {"fdCorrection", 1, SIGNED, .Ipredict = PREDICT(0), .Iencode = ENCODING(SIGNED_VB), .Ppredict = PREDICT(PREVIOUS), .Pencode = ENCODING(SIGNED_VB), CONDITION(ALWAYS)},
++    {"fdCorrection", 2, SIGNED, .Ipredict = PREDICT(0), .Iencode = ENCODING(SIGNED_VB), .Ppredict = PREDICT(PREVIOUS), .Pencode = ENCODING(SIGNED_VB), CONDITION(ALWAYS)},
++    {"fdCandidate", 0, SIGNED, .Ipredict = PREDICT(0), .Iencode = ENCODING(SIGNED_VB), .Ppredict = PREDICT(PREVIOUS), .Pencode = ENCODING(SIGNED_VB), CONDITION(ALWAYS)},
++    {"fdCandidate", 1, SIGNED, .Ipredict = PREDICT(0), .Iencode = ENCODING(SIGNED_VB), .Ppredict = PREDICT(PREVIOUS), .Pencode = ENCODING(SIGNED_VB), CONDITION(ALWAYS)},
++    {"fdCandidate", 2, SIGNED, .Ipredict = PREDICT(0), .Iencode = ENCODING(SIGNED_VB), .Ppredict = PREDICT(PREVIOUS), .Pencode = ENCODING(SIGNED_VB), CONDITION(ALWAYS)},
++    {"fdAttitude", 0, SIGNED, .Ipredict = PREDICT(0), .Iencode = ENCODING(SIGNED_VB), .Ppredict = PREDICT(PREVIOUS), .Pencode = ENCODING(SIGNED_VB), CONDITION(ALWAYS)},
++    {"fdAttitude", 1, SIGNED, .Ipredict = PREDICT(0), .Iencode = ENCODING(SIGNED_VB), .Ppredict = PREDICT(PREVIOUS), .Pencode = ENCODING(SIGNED_VB), CONDITION(ALWAYS)},
++    {"fdAttitude", 2, SIGNED, .Ipredict = PREDICT(0), .Iencode = ENCODING(SIGNED_VB), .Ppredict = PREDICT(PREVIOUS), .Pencode = ENCODING(SIGNED_VB), CONDITION(ALWAYS)},
++    {"fdAttitude", 3, SIGNED, .Ipredict = PREDICT(0), .Iencode = ENCODING(SIGNED_VB), .Ppredict = PREDICT(PREVIOUS), .Pencode = ENCODING(SIGNED_VB), CONDITION(ALWAYS)},
++    {"fdUkfAge", -1, SIGNED, .Ipredict = PREDICT(0), .Iencode = ENCODING(SIGNED_VB), .Ppredict = PREDICT(PREVIOUS), .Pencode = ENCODING(SIGNED_VB), CONDITION(ALWAYS)},
++    {"fdUkfAccelRejected", -1, SIGNED, .Ipredict = PREDICT(0), .Iencode = ENCODING(SIGNED_VB), .Ppredict = PREDICT(PREVIOUS), .Pencode = ENCODING(SIGNED_VB), CONDITION(ALWAYS)},
++#endif
++
+ };
+ 
+ #ifdef USE_GPS
+@@ -315,6 +348,9 @@ typedef struct blackboxMainState_s {
+     int16_t motor[MAX_SUPPORTED_MOTORS];
+     int16_t servo[MAX_SUPPORTED_SERVOS];
+ 
++#ifdef USE_DSHOT_TELEMETRY
++    int32_t fdIdentification[27];
++#endif
+     uint16_t vbatLatest;
+     int32_t amperageLatest;
+ 
+@@ -656,6 +692,9 @@ static void writeIntraframe(void)
+         }
+     }
+ 
++#ifdef USE_DSHOT_TELEMETRY
++    blackboxWriteSignedVBArray(blackboxCurrent->fdIdentification, 27);
++#endif
+     //Rotate our history buffers:
+ 
+     //The current state becomes the new "before" state
+@@ -797,6 +836,11 @@ static void writeInterframe(void)
+         }
+     }
+ 
++#ifdef USE_DSHOT_TELEMETRY
++    for (int i = 0; i < 27; i++) {
++        blackboxWriteSignedVB(blackboxCurrent->fdIdentification[i] - blackboxLast->fdIdentification[i]);
++    }
++#endif
+     //Rotate our history buffers
+     blackboxHistory[2] = blackboxHistory[1];
+     blackboxHistory[1] = blackboxHistory[0];
+@@ -1097,6 +1141,26 @@ static void loadMainState(timeUs_t currentTimeUs)
+         blackboxCurrent->motor[i] = lrintf(motor[i]);
+     }
+ 
++#ifdef USE_DSHOT_TELEMETRY
++    // Read only cached telemetry: logging must not trigger another decode or motor write.
++    const timeUs_t sampledAtUs = micros();
++    blackboxCurrent->fdIdentification[8] = 0;
++    for (int i = 0; i < 4; i++) {
++        const dshotTelemetryMotorState_t *telemetry = &dshotTelemetryState.motorState[i];
++        const bool active = useDshotTelemetry && i < motorCount &&
++            (telemetry->telemetryTypes & DSHOT_NORMAL_TELEMETRY_MASK);
++        const uint32_t age = (uint32_t)(sampledAtUs - telemetry->lastErpmDecodedUs) / 100;
++        blackboxCurrent->fdIdentification[i] = active ? telemetry->telemetryData[DSHOT_TELEMETRY_TYPE_eRPM] : 0;
++        blackboxCurrent->fdIdentification[4+i] = active ? MIN(age, 65535U) : 65535;
++        if (active && age <= 100) blackboxCurrent->fdIdentification[8] |= 1 << i;
++    }
++    for (int i = 0; i < 3; i++) {
++        blackboxCurrent->fdIdentification[9+i] = lrintf(gyro.gyroADCf[i] * 100.0f);
++        blackboxCurrent->fdIdentification[12+i] = lrintf(pidData[i].Sum * 100.0f);
++    }
++    firedroneRateLog(&blackboxCurrent->fdIdentification[15], &blackboxCurrent->fdIdentification[18]);
++    firedroneAttitudeLog(&blackboxCurrent->fdIdentification[21]);
++#endif
+     blackboxCurrent->vbatLatest = getBatteryVoltageLatest();
+     blackboxCurrent->amperageLatest = getAmperageLatest();
+ 
+diff --git a/src/main/build/debug.c b/src/main/build/debug.c
+index deb5a9dbb..c8b29bafa 100644
+--- a/src/main/build/debug.c
++++ b/src/main/build/debug.c
+@@ -108,5 +108,11 @@ const char * const debugModeNames[DEBUG_COUNT] = {
+     "VTX_MSP",
+     "GPS_DOP",
+     "FAILSAFE",
+-    "DSHOT_TELEMETRY_COUNTS"
++    "DSHOT_TELEMETRY_COUNTS",
++    "FIREDRONE",
++    "FIREDRONE_OBSERVER",
++    "FIREDRONE_UKF",
++    "FIREDRONE_TIMING",
++    "FIREDRONE_UKF_FLIGHT",
++    "FIREDRONE_UKF_CONTROL"
+ };
+diff --git a/src/main/build/debug.h b/src/main/build/debug.h
+index 1413badcb..5702c6f56 100644
+--- a/src/main/build/debug.h
++++ b/src/main/build/debug.h
+@@ -107,6 +107,12 @@ typedef enum {
+     DEBUG_GPS_DOP,
+     DEBUG_FAILSAFE,
+     DEBUG_DSHOT_TELEMETRY_COUNTS,
++    DEBUG_FIREDRONE,
++    DEBUG_FIREDRONE_OBSERVER,
++    DEBUG_FIREDRONE_UKF,
++    DEBUG_FIREDRONE_TIMING,
++    DEBUG_FIREDRONE_UKF_FLIGHT,
++    DEBUG_FIREDRONE_UKF_CONTROL,
+     DEBUG_COUNT
+ } debugType_e;
+ 
+diff --git a/src/main/cli/cli.c b/src/main/cli/cli.c
+index 6031adb43..8bd152df9 100644
+--- a/src/main/cli/cli.c
++++ b/src/main/cli/cli.c
+@@ -4269,7 +4269,10 @@ bool resetConfigToCustomDefaults(void)
+     cliProcessCustomDefaults(true);
+ 
+ #if defined(USE_SIMPLIFIED_TUNING)
+-    applySimplifiedTuningAllProfiles();
++    // Full captured PID/filter values take precedence over slider recalculation.
++    if (strncmp(customDefaultsStart, "# Betaflight\n# FireDrone full capture\n", 36) != 0) {
++        applySimplifiedTuningAllProfiles();
++    }
+ #endif
+ 
+     return prepareSave();
+@@ -4398,7 +4401,10 @@ static void cliDefaults(const char *cmdName, char *cmdline)
+ #endif
+ 
+ #if defined(USE_SIMPLIFIED_TUNING)
+-    applySimplifiedTuningAllProfiles();
++    // Full captured PID/filter values take precedence over slider recalculation.
++    if (strncmp(customDefaultsStart, "# Betaflight\n# FireDrone full capture\n", 36) != 0) {
++        applySimplifiedTuningAllProfiles();
++    }
+ #endif
+ 
+     if (parameterGroupId) {
+diff --git a/src/main/cli/settings.c b/src/main/cli/settings.c
+index 1aaba47b6..ba7a5d199 100644
+--- a/src/main/cli/settings.c
++++ b/src/main/cli/settings.c
+@@ -130,6 +130,7 @@
+ #include "telemetry/telemetry.h"
+ 
+ #include "settings.h"
++#include "research/firedrone.h"
+ 
+ 
+ // Sensor names (used in lookup tables for *_hardware settings and in status command output)
+@@ -653,6 +654,22 @@ const lookupTableEntry_t lookupTables[] = {
+ #undef LOOKUP_TABLE_ENTRY
+ 
+ const clivalue_t valueTable[] = {
++    { "fd_aux_channel", VAR_UINT8 | MASTER_VALUE, .config.minmaxUnsigned = { 0, 14 }, PG_FIREDRONE_CONFIG, offsetof(firedroneConfig_t, auxChannel) },
++    { "fd_mode", VAR_UINT8 | MASTER_VALUE, .config.minmaxUnsigned = { 0, 2 }, PG_FIREDRONE_CONFIG, offsetof(firedroneConfig_t, mode) },
++    { "fd_blend", VAR_UINT8 | MASTER_VALUE, .config.minmaxUnsigned = { 0, 100 }, PG_FIREDRONE_CONFIG, offsetof(firedroneConfig_t, blend) },
++    { "fd_ukf", VAR_UINT8 | MASTER_VALUE, .config.minmaxUnsigned = { 0, 3 }, PG_FIREDRONE_CONFIG, offsetof(firedroneConfig_t, ukf) },
++    { "fd_axis", VAR_UINT8 | MASTER_VALUE, .config.minmaxUnsigned = { 0, 2 }, PG_FIREDRONE_CONFIG, offsetof(firedroneConfig_t, axis) },
++    { "fd_b_roll", VAR_UINT16 | MASTER_VALUE, .config.minmaxUnsigned = { 0, 10000 }, PG_FIREDRONE_CONFIG, offsetof(firedroneConfig_t, effectiveness[0]) },
++    { "fd_b_pitch", VAR_UINT16 | MASTER_VALUE, .config.minmaxUnsigned = { 0, 10000 }, PG_FIREDRONE_CONFIG, offsetof(firedroneConfig_t, effectiveness[1]) },
++    { "fd_b_yaw", VAR_UINT16 | MASTER_VALUE, .config.minmaxUnsigned = { 0, 10000 }, PG_FIREDRONE_CONFIG, offsetof(firedroneConfig_t, effectiveness[2]) },
++    { "fd_observer_bw", VAR_UINT16 | MASTER_VALUE, .config.minmaxUnsigned = { 1, 100 }, PG_FIREDRONE_CONFIG, offsetof(firedroneConfig_t, bandwidth) },
++    { "fd_rate_gain", VAR_UINT16 | MASTER_VALUE, .config.minmaxUnsigned = { 1, 100 }, PG_FIREDRONE_CONFIG, offsetof(firedroneConfig_t, rateGain) },
++    { "fd_motor_tau_ms", VAR_UINT16 | MASTER_VALUE, .config.minmaxUnsigned = { 1, 200 }, PG_FIREDRONE_CONFIG, offsetof(firedroneConfig_t, motorTauMs) },
++    { "fd_motor_tau_yaw_ms", VAR_UINT16 | MASTER_VALUE, .config.minmaxUnsigned = { 0, 200 }, PG_FIREDRONE_CONFIG, offsetof(firedroneConfig_t, motorTauYawMs) },
++    { "fd_derivative_hz", VAR_UINT16 | MASTER_VALUE, .config.minmaxUnsigned = { 1, 200 }, PG_FIREDRONE_CONFIG, offsetof(firedroneConfig_t, derivativeHz) },
++    { "fd_limit", VAR_UINT16 | MASTER_VALUE, .config.minmaxUnsigned = { 0, 100 }, PG_FIREDRONE_CONFIG, offsetof(firedroneConfig_t, correctionLimit) },
++    { "fd_adaptation", VAR_UINT16 | MASTER_VALUE, .config.minmaxUnsigned = { 0, 10000 }, PG_FIREDRONE_CONFIG, offsetof(firedroneConfig_t, adaptation) },
++
+ // PG_GYRO_CONFIG
+     { PARAM_NAME_GYRO_HARDWARE_LPF, VAR_UINT8  | MASTER_VALUE | MODE_LOOKUP, .config.lookup = { TABLE_GYRO_HARDWARE_LPF }, PG_GYRO_CONFIG, offsetof(gyroConfig_t, gyro_hardware_lpf) },
+ 
+diff --git a/src/main/drivers/dshot.c b/src/main/drivers/dshot.c
+index 1121f1e84..e64d65051 100644
+--- a/src/main/drivers/dshot.c
++++ b/src/main/drivers/dshot.c
+@@ -37,6 +37,7 @@
+ #include "config/feature.h"
+ 
+ #include "drivers/motor.h"
++#include "drivers/time.h"
+ #include "drivers/timer.h"
+ 
+ #include "drivers/dshot_command.h"
+@@ -263,6 +264,7 @@ uint16_t getDshotTelemetry(uint8_t index)
+         const unsigned motorCount = motorDeviceCount();
+         uint32_t erpmTotal = 0;
+         uint32_t rpmSamples = 0;
++        const timeUs_t decodedAtUs = micros();
+ 
+         // Decode all telemetry data now to discharge interrupt from this task
+         for (uint8_t k = 0; k < motorCount; k++) {
+@@ -275,6 +277,7 @@ uint16_t getDshotTelemetry(uint8_t index)
+                 dshotUpdateTelemetryData(k, type, value);
+ 
+                 if (type == DSHOT_TELEMETRY_TYPE_eRPM) {
++                    dshotTelemetryState.motorState[k].lastErpmDecodedUs = decodedAtUs;
+                     erpmTotal += value;
+                     rpmSamples++;
+                 }
+diff --git a/src/main/drivers/dshot.h b/src/main/drivers/dshot.h
+index 1a91c9fcd..318c802e9 100644
+--- a/src/main/drivers/dshot.h
++++ b/src/main/drivers/dshot.h
+@@ -90,6 +90,7 @@ uint16_t prepareDshotPacket(dshotProtocolControl_t *pcb);
+ extern bool useDshotTelemetry;
+ 
+ typedef struct dshotTelemetryMotorState_s {
++    uint32_t lastErpmDecodedUs; // Timestamp of last valid eRPM decode, not command transmission.
+     uint16_t rawValue;
+     uint16_t telemetryData[DSHOT_TELEMETRY_TYPE_COUNT];
+     uint8_t telemetryTypes;
+diff --git a/src/main/flight/pid.c b/src/main/flight/pid.c
+index 6feeed5ad..5e934d39a 100644
+--- a/src/main/flight/pid.c
++++ b/src/main/flight/pid.c
+@@ -62,6 +62,9 @@
+ #include "sensors/gyro.h"
+ 
+ #include "pid.h"
++#include "flight/failsafe.h"
++#include "rx/rx.h"
++#include "research/firedrone.h"
+ 
+ typedef enum {
+     LEVEL_MODE_OFF = 0,
+@@ -435,6 +438,9 @@ STATIC_UNIT_TESTED FAST_CODE_NOINLINE float calcHorizonLevelStrength(void)
+ // Use the FAST_CODE_NOINLINE directive to avoid this code from being inlined into ITCM RAM to avoid overflow.
+ // The impact is possibly slightly slower performance on F7/H7 but they have more than enough
+ // processing power that it should be a non-issue.
++static bool fdLevelActive;
++static float fdLevelAngles[2]; // Degrees, selected once for both axes each PID tick.
++
+ STATIC_UNIT_TESTED FAST_CODE_NOINLINE float pidLevel(int axis, const pidProfile_t *pidProfile, const rollAndPitchTrims_t *angleTrim,
+                                                         float currentPidSetpoint, float horizonLevelStrength)
+ {
+@@ -446,7 +452,9 @@ STATIC_UNIT_TESTED FAST_CODE_NOINLINE float pidLevel(int axis, const pidProfile_
+     angle += gpsRescueAngle[axis] / 100; // ANGLE IS IN CENTIDEGREES
+ #endif
+     angle = constrainf(angle, -levelAngleLimit, levelAngleLimit);
+-    const float errorAngle = angle - ((attitude.raw[axis] - angleTrim->raw[axis]) / 10.0f);
++    const float errorAngle = angle - ((fdLevelActive && FLIGHT_MODE(ANGLE_MODE) && !FLIGHT_MODE(HORIZON_MODE) && !FLIGHT_MODE(GPS_RESCUE_MODE))
++        ? (fdLevelAngles[axis] - angleTrim->raw[axis] / 10.0f)
++        : ((attitude.raw[axis] - angleTrim->raw[axis]) / 10.0f));
+     if (FLIGHT_MODE(ANGLE_MODE) || FLIGHT_MODE(GPS_RESCUE_MODE)) {
+         // ANGLE mode - control is angle based
+         const float setpointCorrection = errorAngle * pidRuntime.levelGain;
+@@ -830,6 +838,7 @@ static FAST_CODE_NOINLINE float applyLaunchControl(int axis, const rollAndPitchT
+ // Based on 2DOF reference design (matlab)
+ void FAST_CODE pidController(const pidProfile_t *pidProfile, timeUs_t currentTimeUs)
+ {
++    float fdSetpoint[3] = {0};
+     static float previousGyroRateDterm[XYZ_AXIS_COUNT];
+     static float previousRawGyroRateDterm[XYZ_AXIS_COUNT];
+ 
+@@ -876,6 +885,15 @@ void FAST_CODE pidController(const pidProfile_t *pidProfile, timeUs_t currentTim
+         levelModeStartTimeUs = 0;
+     }
+ 
++    const float fdBaselineAngles[2] = {attitude.values.roll / 10.0f, attitude.values.pitch / 10.0f};
++    bool fdLevelPermitted = ARMING_FLAG(ARMED) && FLIGHT_MODE(ANGLE_MODE) && !FLIGHT_MODE(HORIZON_MODE)
++        && !gpsRescueIsActive && !FLIGHT_MODE(FAILSAFE_MODE) && rxIsReceivingSignal() && !failsafeIsActive()
++        && pidRuntime.pidStabilisationEnabled && !gyroOverflowDetected() && !pidRuntime.inCrashRecoveryMode
++        && !launchControlActive && getMixerMode()==MIXER_QUADX;
++#ifdef USE_YAW_SPIN_RECOVERY
++    fdLevelPermitted = fdLevelPermitted && !yawSpinActive;
++#endif
++    fdLevelActive = firedroneLevelAngles(fdBaselineAngles, fdLevelAngles, currentTimeUs, pidRuntime.dT, fdLevelPermitted);
+     gpsRescuePreviousState = gpsRescueIsActive;
+ #else
+     UNUSED(pidProfile);
+@@ -1163,6 +1181,7 @@ void FAST_CODE pidController(const pidProfile_t *pidProfile, timeUs_t currentTim
+             }
+         }
+ 
++        fdSetpoint[axis] = currentPidSetpoint;
+         // calculating the PID sum
+         const float pidSum = pidData[axis].P + pidData[axis].I + pidData[axis].D + pidData[axis].F;
+ #ifdef USE_INTEGRATED_YAW_CONTROL
+@@ -1176,6 +1195,15 @@ void FAST_CODE pidController(const pidProfile_t *pidProfile, timeUs_t currentTim
+         }
+     }
+ 
++    bool fdPermitted = ARMING_FLAG(ARMED) && rxIsReceivingSignal() && !failsafeIsActive()
++        && calculateThrottleStatus() == THROTTLE_HIGH && pidRuntime.pidStabilisationEnabled
++        && !gyroOverflowDetected() && !pidRuntime.inCrashRecoveryMode && !launchControlActive
++        && !FLIGHT_MODE(GPS_RESCUE_MODE) && !FLIGHT_MODE(FAILSAFE_MODE);
++#ifdef USE_YAW_SPIN_RECOVERY
++    fdPermitted = fdPermitted && !yawSpinActive;
++#endif
++    firedroneUpdate(fdSetpoint, pidRuntime.dT, currentTimeUs, fdPermitted);
++
+     // Disable PID control if at zero throttle or if gyro overflow detected
+     // This may look very innefficient, but it is done on purpose to always show real CPU usage as in flight
+     if (!pidRuntime.pidStabilisationEnabled || gyroOverflowDetected()) {
+diff --git a/src/main/pg/pg_ids.h b/src/main/pg/pg_ids.h
+index 3dc3ff30f..9290946a0 100644
+--- a/src/main/pg/pg_ids.h
++++ b/src/main/pg/pg_ids.h
+@@ -154,6 +154,7 @@
+ #define PG_RX_EXPRESSLRS_SPI_CONFIG 555
+ #define PG_SCHEDULER_CONFIG         556
+ #define PG_MSP_CONFIG               557
++#define PG_FIREDRONE_CONFIG 600
+ #define PG_BETAFLIGHT_END           557
+ 
+ 
+diff --git a/src/main/target/STM32F405/target.h b/src/main/target/STM32F405/target.h
+index 684c5da42..1dd3f73fc 100644
+--- a/src/main/target/STM32F405/target.h
++++ b/src/main/target/STM32F405/target.h
+@@ -77,3 +77,6 @@
+ 
+ #define USE_CUSTOM_DEFAULTS
+ 
++
++// Present in the captured Mobula8 firmware; preserve all profile settings.
++#define USE_ACRO_TRAINER

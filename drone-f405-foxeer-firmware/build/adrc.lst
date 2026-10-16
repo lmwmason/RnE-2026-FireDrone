@@ -1,0 +1,538 @@
+ARM GAS  /tmp/ccN5950I.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 1
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"adrc.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.file 1 "Control/adrc.c"
+  20              		.section	.text.adrc_axis_init,"ax",%progbits
+  21              		.align	1
+  22              		.global	adrc_axis_init
+  23              		.syntax unified
+  24              		.thumb
+  25              		.thumb_func
+  27              	adrc_axis_init:
+  28              	.LVL0:
+  29              	.LFB0:
+   1:Control/adrc.c **** #include "adrc.h"
+   2:Control/adrc.c **** #include <string.h>
+   3:Control/adrc.c **** 
+   4:Control/adrc.c **** /* 3rd-order ESO for 2nd-order plant:
+   5:Control/adrc.c ****  *   θ_dot  = ω          (z1 ≈ θ)
+   6:Control/adrc.c ****  *   ω_dot  = f + b0*u   (z2 ≈ ω, z3 ≈ f = total disturbance)
+   7:Control/adrc.c ****  *
+   8:Control/adrc.c ****  * ESO (Euler discrete):
+   9:Control/adrc.c ****  *   e      = y - z1
+  10:Control/adrc.c ****  *   z1    += dt * (z2 + β1*e)
+  11:Control/adrc.c ****  *   z2    += dt * (z3 + β2*e + b0*u)
+  12:Control/adrc.c ****  *   z3    += dt * (β3*e)
+  13:Control/adrc.c ****  *
+  14:Control/adrc.c ****  * Pole placement at -ω_o (all three):
+  15:Control/adrc.c ****  *   β1 = 3*ω_o,  β2 = 3*ω_o²,  β3 = ω_o³
+  16:Control/adrc.c ****  *
+  17:Control/adrc.c ****  * Control law:
+  18:Control/adrc.c ****  *   u0  = kp*(r - z1) + kd*(r_dot - z2)
+  19:Control/adrc.c ****  *   u   = (u0 - z3) / b0                */
+  20:Control/adrc.c **** 
+  21:Control/adrc.c **** void adrc_axis_init(adrc_axis_t *ax, float omega_o, float b0, float kp, float kd, float dt)
+  22:Control/adrc.c **** {
+  30              		.loc 1 22 1 view -0
+  31              		.cfi_startproc
+  32              		@ args = 0, pretend = 0, frame = 0
+  33              		@ frame_needed = 0, uses_anonymous_args = 0
+  34              		.loc 1 22 1 is_stmt 0 view .LVU1
+  35 0000 2DE9F041 		push	{r4, r5, r6, r7, r8, lr}
+  36              	.LCFI0:
+ARM GAS  /tmp/ccN5950I.s 			page 2
+
+
+  37              		.cfi_def_cfa_offset 24
+  38              		.cfi_offset 4, -24
+  39              		.cfi_offset 5, -20
+  40              		.cfi_offset 6, -16
+  41              		.cfi_offset 7, -12
+  42              		.cfi_offset 8, -8
+  43              		.cfi_offset 14, -4
+  44 0004 2DED028B 		vpush.64	{d8}
+  45              	.LCFI1:
+  46              		.cfi_def_cfa_offset 32
+  47              		.cfi_offset 80, -32
+  48              		.cfi_offset 81, -28
+  49 0008 0446     		mov	r4, r0
+  50 000a B0EE408A 		vmov.f32	s16, s0
+  51 000e 10EE908A 		vmov	r8, s1
+  52 0012 11EE107A 		vmov	r7, s2
+  53 0016 11EE906A 		vmov	r6, s3
+  54 001a 12EE105A 		vmov	r5, s4
+  23:Control/adrc.c ****     memset(ax, 0, sizeof(adrc_axis_t));
+  55              		.loc 1 23 5 is_stmt 1 view .LVU2
+  56 001e 2822     		movs	r2, #40
+  57 0020 0021     		movs	r1, #0
+  58 0022 FFF7FEFF 		bl	memset
+  59              	.LVL1:
+  24:Control/adrc.c ****     ax->beta1 = 3.0f * omega_o;
+  60              		.loc 1 24 5 view .LVU3
+  61              		.loc 1 24 22 is_stmt 0 view .LVU4
+  62 0026 F0EE087A 		vmov.f32	s15, #3.0e+0
+  63 002a 68EE277A 		vmul.f32	s15, s16, s15
+  64              		.loc 1 24 15 view .LVU5
+  65 002e C4ED037A 		vstr.32	s15, [r4, #12]
+  25:Control/adrc.c ****     ax->beta2 = 3.0f * omega_o * omega_o;
+  66              		.loc 1 25 5 is_stmt 1 view .LVU6
+  67              		.loc 1 25 32 is_stmt 0 view .LVU7
+  68 0032 67EE887A 		vmul.f32	s15, s15, s16
+  69              		.loc 1 25 15 view .LVU8
+  70 0036 C4ED047A 		vstr.32	s15, [r4, #16]
+  26:Control/adrc.c ****     ax->beta3 = omega_o * omega_o * omega_o;
+  71              		.loc 1 26 5 is_stmt 1 view .LVU9
+  72              		.loc 1 26 25 is_stmt 0 view .LVU10
+  73 003a 68EE087A 		vmul.f32	s15, s16, s16
+  74              		.loc 1 26 35 view .LVU11
+  75 003e 67EE887A 		vmul.f32	s15, s15, s16
+  76              		.loc 1 26 15 view .LVU12
+  77 0042 C4ED057A 		vstr.32	s15, [r4, #20]
+  27:Control/adrc.c ****     ax->b0    = b0;
+  78              		.loc 1 27 5 is_stmt 1 view .LVU13
+  79              		.loc 1 27 15 is_stmt 0 view .LVU14
+  80 0046 C4F81880 		str	r8, [r4, #24]	@ float
+  28:Control/adrc.c ****     ax->kp    = kp;
+  81              		.loc 1 28 5 is_stmt 1 view .LVU15
+  82              		.loc 1 28 15 is_stmt 0 view .LVU16
+  83 004a E761     		str	r7, [r4, #28]	@ float
+  29:Control/adrc.c ****     ax->kd    = kd;
+  84              		.loc 1 29 5 is_stmt 1 view .LVU17
+  85              		.loc 1 29 15 is_stmt 0 view .LVU18
+  86 004c 2662     		str	r6, [r4, #32]	@ float
+ARM GAS  /tmp/ccN5950I.s 			page 3
+
+
+  30:Control/adrc.c ****     ax->dt    = dt;
+  87              		.loc 1 30 5 is_stmt 1 view .LVU19
+  88              		.loc 1 30 15 is_stmt 0 view .LVU20
+  89 004e 6562     		str	r5, [r4, #36]	@ float
+  31:Control/adrc.c **** }
+  90              		.loc 1 31 1 view .LVU21
+  91 0050 BDEC028B 		vldm	sp!, {d8}
+  92              	.LCFI2:
+  93              		.cfi_restore 80
+  94              		.cfi_restore 81
+  95              		.cfi_def_cfa_offset 24
+  96              	.LVL2:
+  97              		.loc 1 31 1 view .LVU22
+  98 0054 BDE8F081 		pop	{r4, r5, r6, r7, r8, pc}
+  99              		.loc 1 31 1 view .LVU23
+ 100              		.cfi_endproc
+ 101              	.LFE0:
+ 103              		.section	.text.adrc_axis_update,"ax",%progbits
+ 104              		.align	1
+ 105              		.global	adrc_axis_update
+ 106              		.syntax unified
+ 107              		.thumb
+ 108              		.thumb_func
+ 110              	adrc_axis_update:
+ 111              	.LVL3:
+ 112              	.LFB1:
+  32:Control/adrc.c **** 
+  33:Control/adrc.c **** float adrc_axis_update(adrc_axis_t *ax, float y_meas, float r, float r_dot, float u_prev)
+  34:Control/adrc.c **** {
+ 113              		.loc 1 34 1 is_stmt 1 view -0
+ 114              		.cfi_startproc
+ 115              		@ args = 0, pretend = 0, frame = 0
+ 116              		@ frame_needed = 0, uses_anonymous_args = 0
+ 117              		@ link register save eliminated.
+  35:Control/adrc.c ****     float e   = y_meas - ax->z1;
+ 118              		.loc 1 35 5 view .LVU25
+ 119              		.loc 1 35 28 is_stmt 0 view .LVU26
+ 120 0000 90ED007A 		vldr.32	s14, [r0]
+ 121              		.loc 1 35 11 view .LVU27
+ 122 0004 30EE475A 		vsub.f32	s10, s0, s14
+ 123              	.LVL4:
+  36:Control/adrc.c **** 
+  37:Control/adrc.c ****     ax->z1 += ax->dt * (ax->z2 + ax->beta1 * e);
+ 124              		.loc 1 37 5 is_stmt 1 view .LVU28
+ 125              		.loc 1 37 17 is_stmt 0 view .LVU29
+ 126 0008 D0ED095A 		vldr.32	s11, [r0, #36]
+ 127              		.loc 1 37 27 view .LVU30
+ 128 000c D0ED016A 		vldr.32	s13, [r0, #4]
+ 129              		.loc 1 37 36 view .LVU31
+ 130 0010 D0ED037A 		vldr.32	s15, [r0, #12]
+ 131              		.loc 1 37 44 view .LVU32
+ 132 0014 67EE857A 		vmul.f32	s15, s15, s10
+ 133              		.loc 1 37 32 view .LVU33
+ 134 0018 76EEA77A 		vadd.f32	s15, s13, s15
+ 135              		.loc 1 37 22 view .LVU34
+ 136 001c 65EEA77A 		vmul.f32	s15, s11, s15
+ 137              		.loc 1 37 12 view .LVU35
+ARM GAS  /tmp/ccN5950I.s 			page 4
+
+
+ 138 0020 37EE276A 		vadd.f32	s12, s14, s15
+ 139 0024 80ED006A 		vstr.32	s12, [r0]
+  38:Control/adrc.c ****     ax->z2 += ax->dt * (ax->z3 + ax->beta2 * e + ax->b0 * u_prev);
+ 140              		.loc 1 38 5 is_stmt 1 view .LVU36
+ 141              		.loc 1 38 27 is_stmt 0 view .LVU37
+ 142 0028 90ED027A 		vldr.32	s14, [r0, #8]
+ 143              		.loc 1 38 36 view .LVU38
+ 144 002c D0ED047A 		vldr.32	s15, [r0, #16]
+ 145              		.loc 1 38 44 view .LVU39
+ 146 0030 67EE857A 		vmul.f32	s15, s15, s10
+ 147              		.loc 1 38 32 view .LVU40
+ 148 0034 77EE277A 		vadd.f32	s15, s14, s15
+ 149              		.loc 1 38 52 view .LVU41
+ 150 0038 90ED060A 		vldr.32	s0, [r0, #24]
+ 151              	.LVL5:
+ 152              		.loc 1 38 57 view .LVU42
+ 153 003c 60EE211A 		vmul.f32	s3, s0, s3
+ 154              	.LVL6:
+ 155              		.loc 1 38 48 view .LVU43
+ 156 0040 77EEA17A 		vadd.f32	s15, s15, s3
+ 157              		.loc 1 38 22 view .LVU44
+ 158 0044 65EEA77A 		vmul.f32	s15, s11, s15
+ 159              		.loc 1 38 12 view .LVU45
+ 160 0048 76EEA76A 		vadd.f32	s13, s13, s15
+ 161 004c C0ED016A 		vstr.32	s13, [r0, #4]
+  39:Control/adrc.c ****     ax->z3 += ax->dt * (ax->beta3 * e);
+ 162              		.loc 1 39 5 is_stmt 1 view .LVU46
+ 163              		.loc 1 39 27 is_stmt 0 view .LVU47
+ 164 0050 D0ED057A 		vldr.32	s15, [r0, #20]
+ 165              		.loc 1 39 35 view .LVU48
+ 166 0054 67EE857A 		vmul.f32	s15, s15, s10
+ 167              		.loc 1 39 22 view .LVU49
+ 168 0058 65EEA75A 		vmul.f32	s11, s11, s15
+ 169              		.loc 1 39 12 view .LVU50
+ 170 005c 37EE257A 		vadd.f32	s14, s14, s11
+ 171 0060 80ED027A 		vstr.32	s14, [r0, #8]
+  40:Control/adrc.c **** 
+  41:Control/adrc.c ****     float u0 = ax->kp * (r - ax->z1) + ax->kd * (r_dot - ax->z2);
+ 172              		.loc 1 41 5 is_stmt 1 view .LVU51
+ 173              		.loc 1 41 18 is_stmt 0 view .LVU52
+ 174 0064 D0ED077A 		vldr.32	s15, [r0, #28]
+ 175              		.loc 1 41 28 view .LVU53
+ 176 0068 70EEC60A 		vsub.f32	s1, s1, s12
+ 177              	.LVL7:
+ 178              		.loc 1 41 23 view .LVU54
+ 179 006c 67EEA07A 		vmul.f32	s15, s15, s1
+ 180              		.loc 1 41 42 view .LVU55
+ 181 0070 90ED086A 		vldr.32	s12, [r0, #32]
+ 182              		.loc 1 41 56 view .LVU56
+ 183 0074 31EE661A 		vsub.f32	s2, s2, s13
+ 184              	.LVL8:
+ 185              		.loc 1 41 47 view .LVU57
+ 186 0078 26EE016A 		vmul.f32	s12, s12, s2
+ 187              		.loc 1 41 11 view .LVU58
+ 188 007c 77EE867A 		vadd.f32	s15, s15, s12
+ 189              	.LVL9:
+  42:Control/adrc.c ****     float u  = (u0 - ax->z3) / ax->b0;
+ARM GAS  /tmp/ccN5950I.s 			page 5
+
+
+ 190              		.loc 1 42 5 is_stmt 1 view .LVU59
+ 191              		.loc 1 42 20 is_stmt 0 view .LVU60
+ 192 0080 77EEC77A 		vsub.f32	s15, s15, s14
+ 193              	.LVL10:
+  43:Control/adrc.c ****     return u;
+ 194              		.loc 1 43 5 is_stmt 1 view .LVU61
+  44:Control/adrc.c **** }
+ 195              		.loc 1 44 1 is_stmt 0 view .LVU62
+ 196 0084 87EE800A 		vdiv.f32	s0, s15, s0
+ 197              	.LVL11:
+ 198              		.loc 1 44 1 view .LVU63
+ 199 0088 7047     		bx	lr
+ 200              		.cfi_endproc
+ 201              	.LFE1:
+ 203              		.section	.text.adrc_init,"ax",%progbits
+ 204              		.align	1
+ 205              		.global	adrc_init
+ 206              		.syntax unified
+ 207              		.thumb
+ 208              		.thumb_func
+ 210              	adrc_init:
+ 211              	.LVL12:
+ 212              	.LFB2:
+  45:Control/adrc.c **** 
+  46:Control/adrc.c **** void adrc_init(adrc_t *adrc,
+  47:Control/adrc.c ****                float omega_o_roll, float omega_o_pitch, float omega_o_yaw,
+  48:Control/adrc.c ****                float b0_roll, float b0_pitch, float b0_yaw,
+  49:Control/adrc.c ****                float kp, float kd, float dt)
+  50:Control/adrc.c **** {
+ 213              		.loc 1 50 1 is_stmt 1 view -0
+ 214              		.cfi_startproc
+ 215              		@ args = 0, pretend = 0, frame = 0
+ 216              		@ frame_needed = 0, uses_anonymous_args = 0
+ 217              		.loc 1 50 1 is_stmt 0 view .LVU65
+ 218 0000 10B5     		push	{r4, lr}
+ 219              	.LCFI3:
+ 220              		.cfi_def_cfa_offset 8
+ 221              		.cfi_offset 4, -8
+ 222              		.cfi_offset 14, -4
+ 223 0002 2DED088B 		vpush.64	{d8, d9, d10, d11}
+ 224              	.LCFI4:
+ 225              		.cfi_def_cfa_offset 40
+ 226              		.cfi_offset 80, -40
+ 227              		.cfi_offset 81, -36
+ 228              		.cfi_offset 82, -32
+ 229              		.cfi_offset 83, -28
+ 230              		.cfi_offset 84, -24
+ 231              		.cfi_offset 85, -20
+ 232              		.cfi_offset 86, -16
+ 233              		.cfi_offset 87, -12
+ 234 0006 0446     		mov	r4, r0
+ 235 0008 B0EE60BA 		vmov.f32	s22, s1
+ 236 000c F0EE41AA 		vmov.f32	s21, s2
+ 237 0010 F0EE610A 		vmov.f32	s1, s3
+ 238              	.LVL13:
+ 239              		.loc 1 50 1 view .LVU66
+ 240 0014 B0EE42AA 		vmov.f32	s20, s4
+ARM GAS  /tmp/ccN5950I.s 			page 6
+
+
+ 241 0018 F0EE629A 		vmov.f32	s19, s5
+ 242 001c B0EE438A 		vmov.f32	s16, s6
+ 243 0020 F0EE638A 		vmov.f32	s17, s7
+ 244 0024 B0EE449A 		vmov.f32	s18, s8
+  51:Control/adrc.c ****     adrc_axis_init(&adrc->axis[0], omega_o_roll,  b0_roll,  kp, kd, dt);
+ 245              		.loc 1 51 5 is_stmt 1 view .LVU67
+ 246 0028 B0EE442A 		vmov.f32	s4, s8
+ 247              	.LVL14:
+ 248              		.loc 1 51 5 is_stmt 0 view .LVU68
+ 249 002c F0EE631A 		vmov.f32	s3, s7
+ 250              	.LVL15:
+ 251              		.loc 1 51 5 view .LVU69
+ 252 0030 B0EE431A 		vmov.f32	s2, s6
+ 253              	.LVL16:
+ 254              		.loc 1 51 5 view .LVU70
+ 255 0034 FFF7FEFF 		bl	adrc_axis_init
+ 256              	.LVL17:
+  52:Control/adrc.c ****     adrc_axis_init(&adrc->axis[1], omega_o_pitch, b0_pitch, kp, kd, dt);
+ 257              		.loc 1 52 5 is_stmt 1 view .LVU71
+ 258 0038 B0EE492A 		vmov.f32	s4, s18
+ 259 003c F0EE681A 		vmov.f32	s3, s17
+ 260 0040 B0EE481A 		vmov.f32	s2, s16
+ 261 0044 F0EE4A0A 		vmov.f32	s1, s20
+ 262 0048 B0EE4B0A 		vmov.f32	s0, s22
+ 263 004c 04F12800 		add	r0, r4, #40
+ 264 0050 FFF7FEFF 		bl	adrc_axis_init
+ 265              	.LVL18:
+  53:Control/adrc.c ****     adrc_axis_init(&adrc->axis[2], omega_o_yaw,   b0_yaw,   kp, kd, dt);
+ 266              		.loc 1 53 5 view .LVU72
+ 267 0054 B0EE492A 		vmov.f32	s4, s18
+ 268 0058 F0EE681A 		vmov.f32	s3, s17
+ 269 005c B0EE481A 		vmov.f32	s2, s16
+ 270 0060 F0EE690A 		vmov.f32	s1, s19
+ 271 0064 B0EE6A0A 		vmov.f32	s0, s21
+ 272 0068 04F15000 		add	r0, r4, #80
+ 273 006c FFF7FEFF 		bl	adrc_axis_init
+ 274              	.LVL19:
+  54:Control/adrc.c **** }
+ 275              		.loc 1 54 1 is_stmt 0 view .LVU73
+ 276 0070 BDEC088B 		vldm	sp!, {d8-d11}
+ 277              	.LCFI5:
+ 278              		.cfi_restore 86
+ 279              		.cfi_restore 87
+ 280              		.cfi_restore 84
+ 281              		.cfi_restore 85
+ 282              		.cfi_restore 82
+ 283              		.cfi_restore 83
+ 284              		.cfi_restore 80
+ 285              		.cfi_restore 81
+ 286              		.cfi_def_cfa_offset 8
+ 287              	.LVL20:
+ 288              		.loc 1 54 1 view .LVU74
+ 289 0074 10BD     		pop	{r4, pc}
+ 290              		.loc 1 54 1 view .LVU75
+ 291              		.cfi_endproc
+ 292              	.LFE2:
+ 294              		.section	.text.adrc_update,"ax",%progbits
+ARM GAS  /tmp/ccN5950I.s 			page 7
+
+
+ 295              		.align	1
+ 296              		.global	adrc_update
+ 297              		.syntax unified
+ 298              		.thumb
+ 299              		.thumb_func
+ 301              	adrc_update:
+ 302              	.LVL21:
+ 303              	.LFB3:
+  55:Control/adrc.c **** 
+  56:Control/adrc.c **** void adrc_update(adrc_t *adrc, const float theta_meas[3], const float r[3],
+  57:Control/adrc.c ****                  const float r_dot[3], const float u_prev[3], float u_out[3])
+  58:Control/adrc.c **** {
+ 304              		.loc 1 58 1 is_stmt 1 view -0
+ 305              		.cfi_startproc
+ 306              		@ args = 8, pretend = 0, frame = 0
+ 307              		@ frame_needed = 0, uses_anonymous_args = 0
+ 308              		.loc 1 58 1 is_stmt 0 view .LVU77
+ 309 0000 2DE9F843 		push	{r3, r4, r5, r6, r7, r8, r9, lr}
+ 310              	.LCFI6:
+ 311              		.cfi_def_cfa_offset 32
+ 312              		.cfi_offset 3, -32
+ 313              		.cfi_offset 4, -28
+ 314              		.cfi_offset 5, -24
+ 315              		.cfi_offset 6, -20
+ 316              		.cfi_offset 7, -16
+ 317              		.cfi_offset 8, -12
+ 318              		.cfi_offset 9, -8
+ 319              		.cfi_offset 14, -4
+ 320 0004 8046     		mov	r8, r0
+ 321 0006 0F46     		mov	r7, r1
+ 322 0008 1646     		mov	r6, r2
+ 323 000a 1D46     		mov	r5, r3
+  59:Control/adrc.c ****     for (uint8_t i = 0; i < 3; i++)
+ 324              		.loc 1 59 5 is_stmt 1 view .LVU78
+ 325              	.LBB2:
+ 326              		.loc 1 59 10 view .LVU79
+ 327              	.LVL22:
+ 328              		.loc 1 59 18 is_stmt 0 view .LVU80
+ 329 000c 0024     		movs	r4, #0
+ 330              		.loc 1 59 5 view .LVU81
+ 331 000e 1DE0     		b	.L7
+ 332              	.LVL23:
+ 333              	.L8:
+  60:Control/adrc.c ****         u_out[i] = adrc_axis_update(&adrc->axis[i],
+ 334              		.loc 1 60 9 is_stmt 1 view .LVU82
+  61:Control/adrc.c ****                                     theta_meas[i], r[i], r_dot[i], u_prev[i]);
+ 335              		.loc 1 61 47 is_stmt 0 view .LVU83
+ 336 0010 07EB8403 		add	r3, r7, r4, lsl #2
+ 337              		.loc 1 61 53 view .LVU84
+ 338 0014 06EB8402 		add	r2, r6, r4, lsl #2
+ 339              		.loc 1 61 63 view .LVU85
+ 340 0018 05EB8401 		add	r1, r5, r4, lsl #2
+ 341              		.loc 1 61 74 view .LVU86
+ 342 001c 0898     		ldr	r0, [sp, #32]
+ 343 001e 00EB840C 		add	ip, r0, r4, lsl #2
+  60:Control/adrc.c ****         u_out[i] = adrc_axis_update(&adrc->axis[i],
+ 344              		.loc 1 60 14 view .LVU87
+ARM GAS  /tmp/ccN5950I.s 			page 8
+
+
+ 345 0022 0998     		ldr	r0, [sp, #36]
+ 346 0024 00EB8409 		add	r9, r0, r4, lsl #2
+  60:Control/adrc.c ****         u_out[i] = adrc_axis_update(&adrc->axis[i],
+ 347              		.loc 1 60 20 view .LVU88
+ 348 0028 04EB8400 		add	r0, r4, r4, lsl #2
+ 349 002c DCED001A 		vldr.32	s3, [ip]
+ 350 0030 91ED001A 		vldr.32	s2, [r1]
+ 351 0034 D2ED000A 		vldr.32	s1, [r2]
+ 352 0038 93ED000A 		vldr.32	s0, [r3]
+ 353 003c 08EBC000 		add	r0, r8, r0, lsl #3
+ 354 0040 FFF7FEFF 		bl	adrc_axis_update
+ 355              	.LVL24:
+  60:Control/adrc.c ****         u_out[i] = adrc_axis_update(&adrc->axis[i],
+ 356              		.loc 1 60 18 discriminator 1 view .LVU89
+ 357 0044 89ED000A 		vstr.32	s0, [r9]
+  59:Control/adrc.c ****     for (uint8_t i = 0; i < 3; i++)
+ 358              		.loc 1 59 33 is_stmt 1 discriminator 3 view .LVU90
+ 359 0048 0134     		adds	r4, r4, #1
+ 360              	.LVL25:
+  59:Control/adrc.c ****     for (uint8_t i = 0; i < 3; i++)
+ 361              		.loc 1 59 33 is_stmt 0 discriminator 3 view .LVU91
+ 362 004a E4B2     		uxtb	r4, r4
+ 363              	.LVL26:
+ 364              	.L7:
+  59:Control/adrc.c ****     for (uint8_t i = 0; i < 3; i++)
+ 365              		.loc 1 59 27 is_stmt 1 discriminator 1 view .LVU92
+ 366 004c 022C     		cmp	r4, #2
+ 367 004e DFD9     		bls	.L8
+ 368              	.LBE2:
+  62:Control/adrc.c **** }
+ 369              		.loc 1 62 1 is_stmt 0 view .LVU93
+ 370 0050 BDE8F883 		pop	{r3, r4, r5, r6, r7, r8, r9, pc}
+ 371              		.loc 1 62 1 view .LVU94
+ 372              		.cfi_endproc
+ 373              	.LFE3:
+ 375              		.section	.text.adrc_get_disturbance,"ax",%progbits
+ 376              		.align	1
+ 377              		.global	adrc_get_disturbance
+ 378              		.syntax unified
+ 379              		.thumb
+ 380              		.thumb_func
+ 382              	adrc_get_disturbance:
+ 383              	.LVL27:
+ 384              	.LFB4:
+  63:Control/adrc.c **** 
+  64:Control/adrc.c **** void adrc_get_disturbance(const adrc_t *adrc, float f_hat[3])
+  65:Control/adrc.c **** {
+ 385              		.loc 1 65 1 is_stmt 1 view -0
+ 386              		.cfi_startproc
+ 387              		@ args = 0, pretend = 0, frame = 0
+ 388              		@ frame_needed = 0, uses_anonymous_args = 0
+ 389              		@ link register save eliminated.
+  66:Control/adrc.c ****     for (uint8_t i = 0; i < 3; i++) f_hat[i] = adrc->axis[i].z3;
+ 390              		.loc 1 66 5 view .LVU96
+ 391              	.LBB3:
+ 392              		.loc 1 66 10 view .LVU97
+ 393              		.loc 1 66 18 is_stmt 0 view .LVU98
+ARM GAS  /tmp/ccN5950I.s 			page 9
+
+
+ 394 0000 0023     		movs	r3, #0
+ 395              		.loc 1 66 5 view .LVU99
+ 396 0002 0AE0     		b	.L11
+ 397              	.LVL28:
+ 398              	.L12:
+ 399              		.loc 1 66 37 is_stmt 1 discriminator 3 view .LVU100
+ 400              		.loc 1 66 42 is_stmt 0 discriminator 3 view .LVU101
+ 401 0004 01EB830C 		add	ip, r1, r3, lsl #2
+ 402              		.loc 1 66 61 discriminator 3 view .LVU102
+ 403 0008 03EB8302 		add	r2, r3, r3, lsl #2
+ 404 000c 00EBC202 		add	r2, r0, r2, lsl #3
+ 405 0010 9268     		ldr	r2, [r2, #8]	@ float
+ 406              		.loc 1 66 46 discriminator 3 view .LVU103
+ 407 0012 CCF80020 		str	r2, [ip]	@ float
+ 408              		.loc 1 66 33 is_stmt 1 discriminator 3 view .LVU104
+ 409 0016 0133     		adds	r3, r3, #1
+ 410              	.LVL29:
+ 411              		.loc 1 66 33 is_stmt 0 discriminator 3 view .LVU105
+ 412 0018 DBB2     		uxtb	r3, r3
+ 413              	.LVL30:
+ 414              	.L11:
+ 415              		.loc 1 66 27 is_stmt 1 discriminator 1 view .LVU106
+ 416 001a 022B     		cmp	r3, #2
+ 417 001c F2D9     		bls	.L12
+ 418              	.LBE3:
+  67:Control/adrc.c **** }
+ 419              		.loc 1 67 1 is_stmt 0 view .LVU107
+ 420 001e 7047     		bx	lr
+ 421              		.cfi_endproc
+ 422              	.LFE4:
+ 424              		.text
+ 425              	.Letext0:
+ 426              		.file 2 "/usr/arm-none-eabi/include/machine/_default_types.h"
+ 427              		.file 3 "/usr/arm-none-eabi/include/sys/_stdint.h"
+ 428              		.file 4 "Control/adrc.h"
+ 429              		.file 5 "/usr/arm-none-eabi/include/string.h"
+ 430              		.file 6 "<built-in>"
+ARM GAS  /tmp/ccN5950I.s 			page 10
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 adrc.c
+     /tmp/ccN5950I.s:21     .text.adrc_axis_init:00000000 $t
+     /tmp/ccN5950I.s:27     .text.adrc_axis_init:00000000 adrc_axis_init
+     /tmp/ccN5950I.s:104    .text.adrc_axis_update:00000000 $t
+     /tmp/ccN5950I.s:110    .text.adrc_axis_update:00000000 adrc_axis_update
+     /tmp/ccN5950I.s:204    .text.adrc_init:00000000 $t
+     /tmp/ccN5950I.s:210    .text.adrc_init:00000000 adrc_init
+     /tmp/ccN5950I.s:295    .text.adrc_update:00000000 $t
+     /tmp/ccN5950I.s:301    .text.adrc_update:00000000 adrc_update
+     /tmp/ccN5950I.s:376    .text.adrc_get_disturbance:00000000 $t
+     /tmp/ccN5950I.s:382    .text.adrc_get_disturbance:00000000 adrc_get_disturbance
+
+UNDEFINED SYMBOLS
+memset

@@ -1,0 +1,191 @@
+diff all
+
+# version
+# Betaflight / STM32F405 (S405) 4.4.2 Jun 30 2024 / 00:59:29 (23d066d08) MSP API: 1.45
+
+# config: YES
+
+# start the command batch
+batch start
+
+# reset configuration to default settings
+defaults nosave
+
+board_name BETAFLIGHTF4
+manufacturer_id FPVM
+mcu_id 004a00515131500c20333341
+signature 
+
+# name: Mobula8
+
+# serial
+serial 0 131073 115200 57600 0 115200
+serial 5 64 115200 57600 0 115200
+
+# map
+map RETA1234
+
+# aux
+aux 0 0 0 1800 2100 0 0
+aux 1 1 2 1700 2100 0 0
+aux 2 2 2 1300 1700 0 0
+aux 3 13 3 1200 2100 0 0
+aux 4 35 1 1475 2100 0 0
+
+# master
+set gyro_lpf2_static_hz = 0
+set dyn_notch_q = 400
+set acc_trim_roll = 1
+set acc_calibration = 41,51,-50,1
+set max_check = 2000
+set rc_smoothing_auto_factor = 250
+set rc_smoothing_auto_factor_throttle = 100
+set rc_smoothing_setpoint_cutoff = 6
+set rc_smoothing_feedforward_cutoff = 6
+set rc_smoothing_throttle_cutoff = 20
+set fpv_mix_degrees = 25
+set serialrx_provider = SBUS
+set blackbox_sample_rate = 1/2
+set dshot_idle_value = 1000
+set dshot_bidir = ON
+set motor_pwm_protocol = DSHOT300
+set motor_poles = 12
+set motor_output_reordering = 2,3,0,1,4,5,6,7
+set align_board_roll = 180
+set vbat_min_cell_voltage = 320
+set current_meter = ADC
+set battery_meter = ADC
+set vbat_scale = 111
+set ibata_scale = 470
+set small_angle = 180
+set osd_tim1 = 2561
+set osd_vbat_pos = 449
+set osd_rssi_pos = 1036
+set osd_link_quality_pos = 2562
+set osd_tim_1_pos = 1408
+set osd_tim_2_pos = 1519
+set osd_remaining_time_estimate_pos = 496
+set osd_flymode_pos = 1487
+set osd_throttle_pos = 1359
+set osd_vtx_channel_pos = 225
+set osd_crosshairs_pos = 345
+set osd_current_pos = 1390
+set osd_mah_drawn_pos = 481
+set osd_craft_name_pos = 23
+set osd_pilot_name_pos = 631
+set osd_gps_speed_pos = 1449
+set osd_home_dir_pos = 538
+set osd_compass_bar_pos = 598
+set osd_altitude_pos = 1326
+set osd_warnings_pos = 372
+set osd_avg_cell_voltage_pos = 2594
+set osd_disarmed_pos = 279
+set osd_flip_arrow_pos = 311
+set osd_core_temp_pos = 547
+set osd_sys_lq_pos = 1040
+set osd_sys_vtx_temp_pos = 515
+set osd_stat_bitmask = 14252
+set osd_displayport_device = MSP
+set debug_mode = GYRO_SCALED
+set vcd_video_system = HD
+set gyro_1_sensor_align = CW0
+set gyro_1_align_yaw = 0
+set rpm_filter_min_hz = 95
+set craft_name = Mobula8
+set pilot_name = Grass FPV
+
+profile 0
+
+# profile 0
+set profile_name = yeom_pid
+set dterm_lpf1_dyn_min_hz = 67
+set dterm_lpf1_dyn_max_hz = 135
+set dterm_lpf1_static_hz = 0
+set dterm_lpf2_static_hz = 135
+set iterm_relax_cutoff = 25
+set p_pitch = 67
+set d_pitch = 56
+set f_pitch = 144
+set p_roll = 61
+set i_roll = 77
+set d_roll = 47
+set f_roll = 132
+set p_yaw = 61
+set i_yaw = 77
+set f_yaw = 132
+set d_min_roll = 47
+set d_min_pitch = 56
+set d_max_advance = 0
+set feedforward_smooth_factor = 40
+set feedforward_jitter_factor = 16
+set feedforward_max_rate_limit = 95
+set simplified_master_multiplier = 110
+set simplified_i_gain = 70
+set simplified_d_gain = 145
+set simplified_pi_gain = 125
+set simplified_dmax_gain = 0
+set simplified_pitch_d_gain = 105
+set simplified_pitch_pi_gain = 105
+set simplified_dterm_filter = OFF
+set simplified_dterm_filter_multiplier = 85
+set tpa_breakpoint = 1250
+
+profile 1
+
+# profile 1
+set dterm_lpf1_dyn_min_hz = 63
+set dterm_lpf1_dyn_max_hz = 127
+set dterm_lpf1_static_hz = 63
+set dterm_lpf2_static_hz = 127
+set d_pitch = 36
+set d_roll = 31
+set d_min_roll = 23
+set d_min_pitch = 27
+set simplified_d_gain = 80
+set simplified_dterm_filter_multiplier = 85
+
+profile 2
+
+# profile 2
+set simplified_dterm_filter_multiplier = 85
+
+profile 3
+
+# restore original profile selection
+profile 2
+
+rateprofile 0
+
+# rateprofile 0
+set rateprofile_name = GrassFPV
+set roll_rc_rate = 10
+set pitch_rc_rate = 12
+set yaw_rc_rate = 12
+set roll_expo = 30
+set pitch_expo = 28
+set yaw_expo = 28
+set roll_srate = 88
+set pitch_srate = 90
+set yaw_srate = 90
+
+rateprofile 1
+
+rateprofile 2
+
+# rateprofile 2
+set rates_type = BETAFLIGHT
+set roll_rc_rate = 120
+set pitch_rc_rate = 120
+set yaw_rc_rate = 130
+set roll_srate = 75
+set pitch_srate = 75
+set yaw_srate = 80
+
+rateprofile 3
+
+# restore original rateprofile selection
+rateprofile 0
+
+# save configuration
+save
+# 

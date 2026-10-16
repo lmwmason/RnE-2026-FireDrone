@@ -1,0 +1,67 @@
+--- a/Control/indi.c
++++ b/Control/indi.c
+@@ -3,6 +3,10 @@
+ #include <math.h>
+ #include <string.h>
+ 
++/* ESC + motor + prop lag.  INDI adds its increment to what the rotors are doing now, not to what
++ * was commanded one tick ago, otherwise the loop sees a lag-free actuator and limit-cycles. */
++#define INDI_ACT_TAU_S  0.025f
++
+ /* Betaflight/KISS motor order, X-config:
+  * M1=rear-right(CCW), M2=front-right(CW),
+  * M3=rear-left(CW),   M4=front-left(CCW)
+@@ -42,13 +46,14 @@
+ 
+     float wc = 2.0f * 3.14159265f * cutoff_hz;
+     indi->alpha_filt = wc * dt / (1.0f + wc * dt);
++    indi->act_alpha  = dt / (INDI_ACT_TAU_S + dt);
+ 
+     indi_recompute_G(indi, arm_m, k_thrust, k_drag, ixx, iyy, izz);
+ }
+ 
+ void indi_reset(indi_t *indi, float throttle_idle)
+ {
+-    for (uint8_t i = 0; i < INDI_MOTORS; i++) indi->u_prev[i] = throttle_idle;
++    for (uint8_t i = 0; i < INDI_MOTORS; i++) indi->u_prev[i] = indi->u_lag[i] = throttle_idle;
+     for (uint8_t i = 0; i < INDI_AXES; i++)   indi->omega_filt[i] = 0.0f;
+ }
+ 
+@@ -73,11 +78,12 @@
+     float du[INDI_MOTORS];
+     mat_mul(indi->G_inv, da, du, INDI_MOTORS, INDI_AXES, 1);
+ 
+-    float c_prev = 0.25f * (indi->u_prev[0] + indi->u_prev[1]
+-                           + indi->u_prev[2] + indi->u_prev[3]);
++    for (uint8_t i = 0; i < INDI_MOTORS; i++)
++        indi->u_lag[i] += indi->act_alpha * (indi->u_prev[i] - indi->u_lag[i]);
++    float c_lag = 0.25f * (indi->u_lag[0] + indi->u_lag[1] + indi->u_lag[2] + indi->u_lag[3]);
+ 
+     for (uint8_t i = 0; i < INDI_MOTORS; i++) {
+-        float d = indi->u_prev[i] - c_prev + du[i];
++        float d = indi->u_lag[i] - c_lag + du[i];
+         float u = throttle + d;
+         u_out[i] = u < 0.0f ? 0.0f : (u > 1.0f ? 1.0f : u);
+         indi->u_prev[i] = u_out[i];
+--- a/Control/indi.h
++++ b/Control/indi.h
+@@ -13,6 +13,8 @@
+     float omega_filt[INDI_AXES];
+     float alpha_filt;
+     float u_prev[INDI_MOTORS];
++    float u_lag[INDI_MOTORS];      /* commands seen through the motor lag */
++    float act_alpha;
+     float dt;
+ } indi_t;
+ 
+--- a/Core/Src/main.c
++++ b/Core/Src/main.c
+@@ -76,7 +76,7 @@
+ #define FS_HOLD_MS          500U        /* keep the hover throttle first */
+ #define FS_DISARM_MS        60000U      /* give up and disarm */
+ #define FS_VZ_FAST          (-0.7f)     /* m/s */
+-#define FS_VZ_SLOW          (-0.3f)     /* m/s, slowest descent near the ground */
++#define FS_VZ_SLOW          (-0.5f)     /* m/s, slowest descent near the ground */
+ #define FS_SLOW_GAIN        0.9f        /* descent rate = gain * height, between the limits */
+ #define FS_VZ_MFAULT        (-2.0f)     /* m/s, controlled fall after losing a motor */
+ #define FS_KV_MFAULT        0.15f

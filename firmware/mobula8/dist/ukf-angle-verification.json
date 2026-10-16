@@ -1,0 +1,25 @@
+{
+  "status": "UKF_ANGLE_ENABLED_GROUND_CHECKED_FIRST_FLIGHT_PENDING",
+  "ukf_mode": 3,
+  "fd_mode": 0,
+  "fd_blend": 0,
+  "flash_readback_exact": true,
+  "unexpected_settings_changes": {},
+  "flash_used_bytes": 0,
+  "maximum_adapter_us": 93,
+  "maximum_sampled_cycle_us": 321,
+  "valid_observer_samples": 141,
+  "sample_count": 141,
+  "stationary_bf_difference_max_deg": [
+    0.2,
+    0.1
+  ],
+  "angle_control_hardware_armed_tested": false,
+  "host_selection_and_fallback_tests": "PASS",
+  "manual_return": "SE middle HORIZON",
+  "automatic_return": "invalid/stale/divergent/out-of-envelope UKF or compute budget fault",
+  "entry_ramp_seconds": 1,
+  "flight_validated": false,
+  "attitude_valid_samples": 65,
+  "attitude_initializing_samples": 8
+}

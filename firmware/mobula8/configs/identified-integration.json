@@ -1,0 +1,30 @@
+{
+  "settings": {
+    "fd_b_roll": 254,
+    "fd_b_pitch": 219,
+    "fd_b_yaw": 72,
+    "fd_motor_tau_ms": 40,
+    "fd_motor_tau_yaw_ms": 5,
+    "fd_mode": 2,
+    "fd_blend": 5,
+    "fd_limit": 5,
+    "fd_aux_channel": 4
+  },
+  "classification": "bounded experimental local model; not fully validated plant",
+  "maximum_added_pid_units_per_axis": 0.25,
+  "identified": "local control effectiveness and effective lag; yaw lag is torque-path effective lag, not motor time constant",
+  "design_settings_retained": [
+    "bandwidth",
+    "rate gain",
+    "derivative filter",
+    "adaptation gain"
+  ],
+  "limitations": [
+    "Pitch raw acceleration prediction fails and cross-flight effectiveness differs by 25 percent.",
+    "Yaw training block uncertainty is broad.",
+    "Projected instrumental moment agreement is not raw acceleration prediction.",
+    "ADRC observer is computed, but disturbance is not independently subtracted: INDI already compensates acceleration.",
+    "MRAC remains normalized, projected and frozen during clipping; useful adaptation is not established."
+  ],
+  "reason_for_40ms": "RPM motor response supports 40-50 ms; exploratory 25 ms effective-body fit was not used as physical motor lag."
+}

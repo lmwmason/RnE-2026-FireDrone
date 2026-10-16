@@ -1,0 +1,6 @@
+# SE observed on CH8/AUX4. High ANGLE, middle HORIZON, low ACRO.
+# Clear manual beeper range formerly sharing SE; ARM and crash-flip unchanged.
+aux 1 1 3 1700 2100 0 0
+aux 2 2 3 1300 1700 0 0
+aux 3 0 0 900 900 0 0
+save

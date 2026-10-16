@@ -1,0 +1,1122 @@
+ARM GAS  /tmp/ccfagbFr.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 1
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"flight.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.file 1 "Core/Src/flight.c"
+  20              		.section	.text.UsToPulse,"ax",%progbits
+  21              		.align	1
+  22              		.syntax unified
+  23              		.thumb
+  24              		.thumb_func
+  26              	UsToPulse:
+  27              	.LVL0:
+  28              	.LFB134:
+   1:Core/Src/flight.c **** #include "flight.h"
+   2:Core/Src/flight.c **** #include "main.h"
+   3:Core/Src/flight.c **** #include "icm42688.h"
+   4:Core/Src/flight.c **** #include "crsf.h"
+   5:Core/Src/flight.c **** #include "pid.h"
+   6:Core/Src/flight.c **** #include "mixer.h"
+   7:Core/Src/flight.c **** #include <stdbool.h>
+   8:Core/Src/flight.c **** 
+   9:Core/Src/flight.c **** extern TIM_HandleTypeDef htim1;
+  10:Core/Src/flight.c **** extern TIM_HandleTypeDef htim6;
+  11:Core/Src/flight.c **** extern TIM_HandleTypeDef htim8;
+  12:Core/Src/flight.c **** 
+  13:Core/Src/flight.c **** /* Starting/conservative gains: output is motor-fraction (0..1) per dps of
+  14:Core/Src/flight.c ****  * rate error. MUST be tuned in the field - validate with props off first,
+  15:Core/Src/flight.c ****  * then a cautious low, tethered hover before any real flight. */
+  16:Core/Src/flight.c **** #define PID_ROLL_KP   0.0035f
+  17:Core/Src/flight.c **** #define PID_ROLL_KI   0.00002f
+  18:Core/Src/flight.c **** #define PID_ROLL_KD   0.00010f
+  19:Core/Src/flight.c **** 
+  20:Core/Src/flight.c **** #define PID_PITCH_KP  0.0035f
+  21:Core/Src/flight.c **** #define PID_PITCH_KI  0.00002f
+  22:Core/Src/flight.c **** #define PID_PITCH_KD  0.00010f
+  23:Core/Src/flight.c **** 
+  24:Core/Src/flight.c **** #define PID_YAW_KP    0.0050f
+  25:Core/Src/flight.c **** #define PID_YAW_KI    0.00003f
+  26:Core/Src/flight.c **** #define PID_YAW_KD    0.00000f
+  27:Core/Src/flight.c **** 
+  28:Core/Src/flight.c **** #define PID_I_LIMIT   0.20f
+  29:Core/Src/flight.c **** 
+  30:Core/Src/flight.c **** #define MAX_ROLLPITCH_RATE_DPS  600.0f
+ARM GAS  /tmp/ccfagbFr.s 			page 2
+
+
+  31:Core/Src/flight.c **** #define MAX_YAW_RATE_DPS        400.0f
+  32:Core/Src/flight.c **** #define MOTOR_IDLE_FRACTION     0.05f
+  33:Core/Src/flight.c **** #define ARM_AUX_THRESHOLD_US    1700
+  34:Core/Src/flight.c **** #define ARM_THROTTLE_MAX_US     1100
+  35:Core/Src/flight.c **** #define LOOP_DT_S               0.001f /* TIM6 @ 1kHz */
+  36:Core/Src/flight.c **** 
+  37:Core/Src/flight.c **** typedef enum { FLIGHT_DISARMED = 0, FLIGHT_ARMED } flight_state_t;
+  38:Core/Src/flight.c **** 
+  39:Core/Src/flight.c **** static pid_t s_pidRoll, s_pidPitch, s_pidYaw;
+  40:Core/Src/flight.c **** static float s_gyroBias[3];
+  41:Core/Src/flight.c **** static flight_state_t s_state = FLIGHT_DISARMED;
+  42:Core/Src/flight.c **** 
+  43:Core/Src/flight.c **** static uint16_t UsToPulse(float us)
+  44:Core/Src/flight.c **** {
+  29              		.loc 1 44 1 view -0
+  30              		.cfi_startproc
+  31              		@ args = 0, pretend = 0, frame = 0
+  32              		@ frame_needed = 0, uses_anonymous_args = 0
+  33              		@ link register save eliminated.
+  45:Core/Src/flight.c ****     if (us < 1000.0f) us = 1000.0f;
+  34              		.loc 1 45 5 view .LVU1
+  35              		.loc 1 45 8 is_stmt 0 view .LVU2
+  36 0000 DFED0C7A 		vldr.32	s15, .L5
+  37 0004 B4EEE70A 		vcmpe.f32	s0, s15
+  38 0008 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+  39 000c 09D4     		bmi	.L3
+  46:Core/Src/flight.c ****     if (us > 2000.0f) us = 2000.0f;
+  40              		.loc 1 46 5 is_stmt 1 view .LVU3
+  41              		.loc 1 46 8 is_stmt 0 view .LVU4
+  42 000e DFED0A7A 		vldr.32	s15, .L5+4
+  43 0012 B4EEE70A 		vcmpe.f32	s0, s15
+  44 0016 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+  45 001a 04DD     		ble	.L2
+  46              		.loc 1 46 26 discriminator 1 view .LVU5
+  47 001c 9FED060A 		vldr.32	s0, .L5+4
+  48              	.LVL1:
+  49              		.loc 1 46 26 discriminator 1 view .LVU6
+  50 0020 01E0     		b	.L2
+  51              	.LVL2:
+  52              	.L3:
+  45:Core/Src/flight.c ****     if (us < 1000.0f) us = 1000.0f;
+  53              		.loc 1 45 26 discriminator 1 view .LVU7
+  54 0022 9FED040A 		vldr.32	s0, .L5
+  55              	.LVL3:
+  56              	.L2:
+  47:Core/Src/flight.c ****     return (uint16_t)us;
+  57              		.loc 1 47 5 is_stmt 1 view .LVU8
+  58              		.loc 1 47 12 is_stmt 0 view .LVU9
+  59 0026 BCEEC00A 		vcvt.u32.f32	s0, s0
+  60              	.LVL4:
+  48:Core/Src/flight.c **** }
+  61              		.loc 1 48 1 view .LVU10
+  62 002a 10EE103A 		vmov	r3, s0	@ int
+  63 002e 98B2     		uxth	r0, r3
+  64 0030 7047     		bx	lr
+  65              	.L6:
+  66 0032 00BF     		.align	2
+ARM GAS  /tmp/ccfagbFr.s 			page 3
+
+
+  67              	.L5:
+  68 0034 00007A44 		.word	1148846080
+  69 0038 0000FA44 		.word	1157234688
+  70              		.cfi_endproc
+  71              	.LFE134:
+  73              		.section	.text.SetMotors,"ax",%progbits
+  74              		.align	1
+  75              		.syntax unified
+  76              		.thumb
+  77              		.thumb_func
+  79              	SetMotors:
+  80              	.LVL5:
+  81              	.LFB135:
+  49:Core/Src/flight.c **** 
+  50:Core/Src/flight.c **** static void SetMotors(float m1, float m2, float m3, float m4)
+  51:Core/Src/flight.c **** {
+  82              		.loc 1 51 1 is_stmt 1 view -0
+  83              		.cfi_startproc
+  84              		@ args = 0, pretend = 0, frame = 0
+  85              		@ frame_needed = 0, uses_anonymous_args = 0
+  86              		.loc 1 51 1 is_stmt 0 view .LVU12
+  87 0000 38B5     		push	{r3, r4, r5, lr}
+  88              	.LCFI0:
+  89              		.cfi_def_cfa_offset 16
+  90              		.cfi_offset 3, -16
+  91              		.cfi_offset 4, -12
+  92              		.cfi_offset 5, -8
+  93              		.cfi_offset 14, -4
+  94 0002 2DED048B 		vpush.64	{d8, d9}
+  95              	.LCFI1:
+  96              		.cfi_def_cfa_offset 32
+  97              		.cfi_offset 80, -32
+  98              		.cfi_offset 81, -28
+  99              		.cfi_offset 82, -24
+ 100              		.cfi_offset 83, -20
+ 101 0006 F0EE608A 		vmov.f32	s17, s1
+ 102 000a B0EE419A 		vmov.f32	s18, s2
+ 103 000e F0EE619A 		vmov.f32	s19, s3
+  52:Core/Src/flight.c ****     __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, UsToPulse(1000.0f + m1 * 1000.0f)); /* M1 */
+ 104              		.loc 1 52 5 is_stmt 1 view .LVU13
+ 105 0012 9FED128A 		vldr.32	s16, .L9
+ 106 0016 20EE080A 		vmul.f32	s0, s0, s16
+ 107              	.LVL6:
+ 108              		.loc 1 52 5 is_stmt 0 view .LVU14
+ 109 001a 30EE080A 		vadd.f32	s0, s0, s16
+ 110 001e FFF7FEFF 		bl	UsToPulse
+ 111              	.LVL7:
+ 112              		.loc 1 52 5 discriminator 1 view .LVU15
+ 113 0022 0F4B     		ldr	r3, .L9+4
+ 114 0024 1C68     		ldr	r4, [r3]
+ 115 0026 6063     		str	r0, [r4, #52]
+  53:Core/Src/flight.c ****     __HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_4, UsToPulse(1000.0f + m2 * 1000.0f)); /* M2 */
+ 116              		.loc 1 53 5 is_stmt 1 view .LVU16
+ 117 0028 28EE880A 		vmul.f32	s0, s17, s16
+ 118 002c 30EE080A 		vadd.f32	s0, s0, s16
+ 119 0030 FFF7FEFF 		bl	UsToPulse
+ 120              	.LVL8:
+ARM GAS  /tmp/ccfagbFr.s 			page 4
+
+
+ 121              		.loc 1 53 5 is_stmt 0 discriminator 1 view .LVU17
+ 122 0034 0B4B     		ldr	r3, .L9+8
+ 123 0036 1D68     		ldr	r5, [r3]
+ 124 0038 2864     		str	r0, [r5, #64]
+  54:Core/Src/flight.c ****     __HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_3, UsToPulse(1000.0f + m3 * 1000.0f)); /* M3 */
+ 125              		.loc 1 54 5 is_stmt 1 view .LVU18
+ 126 003a 29EE080A 		vmul.f32	s0, s18, s16
+ 127 003e 30EE080A 		vadd.f32	s0, s0, s16
+ 128 0042 FFF7FEFF 		bl	UsToPulse
+ 129              	.LVL9:
+ 130              		.loc 1 54 5 is_stmt 0 discriminator 1 view .LVU19
+ 131 0046 E863     		str	r0, [r5, #60]
+  55:Core/Src/flight.c ****     __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3, UsToPulse(1000.0f + m4 * 1000.0f)); /* M4 (CH3N) *
+ 132              		.loc 1 55 5 is_stmt 1 view .LVU20
+ 133 0048 29EE880A 		vmul.f32	s0, s19, s16
+ 134 004c 30EE080A 		vadd.f32	s0, s0, s16
+ 135 0050 FFF7FEFF 		bl	UsToPulse
+ 136              	.LVL10:
+ 137              		.loc 1 55 5 is_stmt 0 discriminator 1 view .LVU21
+ 138 0054 E063     		str	r0, [r4, #60]
+  56:Core/Src/flight.c **** }
+ 139              		.loc 1 56 1 view .LVU22
+ 140 0056 BDEC048B 		vldm	sp!, {d8-d9}
+ 141              	.LCFI2:
+ 142              		.cfi_restore 82
+ 143              		.cfi_restore 83
+ 144              		.cfi_restore 80
+ 145              		.cfi_restore 81
+ 146              		.cfi_def_cfa_offset 16
+ 147              	.LVL11:
+ 148              		.loc 1 56 1 view .LVU23
+ 149 005a 38BD     		pop	{r3, r4, r5, pc}
+ 150              	.L10:
+ 151              		.align	2
+ 152              	.L9:
+ 153 005c 00007A44 		.word	1148846080
+ 154 0060 00000000 		.word	htim1
+ 155 0064 00000000 		.word	htim8
+ 156              		.cfi_endproc
+ 157              	.LFE135:
+ 159              		.section	.text.FatalBlink,"ax",%progbits
+ 160              		.align	1
+ 161              		.syntax unified
+ 162              		.thumb
+ 163              		.thumb_func
+ 165              	FatalBlink:
+ 166              	.LFB136:
+  57:Core/Src/flight.c **** 
+  58:Core/Src/flight.c **** static void FatalBlink(void)
+  59:Core/Src/flight.c **** {
+ 167              		.loc 1 59 1 is_stmt 1 view -0
+ 168              		.cfi_startproc
+ 169              		@ Volatile: function does not return.
+ 170              		@ args = 0, pretend = 0, frame = 0
+ 171              		@ frame_needed = 0, uses_anonymous_args = 0
+ 172 0000 08B5     		push	{r3, lr}
+ 173              	.LCFI3:
+ARM GAS  /tmp/ccfagbFr.s 			page 5
+
+
+ 174              		.cfi_def_cfa_offset 8
+ 175              		.cfi_offset 3, -8
+ 176              		.cfi_offset 14, -4
+ 177              	.L12:
+  60:Core/Src/flight.c ****     while (1) {
+ 178              		.loc 1 60 5 view .LVU25
+  61:Core/Src/flight.c ****         HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
+ 179              		.loc 1 61 9 view .LVU26
+ 180 0002 4FF40051 		mov	r1, #8192
+ 181 0006 0B48     		ldr	r0, .L14
+ 182 0008 FFF7FEFF 		bl	HAL_GPIO_TogglePin
+ 183              	.LVL12:
+  62:Core/Src/flight.c ****         HAL_GPIO_WritePin(BEEPER_GPIO_Port, BEEPER_Pin, GPIO_PIN_SET);
+ 184              		.loc 1 62 9 view .LVU27
+ 185 000c 0A4C     		ldr	r4, .L14+4
+ 186 000e 0122     		movs	r2, #1
+ 187 0010 4FF40041 		mov	r1, #32768
+ 188 0014 2046     		mov	r0, r4
+ 189 0016 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 190              	.LVL13:
+  63:Core/Src/flight.c ****         HAL_Delay(100);
+ 191              		.loc 1 63 9 view .LVU28
+ 192 001a 6420     		movs	r0, #100
+ 193 001c FFF7FEFF 		bl	HAL_Delay
+ 194              	.LVL14:
+  64:Core/Src/flight.c ****         HAL_GPIO_WritePin(BEEPER_GPIO_Port, BEEPER_Pin, GPIO_PIN_RESET);
+ 195              		.loc 1 64 9 view .LVU29
+ 196 0020 0022     		movs	r2, #0
+ 197 0022 4FF40041 		mov	r1, #32768
+ 198 0026 2046     		mov	r0, r4
+ 199 0028 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 200              	.LVL15:
+  65:Core/Src/flight.c ****         HAL_Delay(100);
+ 201              		.loc 1 65 9 discriminator 2 view .LVU30
+ 202 002c 6420     		movs	r0, #100
+ 203 002e FFF7FEFF 		bl	HAL_Delay
+ 204              	.LVL16:
+  60:Core/Src/flight.c ****         HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
+ 205              		.loc 1 60 11 view .LVU31
+ 206 0032 E6E7     		b	.L12
+ 207              	.L15:
+ 208              		.align	2
+ 209              	.L14:
+ 210 0034 00000240 		.word	1073872896
+ 211 0038 00080240 		.word	1073874944
+ 212              		.cfi_endproc
+ 213              	.LFE136:
+ 215              		.section	.text.Flight_Init,"ax",%progbits
+ 216              		.align	1
+ 217              		.global	Flight_Init
+ 218              		.syntax unified
+ 219              		.thumb
+ 220              		.thumb_func
+ 222              	Flight_Init:
+ 223              	.LFB137:
+  66:Core/Src/flight.c ****     }
+  67:Core/Src/flight.c **** }
+ARM GAS  /tmp/ccfagbFr.s 			page 6
+
+
+  68:Core/Src/flight.c **** 
+  69:Core/Src/flight.c **** void Flight_Init(void)
+  70:Core/Src/flight.c **** {
+ 224              		.loc 1 70 1 view -0
+ 225              		.cfi_startproc
+ 226              		@ args = 0, pretend = 0, frame = 0
+ 227              		@ frame_needed = 0, uses_anonymous_args = 0
+ 228 0000 10B5     		push	{r4, lr}
+ 229              	.LCFI4:
+ 230              		.cfi_def_cfa_offset 8
+ 231              		.cfi_offset 4, -8
+ 232              		.cfi_offset 14, -4
+ 233 0002 2DED048B 		vpush.64	{d8, d9}
+ 234              	.LCFI5:
+ 235              		.cfi_def_cfa_offset 24
+ 236              		.cfi_offset 80, -24
+ 237              		.cfi_offset 81, -20
+ 238              		.cfi_offset 82, -16
+ 239              		.cfi_offset 83, -12
+  71:Core/Src/flight.c ****     HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_SET);
+ 240              		.loc 1 71 5 view .LVU33
+ 241 0006 364C     		ldr	r4, .L20
+ 242 0008 0122     		movs	r2, #1
+ 243 000a 4FF40051 		mov	r1, #8192
+ 244 000e 2046     		mov	r0, r4
+ 245 0010 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 246              	.LVL17:
+  72:Core/Src/flight.c ****     HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_RESET);
+ 247              		.loc 1 72 5 view .LVU34
+ 248 0014 0022     		movs	r2, #0
+ 249 0016 4FF48041 		mov	r1, #16384
+ 250 001a 2046     		mov	r0, r4
+ 251 001c FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 252              	.LVL18:
+  73:Core/Src/flight.c **** 
+  74:Core/Src/flight.c ****     if (!ICM42688_Init()) {
+ 253              		.loc 1 74 5 view .LVU35
+ 254              		.loc 1 74 10 is_stmt 0 view .LVU36
+ 255 0020 FFF7FEFF 		bl	ICM42688_Init
+ 256              	.LVL19:
+ 257              		.loc 1 74 8 discriminator 1 view .LVU37
+ 258 0024 0028     		cmp	r0, #0
+ 259 0026 59D0     		beq	.L19
+  75:Core/Src/flight.c ****         FatalBlink(); /* never spin motors without a working gyro */
+  76:Core/Src/flight.c ****     }
+  77:Core/Src/flight.c **** 
+  78:Core/Src/flight.c ****     /* board must be still during this calibration window */
+  79:Core/Src/flight.c ****     ICM42688_CalibrateGyroBias(s_gyroBias, 500);
+ 260              		.loc 1 79 5 is_stmt 1 view .LVU38
+ 261 0028 4FF4FA71 		mov	r1, #500
+ 262 002c 2D48     		ldr	r0, .L20+4
+ 263 002e FFF7FEFF 		bl	ICM42688_CalibrateGyroBias
+ 264              	.LVL20:
+  80:Core/Src/flight.c **** 
+  81:Core/Src/flight.c ****     CRSF_Init();
+ 265              		.loc 1 81 5 view .LVU39
+ 266 0032 FFF7FEFF 		bl	CRSF_Init
+ARM GAS  /tmp/ccfagbFr.s 			page 7
+
+
+ 267              	.LVL21:
+  82:Core/Src/flight.c **** 
+  83:Core/Src/flight.c ****     PID_Init(&s_pidRoll,  PID_ROLL_KP,  PID_ROLL_KI,  PID_ROLL_KD,  PID_I_LIMIT);
+ 268              		.loc 1 83 5 view .LVU40
+ 269 0036 DFED2C8A 		vldr.32	s17, .L20+8
+ 270 003a DFED2C9A 		vldr.32	s19, .L20+12
+ 271 003e 9FED2C9A 		vldr.32	s18, .L20+16
+ 272 0042 9FED2C8A 		vldr.32	s16, .L20+20
+ 273 0046 F0EE681A 		vmov.f32	s3, s17
+ 274 004a B0EE691A 		vmov.f32	s2, s19
+ 275 004e F0EE490A 		vmov.f32	s1, s18
+ 276 0052 B0EE480A 		vmov.f32	s0, s16
+ 277 0056 2848     		ldr	r0, .L20+24
+ 278 0058 FFF7FEFF 		bl	PID_Init
+ 279              	.LVL22:
+  84:Core/Src/flight.c ****     PID_Init(&s_pidPitch, PID_PITCH_KP, PID_PITCH_KI, PID_PITCH_KD, PID_I_LIMIT);
+ 280              		.loc 1 84 5 view .LVU41
+ 281 005c F0EE681A 		vmov.f32	s3, s17
+ 282 0060 B0EE691A 		vmov.f32	s2, s19
+ 283 0064 F0EE490A 		vmov.f32	s1, s18
+ 284 0068 B0EE480A 		vmov.f32	s0, s16
+ 285 006c 2348     		ldr	r0, .L20+28
+ 286 006e FFF7FEFF 		bl	PID_Init
+ 287              	.LVL23:
+  85:Core/Src/flight.c ****     PID_Init(&s_pidYaw,   PID_YAW_KP,   PID_YAW_KI,   PID_YAW_KD,   PID_I_LIMIT);
+ 288              		.loc 1 85 5 view .LVU42
+ 289 0072 9FED238A 		vldr.32	s16, .L20+32
+ 290 0076 F0EE681A 		vmov.f32	s3, s17
+ 291 007a B0EE481A 		vmov.f32	s2, s16
+ 292 007e DFED210A 		vldr.32	s1, .L20+36
+ 293 0082 9FED210A 		vldr.32	s0, .L20+40
+ 294 0086 2148     		ldr	r0, .L20+44
+ 295 0088 FFF7FEFF 		bl	PID_Init
+ 296              	.LVL24:
+  86:Core/Src/flight.c **** 
+  87:Core/Src/flight.c ****     HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
+ 297              		.loc 1 87 5 view .LVU43
+ 298 008c 204C     		ldr	r4, .L20+48
+ 299 008e 0021     		movs	r1, #0
+ 300 0090 2046     		mov	r0, r4
+ 301 0092 FFF7FEFF 		bl	HAL_TIM_PWM_Start
+ 302              	.LVL25:
+  88:Core/Src/flight.c ****     HAL_TIMEx_PWMN_Start(&htim1, TIM_CHANNEL_3);
+ 303              		.loc 1 88 5 view .LVU44
+ 304 0096 0821     		movs	r1, #8
+ 305 0098 2046     		mov	r0, r4
+ 306 009a FFF7FEFF 		bl	HAL_TIMEx_PWMN_Start
+ 307              	.LVL26:
+  89:Core/Src/flight.c ****     HAL_TIM_PWM_Start(&htim8, TIM_CHANNEL_3);
+ 308              		.loc 1 89 5 view .LVU45
+ 309 009e 1D4C     		ldr	r4, .L20+52
+ 310 00a0 0821     		movs	r1, #8
+ 311 00a2 2046     		mov	r0, r4
+ 312 00a4 FFF7FEFF 		bl	HAL_TIM_PWM_Start
+ 313              	.LVL27:
+  90:Core/Src/flight.c ****     HAL_TIM_PWM_Start(&htim8, TIM_CHANNEL_4);
+ 314              		.loc 1 90 5 view .LVU46
+ARM GAS  /tmp/ccfagbFr.s 			page 8
+
+
+ 315 00a8 0C21     		movs	r1, #12
+ 316 00aa 2046     		mov	r0, r4
+ 317 00ac FFF7FEFF 		bl	HAL_TIM_PWM_Start
+ 318              	.LVL28:
+  91:Core/Src/flight.c ****     SetMotors(0.0f, 0.0f, 0.0f, 0.0f);
+ 319              		.loc 1 91 5 view .LVU47
+ 320 00b0 F0EE481A 		vmov.f32	s3, s16
+ 321 00b4 B0EE481A 		vmov.f32	s2, s16
+ 322 00b8 F0EE480A 		vmov.f32	s1, s16
+ 323 00bc B0EE480A 		vmov.f32	s0, s16
+ 324 00c0 FFF7FEFF 		bl	SetMotors
+ 325              	.LVL29:
+  92:Core/Src/flight.c **** 
+  93:Core/Src/flight.c ****     HAL_TIM_Base_Start_IT(&htim6);
+ 326              		.loc 1 93 5 view .LVU48
+ 327 00c4 1448     		ldr	r0, .L20+56
+ 328 00c6 FFF7FEFF 		bl	HAL_TIM_Base_Start_IT
+ 329              	.LVL30:
+  94:Core/Src/flight.c **** 
+  95:Core/Src/flight.c ****     HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_RESET);
+ 330              		.loc 1 95 5 view .LVU49
+ 331 00ca 0022     		movs	r2, #0
+ 332 00cc 4FF40051 		mov	r1, #8192
+ 333 00d0 0348     		ldr	r0, .L20
+ 334 00d2 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 335              	.LVL31:
+  96:Core/Src/flight.c **** }
+ 336              		.loc 1 96 1 is_stmt 0 view .LVU50
+ 337 00d6 BDEC048B 		vldm	sp!, {d8-d9}
+ 338              	.LCFI6:
+ 339              		.cfi_remember_state
+ 340              		.cfi_restore 82
+ 341              		.cfi_restore 83
+ 342              		.cfi_restore 80
+ 343              		.cfi_restore 81
+ 344              		.cfi_def_cfa_offset 8
+ 345 00da 10BD     		pop	{r4, pc}
+ 346              	.L19:
+ 347              	.LCFI7:
+ 348              		.cfi_restore_state
+  75:Core/Src/flight.c ****     }
+ 349              		.loc 1 75 9 is_stmt 1 view .LVU51
+ 350 00dc FFF7FEFF 		bl	FatalBlink
+ 351              	.LVL32:
+ 352              	.L21:
+ 353              		.align	2
+ 354              	.L20:
+ 355 00e0 00000240 		.word	1073872896
+ 356 00e4 00000000 		.word	s_gyroBias
+ 357 00e8 CDCC4C3E 		.word	1045220557
+ 358 00ec 17B7D138 		.word	953267991
+ 359 00f0 ACC5A737 		.word	933741996
+ 360 00f4 4260653B 		.word	996499522
+ 361 00f8 00000000 		.word	s_pidRoll
+ 362 00fc 00000000 		.word	s_pidPitch
+ 363 0100 00000000 		.word	0
+ 364 0104 82A8FB37 		.word	939239554
+ARM GAS  /tmp/ccfagbFr.s 			page 9
+
+
+ 365 0108 0AD7A33B 		.word	1000593162
+ 366 010c 00000000 		.word	s_pidYaw
+ 367 0110 00000000 		.word	htim1
+ 368 0114 00000000 		.word	htim8
+ 369 0118 00000000 		.word	htim6
+ 370              		.cfi_endproc
+ 371              	.LFE137:
+ 373              		.section	.text.Flight_Loop,"ax",%progbits
+ 374              		.align	1
+ 375              		.global	Flight_Loop
+ 376              		.syntax unified
+ 377              		.thumb
+ 378              		.thumb_func
+ 380              	Flight_Loop:
+ 381              	.LFB138:
+  97:Core/Src/flight.c **** 
+  98:Core/Src/flight.c **** void Flight_Loop(void)
+  99:Core/Src/flight.c **** {
+ 382              		.loc 1 99 1 view -0
+ 383              		.cfi_startproc
+ 384              		@ args = 0, pretend = 0, frame = 56
+ 385              		@ frame_needed = 0, uses_anonymous_args = 0
+ 386 0000 10B5     		push	{r4, lr}
+ 387              	.LCFI8:
+ 388              		.cfi_def_cfa_offset 8
+ 389              		.cfi_offset 4, -8
+ 390              		.cfi_offset 14, -4
+ 391 0002 2DED088B 		vpush.64	{d8, d9, d10, d11}
+ 392              	.LCFI9:
+ 393              		.cfi_def_cfa_offset 40
+ 394              		.cfi_offset 80, -40
+ 395              		.cfi_offset 81, -36
+ 396              		.cfi_offset 82, -32
+ 397              		.cfi_offset 83, -28
+ 398              		.cfi_offset 84, -24
+ 399              		.cfi_offset 85, -20
+ 400              		.cfi_offset 86, -16
+ 401              		.cfi_offset 87, -12
+ 402 0006 8EB0     		sub	sp, sp, #56
+ 403              	.LCFI10:
+ 404              		.cfi_def_cfa_offset 96
+ 100:Core/Src/flight.c ****     icm42688_data_t imu;
+ 405              		.loc 1 100 5 view .LVU53
+ 101:Core/Src/flight.c ****     ICM42688_Read(&imu);
+ 406              		.loc 1 101 5 view .LVU54
+ 407 0008 08A8     		add	r0, sp, #32
+ 408 000a FFF7FEFF 		bl	ICM42688_Read
+ 409              	.LVL33:
+ 102:Core/Src/flight.c **** 
+ 103:Core/Src/flight.c ****     /* CW270 sensor alignment: body roll = -rawY, body pitch = rawX, body yaw = rawZ */
+ 104:Core/Src/flight.c ****     float rollRate  = -(imu.gyro_dps[1] - s_gyroBias[1]);
+ 410              		.loc 1 104 5 view .LVU55
+ 411              		.loc 1 104 53 is_stmt 0 view .LVU56
+ 412 000e 794B     		ldr	r3, .L34
+ 413 0010 D3ED017A 		vldr.32	s15, [r3, #4]
+ 414              		.loc 1 104 41 view .LVU57
+ 415 0014 DDED090A 		vldr.32	s1, [sp, #36]
+ARM GAS  /tmp/ccfagbFr.s 			page 10
+
+
+ 416 0018 70EEE70A 		vsub.f32	s1, s1, s15
+ 417              		.loc 1 104 11 view .LVU58
+ 418 001c F1EE607A 		vneg.f32	s15, s1
+ 419 0020 B0EE67AA 		vmov.f32	s20, s15
+ 420              	.LVL34:
+ 105:Core/Src/flight.c ****     float pitchRate =  (imu.gyro_dps[0] - s_gyroBias[0]);
+ 421              		.loc 1 105 5 is_stmt 1 view .LVU59
+ 422              		.loc 1 105 53 is_stmt 0 view .LVU60
+ 423 0024 D3ED007A 		vldr.32	s15, [r3]
+ 424              	.LVL35:
+ 425              		.loc 1 105 11 view .LVU61
+ 426 0028 9DED087A 		vldr.32	s14, [sp, #32]
+ 427 002c 77EE677A 		vsub.f32	s15, s14, s15
+ 428 0030 F0EE67AA 		vmov.f32	s21, s15
+ 429              	.LVL36:
+ 106:Core/Src/flight.c ****     float yawRate   =  (imu.gyro_dps[2] - s_gyroBias[2]);
+ 430              		.loc 1 106 5 is_stmt 1 view .LVU62
+ 431              		.loc 1 106 53 is_stmt 0 view .LVU63
+ 432 0034 D3ED027A 		vldr.32	s15, [r3, #8]
+ 433              	.LVL37:
+ 434              		.loc 1 106 11 view .LVU64
+ 435 0038 9DED0A7A 		vldr.32	s14, [sp, #40]
+ 436 003c 77EE677A 		vsub.f32	s15, s14, s15
+ 437 0040 B0EE67BA 		vmov.f32	s22, s15
+ 438              	.LVL38:
+ 107:Core/Src/flight.c **** 
+ 108:Core/Src/flight.c ****     uint32_t now = HAL_GetTick();
+ 439              		.loc 1 108 5 is_stmt 1 view .LVU65
+ 440              		.loc 1 108 20 is_stmt 0 view .LVU66
+ 441 0044 FFF7FEFF 		bl	HAL_GetTick
+ 442              	.LVL39:
+ 109:Core/Src/flight.c ****     bool linkUp = CRSF_IsLinkUp(now);
+ 443              		.loc 1 109 5 is_stmt 1 view .LVU67
+ 444              		.loc 1 109 19 is_stmt 0 view .LVU68
+ 445 0048 FFF7FEFF 		bl	CRSF_IsLinkUp
+ 446              	.LVL40:
+ 447              		.loc 1 109 19 view .LVU69
+ 448 004c 0446     		mov	r4, r0
+ 449              	.LVL41:
+ 110:Core/Src/flight.c **** 
+ 111:Core/Src/flight.c ****     uint16_t rollUs  = CRSF_GetChannelUs(CRSF_CH_ROLL);
+ 450              		.loc 1 111 5 is_stmt 1 view .LVU70
+ 451              		.loc 1 111 24 is_stmt 0 view .LVU71
+ 452 004e 0020     		movs	r0, #0
+ 453 0050 FFF7FEFF 		bl	CRSF_GetChannelUs
+ 454              	.LVL42:
+ 455 0054 0190     		str	r0, [sp, #4]
+ 456              	.LVL43:
+ 112:Core/Src/flight.c ****     uint16_t pitchUs = CRSF_GetChannelUs(CRSF_CH_PITCH);
+ 457              		.loc 1 112 5 is_stmt 1 view .LVU72
+ 458              		.loc 1 112 24 is_stmt 0 view .LVU73
+ 459 0056 0120     		movs	r0, #1
+ 460 0058 FFF7FEFF 		bl	CRSF_GetChannelUs
+ 461              	.LVL44:
+ 462 005c 0290     		str	r0, [sp, #8]
+ 463              	.LVL45:
+ 113:Core/Src/flight.c ****     uint16_t throUs  = CRSF_GetChannelUs(CRSF_CH_THROTTLE);
+ARM GAS  /tmp/ccfagbFr.s 			page 11
+
+
+ 464              		.loc 1 113 5 is_stmt 1 view .LVU74
+ 465              		.loc 1 113 24 is_stmt 0 view .LVU75
+ 466 005e 0220     		movs	r0, #2
+ 467 0060 FFF7FEFF 		bl	CRSF_GetChannelUs
+ 468              	.LVL46:
+ 469 0064 0090     		str	r0, [sp]
+ 470              	.LVL47:
+ 114:Core/Src/flight.c ****     uint16_t yawUs   = CRSF_GetChannelUs(CRSF_CH_YAW);
+ 471              		.loc 1 114 5 is_stmt 1 view .LVU76
+ 472              		.loc 1 114 24 is_stmt 0 view .LVU77
+ 473 0066 0320     		movs	r0, #3
+ 474 0068 FFF7FEFF 		bl	CRSF_GetChannelUs
+ 475              	.LVL48:
+ 476 006c 0390     		str	r0, [sp, #12]
+ 477              	.LVL49:
+ 115:Core/Src/flight.c ****     uint16_t auxUs   = CRSF_GetChannelUs(CRSF_CH_AUX1);
+ 478              		.loc 1 115 5 is_stmt 1 view .LVU78
+ 479              		.loc 1 115 24 is_stmt 0 view .LVU79
+ 480 006e 0420     		movs	r0, #4
+ 481 0070 FFF7FEFF 		bl	CRSF_GetChannelUs
+ 482              	.LVL50:
+ 116:Core/Src/flight.c **** 
+ 117:Core/Src/flight.c ****     if (!linkUp) {
+ 483              		.loc 1 117 5 is_stmt 1 view .LVU80
+ 484              		.loc 1 117 8 is_stmt 0 view .LVU81
+ 485 0074 44BB     		cbnz	r4, .L23
+ 118:Core/Src/flight.c ****         s_state = FLIGHT_DISARMED;
+ 486              		.loc 1 118 9 is_stmt 1 view .LVU82
+ 487              		.loc 1 118 17 is_stmt 0 view .LVU83
+ 488 0076 604B     		ldr	r3, .L34+4
+ 489 0078 1C70     		strb	r4, [r3]
+ 490              	.LVL51:
+ 491              	.L24:
+ 119:Core/Src/flight.c ****     } else if (s_state == FLIGHT_DISARMED && auxUs > ARM_AUX_THRESHOLD_US && throUs < ARM_THROTTLE_
+ 120:Core/Src/flight.c ****         s_state = FLIGHT_ARMED;
+ 121:Core/Src/flight.c ****         PID_Reset(&s_pidRoll);
+ 122:Core/Src/flight.c ****         PID_Reset(&s_pidPitch);
+ 123:Core/Src/flight.c ****         PID_Reset(&s_pidYaw);
+ 124:Core/Src/flight.c ****     } else if (s_state == FLIGHT_ARMED && auxUs <= ARM_AUX_THRESHOLD_US) {
+ 125:Core/Src/flight.c ****         s_state = FLIGHT_DISARMED;
+ 126:Core/Src/flight.c ****     }
+ 127:Core/Src/flight.c **** 
+ 128:Core/Src/flight.c ****     HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, (s_state == FLIGHT_ARMED) ? GPIO_PIN_SET : GPIO_PIN
+ 492              		.loc 1 128 5 is_stmt 1 view .LVU84
+ 493 007a 5F4C     		ldr	r4, .L34+4
+ 494              	.LVL52:
+ 495              		.loc 1 128 5 is_stmt 0 view .LVU85
+ 496 007c 2278     		ldrb	r2, [r4]	@ zero_extendqisi2
+ 497 007e 012A     		cmp	r2, #1
+ 498 0080 14BF     		ite	ne
+ 499 0082 0022     		movne	r2, #0
+ 500 0084 0122     		moveq	r2, #1
+ 501 0086 4FF48041 		mov	r1, #16384
+ 502 008a 5C48     		ldr	r0, .L34+8
+ 503 008c FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 504              	.LVL53:
+ 129:Core/Src/flight.c **** 
+ARM GAS  /tmp/ccfagbFr.s 			page 12
+
+
+ 130:Core/Src/flight.c ****     if (s_state != FLIGHT_ARMED) {
+ 505              		.loc 1 130 5 is_stmt 1 view .LVU86
+ 506              		.loc 1 130 17 is_stmt 0 view .LVU87
+ 507 0090 2378     		ldrb	r3, [r4]	@ zero_extendqisi2
+ 508              		.loc 1 130 8 view .LVU88
+ 509 0092 012B     		cmp	r3, #1
+ 510 0094 3BD1     		bne	.L32
+ 131:Core/Src/flight.c ****         SetMotors(0.0f, 0.0f, 0.0f, 0.0f);
+ 132:Core/Src/flight.c ****         return;
+ 133:Core/Src/flight.c ****     }
+ 134:Core/Src/flight.c **** 
+ 135:Core/Src/flight.c ****     float throttle = ((float)throUs - 1000.0f) / 1000.0f;
+ 511              		.loc 1 135 5 is_stmt 1 view .LVU89
+ 512              		.loc 1 135 23 is_stmt 0 view .LVU90
+ 513 0096 DDED007A 		vldr.32	s15, [sp]	@ int
+ 514 009a F8EE677A 		vcvt.f32.u32	s15, s15
+ 515              		.loc 1 135 37 view .LVU91
+ 516 009e DFED586A 		vldr.32	s13, .L34+12
+ 517 00a2 77EEE67A 		vsub.f32	s15, s15, s13
+ 518              		.loc 1 135 11 view .LVU92
+ 519 00a6 87EEA67A 		vdiv.f32	s14, s15, s13
+ 520              	.LVL54:
+ 136:Core/Src/flight.c ****     if (throttle < 0.0f) throttle = 0.0f;
+ 521              		.loc 1 136 5 is_stmt 1 view .LVU93
+ 522              		.loc 1 136 8 is_stmt 0 view .LVU94
+ 523 00aa B5EEC07A 		vcmpe.f32	s14, #0
+ 524 00ae F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 525 00b2 37D4     		bmi	.L29
+ 137:Core/Src/flight.c ****     if (throttle > 1.0f) throttle = 1.0f;
+ 526              		.loc 1 137 5 is_stmt 1 view .LVU95
+ 527              		.loc 1 137 8 is_stmt 0 view .LVU96
+ 528 00b4 F7EE007A 		vmov.f32	s15, #1.0e+0
+ 529 00b8 B4EEE77A 		vcmpe.f32	s14, s15
+ 530 00bc F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 531 00c0 32DD     		ble	.L28
+ 532              		.loc 1 137 35 discriminator 1 view .LVU97
+ 533 00c2 B7EE007A 		vmov.f32	s14, #1.0e+0
+ 534              	.LVL55:
+ 535              		.loc 1 137 35 discriminator 1 view .LVU98
+ 536 00c6 2FE0     		b	.L28
+ 537              	.LVL56:
+ 538              	.L23:
+ 119:Core/Src/flight.c ****         s_state = FLIGHT_ARMED;
+ 539              		.loc 1 119 12 is_stmt 1 view .LVU99
+ 119:Core/Src/flight.c ****         s_state = FLIGHT_ARMED;
+ 540              		.loc 1 119 24 is_stmt 0 view .LVU100
+ 541 00c8 4B4B     		ldr	r3, .L34+4
+ 542 00ca 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 119:Core/Src/flight.c ****         s_state = FLIGHT_ARMED;
+ 543              		.loc 1 119 15 view .LVU101
+ 544 00cc 43B9     		cbnz	r3, .L25
+ 119:Core/Src/flight.c ****         s_state = FLIGHT_ARMED;
+ 545              		.loc 1 119 43 discriminator 1 view .LVU102
+ 546 00ce 40F2A462 		movw	r2, #1700
+ 547 00d2 9042     		cmp	r0, r2
+ 548 00d4 04D9     		bls	.L25
+ 119:Core/Src/flight.c ****         s_state = FLIGHT_ARMED;
+ARM GAS  /tmp/ccfagbFr.s 			page 13
+
+
+ 549              		.loc 1 119 75 discriminator 2 view .LVU103
+ 550 00d6 40F24B42 		movw	r2, #1099
+ 551 00da 0099     		ldr	r1, [sp]
+ 552 00dc 9142     		cmp	r1, r2
+ 553 00de 09D9     		bls	.L33
+ 554              	.L25:
+ 124:Core/Src/flight.c ****         s_state = FLIGHT_DISARMED;
+ 555              		.loc 1 124 12 is_stmt 1 view .LVU104
+ 124:Core/Src/flight.c ****         s_state = FLIGHT_DISARMED;
+ 556              		.loc 1 124 15 is_stmt 0 view .LVU105
+ 557 00e0 012B     		cmp	r3, #1
+ 558 00e2 CAD1     		bne	.L24
+ 124:Core/Src/flight.c ****         s_state = FLIGHT_DISARMED;
+ 559              		.loc 1 124 40 discriminator 1 view .LVU106
+ 560 00e4 40F2A463 		movw	r3, #1700
+ 561 00e8 9842     		cmp	r0, r3
+ 562 00ea C6D8     		bhi	.L24
+ 125:Core/Src/flight.c ****     }
+ 563              		.loc 1 125 9 is_stmt 1 view .LVU107
+ 125:Core/Src/flight.c ****     }
+ 564              		.loc 1 125 17 is_stmt 0 view .LVU108
+ 565 00ec 424B     		ldr	r3, .L34+4
+ 566 00ee 0022     		movs	r2, #0
+ 567 00f0 1A70     		strb	r2, [r3]
+ 568 00f2 C2E7     		b	.L24
+ 569              	.L33:
+ 120:Core/Src/flight.c ****         PID_Reset(&s_pidRoll);
+ 570              		.loc 1 120 9 is_stmt 1 view .LVU109
+ 120:Core/Src/flight.c ****         PID_Reset(&s_pidRoll);
+ 571              		.loc 1 120 17 is_stmt 0 view .LVU110
+ 572 00f4 404B     		ldr	r3, .L34+4
+ 573 00f6 0122     		movs	r2, #1
+ 574 00f8 1A70     		strb	r2, [r3]
+ 121:Core/Src/flight.c ****         PID_Reset(&s_pidPitch);
+ 575              		.loc 1 121 9 is_stmt 1 view .LVU111
+ 576 00fa 4248     		ldr	r0, .L34+16
+ 577              	.LVL57:
+ 121:Core/Src/flight.c ****         PID_Reset(&s_pidPitch);
+ 578              		.loc 1 121 9 is_stmt 0 view .LVU112
+ 579 00fc FFF7FEFF 		bl	PID_Reset
+ 580              	.LVL58:
+ 122:Core/Src/flight.c ****         PID_Reset(&s_pidYaw);
+ 581              		.loc 1 122 9 is_stmt 1 view .LVU113
+ 582 0100 4148     		ldr	r0, .L34+20
+ 583 0102 FFF7FEFF 		bl	PID_Reset
+ 584              	.LVL59:
+ 123:Core/Src/flight.c ****     } else if (s_state == FLIGHT_ARMED && auxUs <= ARM_AUX_THRESHOLD_US) {
+ 585              		.loc 1 123 9 view .LVU114
+ 586 0106 4148     		ldr	r0, .L34+24
+ 587 0108 FFF7FEFF 		bl	PID_Reset
+ 588              	.LVL60:
+ 589 010c B5E7     		b	.L24
+ 590              	.LVL61:
+ 591              	.L32:
+ 131:Core/Src/flight.c ****         return;
+ 592              		.loc 1 131 9 view .LVU115
+ 593 010e 9FED400A 		vldr.32	s0, .L34+28
+ARM GAS  /tmp/ccfagbFr.s 			page 14
+
+
+ 594 0112 F0EE401A 		vmov.f32	s3, s0
+ 595 0116 B0EE401A 		vmov.f32	s2, s0
+ 596 011a F0EE400A 		vmov.f32	s1, s0
+ 597 011e FFF7FEFF 		bl	SetMotors
+ 598              	.LVL62:
+ 132:Core/Src/flight.c ****     }
+ 599              		.loc 1 132 9 view .LVU116
+ 600 0122 63E0     		b	.L22
+ 601              	.LVL63:
+ 602              	.L29:
+ 136:Core/Src/flight.c ****     if (throttle > 1.0f) throttle = 1.0f;
+ 603              		.loc 1 136 35 is_stmt 0 discriminator 1 view .LVU117
+ 604 0124 9FED3A7A 		vldr.32	s14, .L34+28
+ 605              	.LVL64:
+ 606              	.L28:
+ 138:Core/Src/flight.c ****     throttle = MOTOR_IDLE_FRACTION + throttle * (1.0f - MOTOR_IDLE_FRACTION);
+ 607              		.loc 1 138 5 is_stmt 1 view .LVU118
+ 608              		.loc 1 138 47 is_stmt 0 view .LVU119
+ 609 0128 DFED3A7A 		vldr.32	s15, .L34+32
+ 610 012c 27EE277A 		vmul.f32	s14, s14, s15
+ 611              	.LVL65:
+ 612              		.loc 1 138 14 view .LVU120
+ 613 0130 DFED397A 		vldr.32	s15, .L34+36
+ 614 0134 77EE278A 		vadd.f32	s17, s14, s15
+ 615              	.LVL66:
+ 139:Core/Src/flight.c **** 
+ 140:Core/Src/flight.c ****     float rollSetpoint  = (((float)rollUs  - 1500.0f) / 500.0f) * MAX_ROLLPITCH_RATE_DPS;
+ 616              		.loc 1 140 5 is_stmt 1 view .LVU121
+ 617              		.loc 1 140 29 is_stmt 0 view .LVU122
+ 618 0138 DDED017A 		vldr.32	s15, [sp, #4]	@ int
+ 619 013c F8EE677A 		vcvt.f32.u32	s15, s15
+ 620              		.loc 1 140 44 view .LVU123
+ 621 0140 9FED367A 		vldr.32	s14, .L34+40
+ 622 0144 77EEC77A 		vsub.f32	s15, s15, s14
+ 623              		.loc 1 140 55 view .LVU124
+ 624 0148 DFED356A 		vldr.32	s13, .L34+44
+ 625 014c 87EEA60A 		vdiv.f32	s0, s15, s13
+ 626              		.loc 1 140 11 view .LVU125
+ 627 0150 9FED346A 		vldr.32	s12, .L34+48
+ 628              	.LVL67:
+ 141:Core/Src/flight.c ****     float pitchSetpoint = (((float)pitchUs - 1500.0f) / 500.0f) * MAX_ROLLPITCH_RATE_DPS;
+ 629              		.loc 1 141 5 is_stmt 1 view .LVU126
+ 630              		.loc 1 141 29 is_stmt 0 view .LVU127
+ 631 0154 DDED027A 		vldr.32	s15, [sp, #8]	@ int
+ 632 0158 F8EE677A 		vcvt.f32.u32	s15, s15
+ 633              		.loc 1 141 44 view .LVU128
+ 634 015c 77EEC77A 		vsub.f32	s15, s15, s14
+ 635              		.loc 1 141 55 view .LVU129
+ 636 0160 C7EEA65A 		vdiv.f32	s11, s15, s13
+ 637              		.loc 1 141 11 view .LVU130
+ 638 0164 25EE869A 		vmul.f32	s18, s11, s12
+ 639              	.LVL68:
+ 142:Core/Src/flight.c ****     float yawSetpoint   = (((float)yawUs   - 1500.0f) / 500.0f) * MAX_YAW_RATE_DPS;
+ 640              		.loc 1 142 5 is_stmt 1 view .LVU131
+ 641              		.loc 1 142 29 is_stmt 0 view .LVU132
+ 642 0168 DDED037A 		vldr.32	s15, [sp, #12]	@ int
+ 643 016c F8EE677A 		vcvt.f32.u32	s15, s15
+ARM GAS  /tmp/ccfagbFr.s 			page 15
+
+
+ 644              		.loc 1 142 44 view .LVU133
+ 645 0170 77EEC77A 		vsub.f32	s15, s15, s14
+ 646              		.loc 1 142 55 view .LVU134
+ 647 0174 87EEA67A 		vdiv.f32	s14, s15, s13
+ 648              		.loc 1 142 11 view .LVU135
+ 649 0178 DFED2B7A 		vldr.32	s15, .L34+52
+ 650 017c 67EE279A 		vmul.f32	s19, s14, s15
+ 651              	.LVL69:
+ 143:Core/Src/flight.c **** 
+ 144:Core/Src/flight.c ****     float rollOut  = PID_Update(&s_pidRoll,  rollSetpoint,  rollRate,  LOOP_DT_S);
+ 652              		.loc 1 144 5 is_stmt 1 view .LVU136
+ 653              		.loc 1 144 22 is_stmt 0 view .LVU137
+ 654 0180 9FED2A8A 		vldr.32	s16, .L34+56
+ 655 0184 B0EE481A 		vmov.f32	s2, s16
+ 656 0188 F0EE4A0A 		vmov.f32	s1, s20
+ 657 018c 20EE060A 		vmul.f32	s0, s0, s12
+ 658              	.LVL70:
+ 659              		.loc 1 144 22 view .LVU138
+ 660 0190 1C48     		ldr	r0, .L34+16
+ 661 0192 FFF7FEFF 		bl	PID_Update
+ 662              	.LVL71:
+ 663              		.loc 1 144 22 view .LVU139
+ 664 0196 B0EE40AA 		vmov.f32	s20, s0
+ 665              	.LVL72:
+ 145:Core/Src/flight.c ****     float pitchOut = PID_Update(&s_pidPitch, pitchSetpoint, pitchRate, LOOP_DT_S);
+ 666              		.loc 1 145 5 is_stmt 1 view .LVU140
+ 667              		.loc 1 145 22 is_stmt 0 view .LVU141
+ 668 019a B0EE481A 		vmov.f32	s2, s16
+ 669 019e F0EE6A0A 		vmov.f32	s1, s21
+ 670 01a2 B0EE490A 		vmov.f32	s0, s18
+ 671              	.LVL73:
+ 672              		.loc 1 145 22 view .LVU142
+ 673 01a6 1848     		ldr	r0, .L34+20
+ 674 01a8 FFF7FEFF 		bl	PID_Update
+ 675              	.LVL74:
+ 676 01ac B0EE409A 		vmov.f32	s18, s0
+ 677              	.LVL75:
+ 146:Core/Src/flight.c ****     float yawOut   = PID_Update(&s_pidYaw,   yawSetpoint,   yawRate,   LOOP_DT_S);
+ 678              		.loc 1 146 5 is_stmt 1 view .LVU143
+ 679              		.loc 1 146 22 is_stmt 0 view .LVU144
+ 680 01b0 B0EE481A 		vmov.f32	s2, s16
+ 681 01b4 F0EE4B0A 		vmov.f32	s1, s22
+ 682 01b8 B0EE690A 		vmov.f32	s0, s19
+ 683              	.LVL76:
+ 684              		.loc 1 146 22 view .LVU145
+ 685 01bc 1348     		ldr	r0, .L34+24
+ 686 01be FFF7FEFF 		bl	PID_Update
+ 687              	.LVL77:
+ 688 01c2 F0EE401A 		vmov.f32	s3, s0
+ 689              	.LVL78:
+ 147:Core/Src/flight.c **** 
+ 148:Core/Src/flight.c ****     mixer_out_t mix;
+ 690              		.loc 1 148 5 is_stmt 1 view .LVU146
+ 149:Core/Src/flight.c ****     Mixer_QuadX(throttle, rollOut, pitchOut, yawOut, &mix);
+ 691              		.loc 1 149 5 view .LVU147
+ 692 01c6 04A8     		add	r0, sp, #16
+ 693 01c8 B0EE491A 		vmov.f32	s2, s18
+ARM GAS  /tmp/ccfagbFr.s 			page 16
+
+
+ 694 01cc F0EE4A0A 		vmov.f32	s1, s20
+ 695 01d0 B0EE680A 		vmov.f32	s0, s17
+ 696              	.LVL79:
+ 697              		.loc 1 149 5 is_stmt 0 view .LVU148
+ 698 01d4 FFF7FEFF 		bl	Mixer_QuadX
+ 699              	.LVL80:
+ 150:Core/Src/flight.c ****     SetMotors(mix.m1, mix.m2, mix.m3, mix.m4);
+ 700              		.loc 1 150 5 is_stmt 1 view .LVU149
+ 701 01d8 DDED071A 		vldr.32	s3, [sp, #28]
+ 702 01dc 9DED061A 		vldr.32	s2, [sp, #24]
+ 703 01e0 DDED050A 		vldr.32	s1, [sp, #20]
+ 704 01e4 9DED040A 		vldr.32	s0, [sp, #16]
+ 705 01e8 FFF7FEFF 		bl	SetMotors
+ 706              	.LVL81:
+ 707              	.L22:
+ 151:Core/Src/flight.c **** }
+ 708              		.loc 1 151 1 is_stmt 0 view .LVU150
+ 709 01ec 0EB0     		add	sp, sp, #56
+ 710              	.LCFI11:
+ 711              		.cfi_def_cfa_offset 40
+ 712              	.LVL82:
+ 713              		.loc 1 151 1 view .LVU151
+ 714              		@ sp needed
+ 715 01ee BDEC088B 		vldm	sp!, {d8-d11}
+ 716              	.LCFI12:
+ 717              		.cfi_restore 86
+ 718              		.cfi_restore 87
+ 719              		.cfi_restore 84
+ 720              		.cfi_restore 85
+ 721              		.cfi_restore 82
+ 722              		.cfi_restore 83
+ 723              		.cfi_restore 80
+ 724              		.cfi_restore 81
+ 725              		.cfi_def_cfa_offset 8
+ 726              	.LVL83:
+ 727              		.loc 1 151 1 view .LVU152
+ 728 01f2 10BD     		pop	{r4, pc}
+ 729              	.LVL84:
+ 730              	.L35:
+ 731              		.loc 1 151 1 view .LVU153
+ 732              		.align	2
+ 733              	.L34:
+ 734 01f4 00000000 		.word	s_gyroBias
+ 735 01f8 00000000 		.word	s_state
+ 736 01fc 00000240 		.word	1073872896
+ 737 0200 00007A44 		.word	1148846080
+ 738 0204 00000000 		.word	s_pidRoll
+ 739 0208 00000000 		.word	s_pidPitch
+ 740 020c 00000000 		.word	s_pidYaw
+ 741 0210 00000000 		.word	0
+ 742 0214 3333733F 		.word	1064514355
+ 743 0218 CDCC4C3D 		.word	1028443341
+ 744 021c 0080BB44 		.word	1153138688
+ 745 0220 0000FA43 		.word	1140457472
+ 746 0224 00001644 		.word	1142292480
+ 747 0228 0000C843 		.word	1137180672
+ 748 022c 6F12833A 		.word	981668463
+ARM GAS  /tmp/ccfagbFr.s 			page 17
+
+
+ 749              		.cfi_endproc
+ 750              	.LFE138:
+ 752              		.section	.text.HAL_TIM_PeriodElapsedCallback,"ax",%progbits
+ 753              		.align	1
+ 754              		.global	HAL_TIM_PeriodElapsedCallback
+ 755              		.syntax unified
+ 756              		.thumb
+ 757              		.thumb_func
+ 759              	HAL_TIM_PeriodElapsedCallback:
+ 760              	.LVL85:
+ 761              	.LFB139:
+ 152:Core/Src/flight.c **** 
+ 153:Core/Src/flight.c **** void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+ 154:Core/Src/flight.c **** {
+ 762              		.loc 1 154 1 is_stmt 1 view -0
+ 763              		.cfi_startproc
+ 764              		@ args = 0, pretend = 0, frame = 0
+ 765              		@ frame_needed = 0, uses_anonymous_args = 0
+ 766              		.loc 1 154 1 is_stmt 0 view .LVU155
+ 767 0000 08B5     		push	{r3, lr}
+ 768              	.LCFI13:
+ 769              		.cfi_def_cfa_offset 8
+ 770              		.cfi_offset 3, -8
+ 771              		.cfi_offset 14, -4
+ 155:Core/Src/flight.c ****     if (htim->Instance == TIM6) {
+ 772              		.loc 1 155 5 is_stmt 1 view .LVU156
+ 773              		.loc 1 155 13 is_stmt 0 view .LVU157
+ 774 0002 0268     		ldr	r2, [r0]
+ 775              		.loc 1 155 8 view .LVU158
+ 776 0004 034B     		ldr	r3, .L40
+ 777 0006 9A42     		cmp	r2, r3
+ 778 0008 00D0     		beq	.L39
+ 779              	.LVL86:
+ 780              	.L36:
+ 156:Core/Src/flight.c ****         Flight_Loop();
+ 157:Core/Src/flight.c ****     }
+ 158:Core/Src/flight.c **** }
+ 781              		.loc 1 158 1 view .LVU159
+ 782 000a 08BD     		pop	{r3, pc}
+ 783              	.LVL87:
+ 784              	.L39:
+ 156:Core/Src/flight.c ****         Flight_Loop();
+ 785              		.loc 1 156 9 is_stmt 1 view .LVU160
+ 786 000c FFF7FEFF 		bl	Flight_Loop
+ 787              	.LVL88:
+ 788              		.loc 1 158 1 is_stmt 0 view .LVU161
+ 789 0010 FBE7     		b	.L36
+ 790              	.L41:
+ 791 0012 00BF     		.align	2
+ 792              	.L40:
+ 793 0014 00100040 		.word	1073745920
+ 794              		.cfi_endproc
+ 795              	.LFE139:
+ 797              		.section	.bss.s_state,"aw",%nobits
+ 800              	s_state:
+ 801 0000 00       		.space	1
+ 802              		.section	.bss.s_gyroBias,"aw",%nobits
+ARM GAS  /tmp/ccfagbFr.s 			page 18
+
+
+ 803              		.align	2
+ 806              	s_gyroBias:
+ 807 0000 00000000 		.space	12
+ 807      00000000 
+ 807      00000000 
+ 808              		.section	.bss.s_pidYaw,"aw",%nobits
+ 809              		.align	2
+ 812              	s_pidYaw:
+ 813 0000 00000000 		.space	24
+ 813      00000000 
+ 813      00000000 
+ 813      00000000 
+ 813      00000000 
+ 814              		.section	.bss.s_pidPitch,"aw",%nobits
+ 815              		.align	2
+ 818              	s_pidPitch:
+ 819 0000 00000000 		.space	24
+ 819      00000000 
+ 819      00000000 
+ 819      00000000 
+ 819      00000000 
+ 820              		.section	.bss.s_pidRoll,"aw",%nobits
+ 821              		.align	2
+ 824              	s_pidRoll:
+ 825 0000 00000000 		.space	24
+ 825      00000000 
+ 825      00000000 
+ 825      00000000 
+ 825      00000000 
+ 826              		.text
+ 827              	.Letext0:
+ 828              		.file 2 "/usr/arm-none-eabi/include/machine/_default_types.h"
+ 829              		.file 3 "/usr/arm-none-eabi/include/sys/_stdint.h"
+ 830              		.file 4 "Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f405xx.h"
+ 831              		.file 5 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h"
+ 832              		.file 6 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_gpio.h"
+ 833              		.file 7 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_dma.h"
+ 834              		.file 8 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h"
+ 835              		.file 9 "Core/Inc/icm42688.h"
+ 836              		.file 10 "Core/Inc/pid.h"
+ 837              		.file 11 "Core/Inc/mixer.h"
+ 838              		.file 12 "Core/Inc/crsf.h"
+ 839              		.file 13 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h"
+ 840              		.file 14 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h"
+ARM GAS  /tmp/ccfagbFr.s 			page 19
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 flight.c
+     /tmp/ccfagbFr.s:21     .text.UsToPulse:00000000 $t
+     /tmp/ccfagbFr.s:26     .text.UsToPulse:00000000 UsToPulse
+     /tmp/ccfagbFr.s:68     .text.UsToPulse:00000034 $d
+     /tmp/ccfagbFr.s:74     .text.SetMotors:00000000 $t
+     /tmp/ccfagbFr.s:79     .text.SetMotors:00000000 SetMotors
+     /tmp/ccfagbFr.s:153    .text.SetMotors:0000005c $d
+     /tmp/ccfagbFr.s:160    .text.FatalBlink:00000000 $t
+     /tmp/ccfagbFr.s:165    .text.FatalBlink:00000000 FatalBlink
+     /tmp/ccfagbFr.s:210    .text.FatalBlink:00000034 $d
+     /tmp/ccfagbFr.s:216    .text.Flight_Init:00000000 $t
+     /tmp/ccfagbFr.s:222    .text.Flight_Init:00000000 Flight_Init
+     /tmp/ccfagbFr.s:355    .text.Flight_Init:000000e0 $d
+     /tmp/ccfagbFr.s:806    .bss.s_gyroBias:00000000 s_gyroBias
+     /tmp/ccfagbFr.s:824    .bss.s_pidRoll:00000000 s_pidRoll
+     /tmp/ccfagbFr.s:818    .bss.s_pidPitch:00000000 s_pidPitch
+     /tmp/ccfagbFr.s:812    .bss.s_pidYaw:00000000 s_pidYaw
+     /tmp/ccfagbFr.s:374    .text.Flight_Loop:00000000 $t
+     /tmp/ccfagbFr.s:380    .text.Flight_Loop:00000000 Flight_Loop
+     /tmp/ccfagbFr.s:734    .text.Flight_Loop:000001f4 $d
+     /tmp/ccfagbFr.s:800    .bss.s_state:00000000 s_state
+     /tmp/ccfagbFr.s:753    .text.HAL_TIM_PeriodElapsedCallback:00000000 $t
+     /tmp/ccfagbFr.s:759    .text.HAL_TIM_PeriodElapsedCallback:00000000 HAL_TIM_PeriodElapsedCallback
+     /tmp/ccfagbFr.s:793    .text.HAL_TIM_PeriodElapsedCallback:00000014 $d
+     /tmp/ccfagbFr.s:801    .bss.s_state:00000000 $d
+     /tmp/ccfagbFr.s:803    .bss.s_gyroBias:00000000 $d
+     /tmp/ccfagbFr.s:809    .bss.s_pidYaw:00000000 $d
+     /tmp/ccfagbFr.s:815    .bss.s_pidPitch:00000000 $d
+     /tmp/ccfagbFr.s:821    .bss.s_pidRoll:00000000 $d
+
+UNDEFINED SYMBOLS
+htim1
+htim8
+HAL_GPIO_TogglePin
+HAL_GPIO_WritePin
+HAL_Delay
+ICM42688_Init
+ICM42688_CalibrateGyroBias
+CRSF_Init
+PID_Init
+HAL_TIM_PWM_Start
+HAL_TIMEx_PWMN_Start
+HAL_TIM_Base_Start_IT
+htim6
+ICM42688_Read
+HAL_GetTick
+CRSF_IsLinkUp
+CRSF_GetChannelUs
+PID_Reset
+PID_Update
+Mixer_QuadX

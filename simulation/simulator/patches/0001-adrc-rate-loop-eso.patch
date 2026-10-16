@@ -1,0 +1,87 @@
+--- a/Control/adrc.c
++++ b/Control/adrc.c
+@@ -1,29 +1,20 @@
+ #include "adrc.h"
+ #include <string.h>
+ 
+-/* 3rd-order ESO for 2nd-order plant:
+- *   θ_dot  = ω          (z1 ≈ θ)
+- *   ω_dot  = f + b0*u   (z2 ≈ ω, z3 ≈ f = total disturbance)
+- *
+- * ESO (Euler discrete):
+- *   e      = y - z1
+- *   z1    += dt * (z2 + β1*e)
+- *   z2    += dt * (z3 + β2*e + b0*u)
+- *   z3    += dt * (β3*e)
+- *
+- * Pole placement at -ω_o (all three):
+- *   β1 = 3*ω_o,  β2 = 3*ω_o²,  β3 = ω_o³
+- *
+- * Control law:
+- *   u0  = kp*(r - z1) + kd*(r_dot - z2)
+- *   u   = (u0 - z3) / b0                */
++/* Rate-loop ESO (2nd order).  The measured signal is the body rate, so the
++ * plant is  omega_dot = f + b0*u  with  b0*u = angular acceleration that was
++ * commanded to the inner (INDI) loop one tick ago.
++ *   e   = y - z1
++ *   z1 += dt * (z2 + b0*u + 2*w_o*e)        (z1 ~ omega)
++ *   z2 += dt * (w_o^2 * e)                  (z2 ~ f, total disturbance)
++ * Both poles at -w_o.  z3 mirrors z2 so adrc_get_disturbance() is unchanged. */
+ 
+ void adrc_axis_init(adrc_axis_t *ax, float omega_o, float b0, float kp, float kd, float dt)
+ {
+     memset(ax, 0, sizeof(adrc_axis_t));
+-    ax->beta1 = 3.0f * omega_o;
+-    ax->beta2 = 3.0f * omega_o * omega_o;
+-    ax->beta3 = omega_o * omega_o * omega_o;
++    ax->beta1 = 2.0f * omega_o;
++    ax->beta2 = omega_o * omega_o;
++    ax->beta3 = 0.0f;
+     ax->b0    = b0;
+     ax->kp    = kp;
+     ax->kd    = kd;
+@@ -32,11 +23,11 @@
+ 
+ float adrc_axis_update(adrc_axis_t *ax, float y_meas, float r, float r_dot, float u_prev)
+ {
+-    float e   = y_meas - ax->z1;
++    float e = y_meas - ax->z1;
+ 
+-    ax->z1 += ax->dt * (ax->z2 + ax->beta1 * e);
+-    ax->z2 += ax->dt * (ax->z3 + ax->beta2 * e + ax->b0 * u_prev);
+-    ax->z3 += ax->dt * (ax->beta3 * e);
++    ax->z1 += ax->dt * (ax->z2 + ax->b0 * u_prev + ax->beta1 * e);
++    ax->z2 += ax->dt * (ax->beta2 * e);
++    ax->z3  = ax->z2;
+ 
+     float u0 = ax->kp * (r - ax->z1) + ax->kd * (r_dot - ax->z2);
+     float u  = (u0 - ax->z3) / ax->b0;
+--- a/Core/Src/main.c
++++ b/Core/Src/main.c
+@@ -94,6 +94,7 @@
+ 
+ static float       g_gyro_bias[3];
+ static float       g_omega_meas[3];
++static float       g_alpha_cmd[3];
+ 
+ static volatile uint8_t  g_tick_flag;
+ static volatile uint32_t g_tick_count;
+@@ -184,7 +185,8 @@
+         ukf_get_rates(&g_ukf, omega_ukf);
+         float u_adrc[3];
+         float r_dot[3] = {0};
+-        float u_prev_adrc[3] = { g_omega_meas[0], g_omega_meas[1], g_omega_meas[2] };
++        float u_prev_adrc[3] = { g_alpha_cmd[0] / ADRC_B0_RP, g_alpha_cmd[1] / ADRC_B0_RP,
++                                 g_alpha_cmd[2] / ADRC_B0_YAW };
+         adrc_update(&g_adrc, g_omega_meas, omega_ref, r_dot, u_prev_adrc, u_adrc);
+     }
+     adrc_get_disturbance(&g_adrc, f_hat);
+@@ -195,6 +197,8 @@
+     alpha_ref[1] = KP_RATE     * (omega_ref[1] - g_omega_meas[1]) - f_hat[1] + u_mrac[1];
+     alpha_ref[2] = KP_RATE_YAW * (omega_ref[2] - g_omega_meas[2]) - f_hat[2] + u_mrac[2];
+ 
++    for (int i = 0; i < 3; i++) g_alpha_cmd[i] = alpha_ref[i];
++
+     /* Throttle */
+     float throttle = ((float)thro_us - 1000.0f) / 1000.0f;
+     if (throttle < 0.0f) throttle = 0.0f;

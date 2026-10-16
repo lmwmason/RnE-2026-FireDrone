@@ -1,0 +1,10 @@
+# UKF attitude input for ANGLE only. Stock gyro/rate PID and all motor settings retained.
+# Power up stationary >=5 s. SE middle HORIZON uses stock BF attitude.
+set fd_mode = 0
+set fd_blend = 0
+set fd_ukf = 3
+set debug_mode = FIREDRONE_UKF_CONTROL
+set blackbox_device = SPIFLASH
+set blackbox_mode = NORMAL
+set blackbox_sample_rate = 1/2
+save

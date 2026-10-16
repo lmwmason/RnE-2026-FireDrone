@@ -1,0 +1,8 @@
+{
+  "settings_unchanged": true,
+  "comparison": "full dump text equality before/after",
+  "flashed": false,
+  "save_sent": false,
+  "motors_commanded": false,
+  "left_in_cli": true
+}

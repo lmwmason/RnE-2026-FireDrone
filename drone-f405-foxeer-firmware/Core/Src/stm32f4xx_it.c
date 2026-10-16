@@ -1,0 +1,28 @@
+/**
+  ******************************************************************************
+  * @file    stm32f4xx_it.c
+  * @brief   Interrupt Service Routines (core exceptions only).
+  *          Peripheral IRQs are handled in their respective driver files:
+  *          TIM6_DAC_IRQHandler  → main.c
+  *          USART2_IRQHandler    → main.c
+  *          UART5_IRQHandler     → Drivers/gps.c
+  ******************************************************************************
+  */
+#include "main.h"
+#include "stm32f4xx_it.h"
+
+void NMI_Handler(void) {}
+
+void HardFault_Handler(void)  { while (1); }
+void MemManage_Handler(void)  { while (1); }
+void BusFault_Handler(void)   { while (1); }
+void UsageFault_Handler(void) { while (1); }
+
+void SVC_Handler(void)      {}
+void DebugMon_Handler(void) {}
+void PendSV_Handler(void)   {}
+
+void SysTick_Handler(void)
+{
+    HAL_IncTick();
+}
