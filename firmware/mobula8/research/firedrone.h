@@ -19,3 +19,5 @@ bool firedroneLevelAngles(const float baseline[2], float out[2], uint32_t nowUs,
 void firedroneRateLog(int32_t correction[3], int32_t candidate[3]);
 
 void firedroneAttitudeLog(int32_t out[6]);
+
+bool firedroneArmingReady(void);

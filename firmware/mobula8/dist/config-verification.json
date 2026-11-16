@@ -15,7 +15,7 @@
   "hex_config_sector_untouched": true,
   "scope": "FC CLI settings; immutable MCU UID excluded; ESC internal EEPROM, RX firmware/binding, fonts, flash logs not cloned",
   "method": "Actual candidate ARM CLI emulation including validateAndFixConfig, with hardware/runtime initializers stubbed; all captured values compared by profile and key. Not flight validation.",
-  "hex_sha256": "d133853efcddba5bf45d3bf79ebbd73c8a6f198dba50305d159ec7497500cdf0",
-  "elf_sha256": "15dc9239b17204ff6ac08d641e14b40008a3bc62fede17509673b48385e14eba",
+  "hex_sha256": "4cda832eca54b2c78a8652373dbe6b435f95851133933934d702421281bbd29a",
+  "elf_sha256": "6948bc7f7f4047b4b9ddf706008e62e8d904ce524da29e0877d47d28f18e67b1",
   "stock_sha256": "4e3dbc82f292d569108e4c14b76066c4129818f07ea24bb6abe86db73f0eb3f1"
 }

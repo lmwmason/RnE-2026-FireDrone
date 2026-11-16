@@ -23,7 +23,7 @@ static ukf_t estimator;
 static fdUkfWork ukfWork;
 static quat_t gyroWindow={1,0,0,0}, propagated={1,0,0,0};
 static float impactHold;
-static bool accelRejected, observerTurn;
+static bool accelRejected, observerTurn, wasArmed;
 static uint32_t ukfQuietSince;
 static bool ukfReady, ukfPublished, ukfStopped, overBudget;
 static uint32_t ukfCompleted;
@@ -62,6 +62,12 @@ void firedroneAttitudeLog(int32_t out[6])
     uint32_t age=micros()-ukfCompleted;out[4]=valid && age<65535 ? age : 65535;
     out[5]=accelRejected | ((impactHold>0)<<1);
 }
+bool firedroneArmingReady(void)
+{
+    if(firedroneConfig()->ukf!=3)return true;
+    return !wasArmed && ukfPublished && ukfReady && !ukfStopped && !overBudget &&
+        !levelState.hardFault && (uint32_t)(micros()-ukfCompleted)<=20000;
+}
 bool firedroneLevelAngles(const float baseline[2], float out[2], uint32_t nowUs, float dt, bool permitted)
 {
     const uint32_t start=micros();
@@ -75,6 +81,14 @@ bool firedroneLevelAngles(const float baseline[2], float out[2], uint32_t nowUs,
 void firedroneUpdate(const float setpointDps[3], float dt, uint32_t nowUs, bool permitted)
 {
     const firedroneConfig_t *p=firedroneConfig();
+    const bool armed=ARMING_FLAG(ARMED);
+    if(wasArmed && !armed && !ukfStopped && !overBudget){
+        /* Do not carry a post-impact attitude into the next arming.
+         * Reinitialize only after the existing quiet-ground checks pass. */
+        ukfReady=false;ukfPublished=false;ukfWork.active=false;ukfQuietSince=0;
+        levelState=(fdLevelState){0};fdReset(&state);
+    }
+    wasArmed=armed;
     if (!p->mode && !p->ukf) { fdReset(&state); ukfReady=false; ukfPublished=false; ukfWork.active=false; ukfQuietSince=0; lastUkf=nowUs; return; }
     const uint32_t start=micros();
     // Detect delayed scheduler ticks, including micros() wraparound.

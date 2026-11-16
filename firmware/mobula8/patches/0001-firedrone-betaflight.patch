@@ -307,6 +307,57 @@ index 1a91c9fcd..318c802e9 100644
      uint16_t rawValue;
      uint16_t telemetryData[DSHOT_TELEMETRY_TYPE_COUNT];
      uint8_t telemetryTypes;
+diff --git a/src/main/fc/core.c b/src/main/fc/core.c
+index 3445aa554..c4858e85b 100644
+--- a/src/main/fc/core.c
++++ b/src/main/fc/core.c
+@@ -57,6 +57,7 @@
+ #include "fc/rc_adjustments.h"
+ #include "fc/rc_controls.h"
+ #include "fc/runtime_config.h"
++#include "research/firedrone.h"
+ #include "fc/stats.h"
+ 
+ #include "flight/failsafe.h"
+@@ -271,6 +272,8 @@ void updateArmingStatus(void)
+     if (ARMING_FLAG(ARMED)) {
+         LED0_ON;
+     } else {
++        if(firedroneArmingReady())unsetArmingDisabled(ARMING_DISABLED_UKF);
++        else setArmingDisabled(ARMING_DISABLED_UKF);
+         // Check if the power on arming grace time has elapsed
+         if ((getArmingDisableFlags() & ARMING_DISABLED_BOOT_GRACE_TIME) && (millis() >= systemConfig()->powerOnArmingGraceTime * 1000)
+ #ifdef USE_DSHOT
+diff --git a/src/main/fc/runtime_config.c b/src/main/fc/runtime_config.c
+index 290482454..552f182a5 100644
+--- a/src/main/fc/runtime_config.c
++++ b/src/main/fc/runtime_config.c
+@@ -60,6 +60,7 @@ const char *armingDisableFlagNames[]= {
+     "NO_ACC_CAL",
+     "MOTOR_PROTO",
+     "ARMSWITCH",
++    "UKF_INIT",
+ };
+ 
+ static armingDisableFlags_e armingDisableFlags = 0;
+diff --git a/src/main/fc/runtime_config.h b/src/main/fc/runtime_config.h
+index 1a41b1315..38e667496 100644
+--- a/src/main/fc/runtime_config.h
++++ b/src/main/fc/runtime_config.h
+@@ -65,10 +65,11 @@ typedef enum {
+     ARMING_DISABLED_DSHOT_BITBANG   = (1 << 22),
+     ARMING_DISABLED_ACC_CALIBRATION = (1 << 23),
+     ARMING_DISABLED_MOTOR_PROTOCOL  = (1 << 24),
+-    ARMING_DISABLED_ARM_SWITCH      = (1 << 25), // Needs to be the last element, since it's always activated if one of the others is active when arming
++    ARMING_DISABLED_ARM_SWITCH      = (1 << 25), // Also set if another reason is active when arming
++    ARMING_DISABLED_UKF             = (1 << 26), // Append: preserve all existing MSP flag bits
+ } armingDisableFlags_e;
+ 
+-#define ARMING_DISABLE_FLAGS_COUNT (LOG2(ARMING_DISABLED_ARM_SWITCH) + 1)
++#define ARMING_DISABLE_FLAGS_COUNT (LOG2(ARMING_DISABLED_UKF) + 1)
+ 
+ extern const char *armingDisableFlagNames[ARMING_DISABLE_FLAGS_COUNT];
+ 
 diff --git a/src/main/flight/pid.c b/src/main/flight/pid.c
 index 6feeed5ad..5e934d39a 100644
 --- a/src/main/flight/pid.c
@@ -390,6 +441,19 @@ index 6feeed5ad..5e934d39a 100644
      // Disable PID control if at zero throttle or if gyro overflow detected
      // This may look very innefficient, but it is done on purpose to always show real CPU usage as in flight
      if (!pidRuntime.pidStabilisationEnabled || gyroOverflowDetected()) {
+diff --git a/src/main/osd/osd_warnings.c b/src/main/osd/osd_warnings.c
+index a1dbcce2b..4ee5be738 100644
+--- a/src/main/osd/osd_warnings.c
++++ b/src/main/osd/osd_warnings.c
+@@ -81,7 +81,7 @@ void renderOsdWarning(char *warningText, bool *blinking, uint8_t *displayAttr)
+     // Cycle through the arming disabled reasons
+     if (osdWarnGetState(OSD_WARNING_ARMING_DISABLE)) {
+         if (IS_RC_MODE_ACTIVE(BOXARM) && isArmingDisabled()) {
+-            const armingDisableFlags_e armSwitchOnlyFlag = 1 << (ARMING_DISABLE_FLAGS_COUNT - 1);
++            const armingDisableFlags_e armSwitchOnlyFlag = ARMING_DISABLED_ARM_SWITCH;
+             armingDisableFlags_e flags = getArmingDisableFlags();
+ 
+             // Remove the ARMSWITCH flag unless it's the only one
 diff --git a/src/main/pg/pg_ids.h b/src/main/pg/pg_ids.h
 index 3dc3ff30f..9290946a0 100644
 --- a/src/main/pg/pg_ids.h

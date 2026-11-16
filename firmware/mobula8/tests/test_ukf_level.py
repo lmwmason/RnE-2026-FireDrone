@@ -18,7 +18,7 @@ int main(void){
         s=(fdLevelState){0};ukf[0]=12;bf[0]=10;
         unsigned age=0;bool valid=true;float dt=.000312f;
         if(fault==0)age=20001;
-        if(fault==1)ukf[0]=31;
+        if(fault==1)dt=0;
         if(fault==2)ukf[0]=NAN;
         if(fault==3)valid=false;
         if(fault==4)dt=.003f;
@@ -29,32 +29,20 @@ int main(void){
         for(int i=0;i<4000;i++)fdLevelSelect(&s,bf,ukf,true,true,true,0,.000312f,out);
         assert(!s.active && out[0]==bf[0]);
     }
-    // Former 5 deg / 50 deg limits no longer reject normal maneuver estimates.
-    s=(fdLevelState){0};bf[0]=52;ukf[0]=58;
+    // Large disagreement, near vertical attitude and Euler wrap cannot deselect UKF.
+    s=(fdLevelState){0};bf[0]=0;ukf[0]=35;
     for(int i=0;i<4000;i++)fdLevelSelect(&s,bf,ukf,true,true,true,10000,.000312f,out);
-    assert(s.active && !s.rejected && out[0]==58);
-    // Soft envelope exit is immediate, recovers only after continuous tight agreement.
-    ukf[0]=61;
-    fdLevelSelect(&s,bf,ukf,true,true,true,0,.000312f,out);
-    assert(s.rejected && !s.hardFault && !s.active && out[0]==52 && s.reason==5);
-    bf[0]=10;ukf[0]=12;
-    for(int i=0;i<1000;i++)fdLevelSelect(&s,bf,ukf,true,true,true,0,.000312f,out);
-    assert(s.rejected && !s.active);
-    ukf[0]=15;fdLevelSelect(&s,bf,ukf,true,true,true,0,.000312f,out);
-    assert(s.recovery==0);
-    ukf[0]=12;
-    for(int i=0;i<1600;i++)fdLevelSelect(&s,bf,ukf,true,true,true,0,.000312f,out);
-    assert(s.rejected && !s.active);
-    for(int i=0;i<10;i++)fdLevelSelect(&s,bf,ukf,true,true,true,0,.000312f,out);
-    assert(s.active && !s.rejected && s.blend<.01f && out[0]>10 && out[0]<10.02f);
-    for(int i=0;i<4000;i++)fdLevelSelect(&s,bf,ukf,true,true,true,0,.000312f,out);
-    assert(s.active && s.blend==1 && out[0]==12);
-    bf[0]=61;ukf[0]=62;fdLevelSelect(&s,bf,ukf,true,true,true,0,.000312f,out);
-    assert(s.rejected && !s.hardFault && s.reason==6);
-    // Invalid estimate during soft fallback escalates to a permanent hard fault.
+    assert(s.active && !s.rejected && s.blend==1 && out[0]==35);
+    const float cases[][4]={{52,0,61,0},{10,0,62,0},{-179,78,179,81},{0,0,35,-35},{170,85,-170,88}};
+    for(unsigned i=0;i<sizeof(cases)/sizeof(cases[0]);i++){
+        bf[0]=cases[i][0];bf[1]=cases[i][1];ukf[0]=cases[i][2];ukf[1]=cases[i][3];
+        fdLevelSelect(&s,bf,ukf,true,true,true,10000,.000312f,out);
+        assert(s.active && !s.rejected && !s.hardFault && s.reason==0);
+        assert(fabsf(out[0]-ukf[0])<.001f && fabsf(out[1]-ukf[1])<.001f);
+    }
     fdLevelSelect(&s,bf,ukf,true,true,false,0,.000312f,out);
     assert(s.hardFault && s.rejected && s.reason==1);
-    puts("PASS: UKF ANGLE transition, exact baseline fallback, stale/divergent/nonfinite/fault/interval/envelope rejection");
+    puts("PASS: UKF ANGLE transition, exact baseline fallback, stale/nonfinite/interval protection, uninterrupted valid UKF across large attitudes");
 }
 """
 class LevelTests(unittest.TestCase):

@@ -62,17 +62,39 @@ static void step(bool permitted){
     firedroneUpdate(sp,stepUs*1e-6f,now,permitted);
 }
 int main(int argc,char **argv){
-    if(argc>1 && (!strcmp(argv[1],"level") || !strcmp(argv[1],"integrated") || !strcmp(argv[1],"shock") || !strcmp(argv[1],"fast"))){
+    if(argc>1 && (!strcmp(argv[1],"level") || !strcmp(argv[1],"integrated") || !strcmp(argv[1],"shock") || !strcmp(argv[1],"fast") || !strcmp(argv[1],"rearm"))){
         cfg.mode=0;cfg.blend=0;cfg.ukf=3;
         acc.isAccelUpdatedAtLeastOnce=true;acc.dev.acc_1G_rec=1;
         acc.accADC[1]=.5f;acc.accADC[2]=.8660254f;attitude.values.roll=300;
+        assert(!firedroneArmingReady());
         for(int i=0;i<1200;i++)step(false);
+        clockUs=now;assert(firedroneArmingReady());
         testArmed=true;float base[2]={28,0},selected[2];bool active=false;
         for(int i=0;i<1500;i++){
             active=firedroneLevelAngles(base,selected,now,.001f,true);step(true);
             for(int a=0;a<3;a++)assert(pidData[a].Sum==10);
         }
         assert(active && selected[0]>29 && selected[0]<31);
+        if(!strcmp(argv[1],"rearm")){
+            clockUs=now;assert(!firedroneArmingReady());
+            // Large disagreement remains selected, including after repeated impacts.
+            base[0]=-50;
+            assert(firedroneLevelAngles(base,selected,now,.001f,true));
+            assert(selected[0]>29 && selected[0]<31);
+            testArmed=false;step(false);clockUs=now;
+            assert(!firedroneArmingReady());
+            for(int i=0;i<900;i++)step(false);
+            clockUs=now;assert(!firedroneArmingReady());
+            for(int i=0;i<300;i++)step(false);
+            clockUs=now;assert(firedroneArmingReady());
+            testArmed=true;
+            for(int i=0;i<1500;i++){
+                firedroneLevelAngles(base,selected,now,.001f,true);step(true);
+            }
+            assert(selected[0]>29 && selected[0]<31);
+            assert(!(logs[DEBUG_FIREDRONE_UKF_CONTROL][3]&(16|64|4|1)));
+            puts("PASS: normal disarm requires quiet UKF initialization before next arming");return 0;
+        }
         if(!strcmp(argv[1],"fast")){
             stepUs=312;
             for(int i=0;i<12000;i++){
@@ -213,5 +235,5 @@ class BridgeTests(unittest.TestCase):
             sources=[ROOT/"research/firedrone.c",ROOT/"research/rate_core.c",ROOT/"research/ukf_sliced.c",ROOT/"research/ukf_level.c"]+list((ROOT/"research/original").glob("*.c"))
             subprocess.run(["gcc","-std=c99","-Ofast","-Wall","-Wextra","-Werror",
                 "-I"+str(d),"-I"+str(ROOT),str(d/"main.c"),*map(str,sources),"-lm","-o",str(d/"test")],check=True)
-            for case in [[],["early"],["cadence"],["budget"],["level"],["integrated"],["shock"],["fast"]]:
+            for case in [[],["early"],["cadence"],["budget"],["level"],["integrated"],["shock"],["fast"],["rearm"]]:
                 subprocess.run([str(d/"test"),*case],check=True)

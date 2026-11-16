@@ -3,4 +3,4 @@ No baseline attitude is passed to this selector: finite valid UKF is selected di
 Invalid/stale input produces an explicit INVALID result with no replacement output. This is not a complete flight fault-handling strategy. A flight integration must define and validate that behavior rather than silently reuse this host result as actuator authorization.
 Flight22 provides no external attitude truth. Third-flight estimate disagreement reaches34.8deg in pitch, equivalent to174deg/s difference at the pre-filter ANGLE rate-command input with current levelGain5. This counterfactual is not a closed-loop trajectory prediction and cannot establish which estimate is correct. Therefore live UKF-only operation is not validated by these recordings.
 
-User explicitly deferred upload until a later instruction. Do not upload or enable this experiment without that later instruction.
+On 2026-10-17 the user explicitly authorized upload. The production change is in research/ukf_level.c, not this experiment: it removes disagreement/envelope exits but retains the one-second entry blend and invalid/stale/timing protections. This direct-selector experiment remains host-only.
